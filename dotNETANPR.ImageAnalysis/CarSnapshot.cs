@@ -103,9 +103,9 @@ namespace dotNETANPR.ImageAnalysis
         //        Bitmap imageCopy = duplicateBi(image);
         //        
         //        float data[] = new float[9];
-        //        for (int i=0; i<data.length; i++) data[i] = 1.0f/data.length;
+        //        for (int i=0; i<data.Length; i++) data[i] = 1.0f/data.Length;
         //        
-        //        new ConvolveOp(new Kernel(1,data.length, data), ConvolveOp.EDGE_NO_OP, null).filter(imageCopy, image);
+        //        new ConvolveOp(new Kernel(1,data.Length, data), ConvolveOp.EDGE_NO_OP, null).filter(imageCopy, image);
         //    }
 
         public CarSnapshotGraph histogram(Bitmap bi)

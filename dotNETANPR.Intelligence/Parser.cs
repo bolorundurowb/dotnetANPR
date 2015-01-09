@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using dotNETANPR.Configurator;
 using dotNETANPR.Recognizer;
+using dotNETANPR;
 
 namespace dotNETANPR.Intelligence
 {
@@ -46,7 +47,7 @@ namespace dotNETANPR.Intelligence
             {
                 return this.positions.ElementAt(index);
             }
-            public int length()
+            public int Length()
             {
                 return this.positions.Count;
             }
@@ -111,14 +112,14 @@ namespace dotNETANPR.Intelligence
         // pre danu dlzku znacky sa pokusi najst nejaky plateform o rovnakej dlzke
         // v pripade ze nenajde ziadny, pripusti moznost ze je nejaky znak navyse
         // a hlada plateform s mensim poctom pismen
-        public void flagEqualOrShorterLength(int length)
+        public void flagEqualOrShorterLength(int Length)
         {
             bool found = false;
-            for (int i = length; i >= 1 && !found; i--)
+            for (int i = Length; i >= 1 && !found; i--)
             {
                 foreach (PlateForm form in this.plateForms)
                 {
-                    if (form.length() == i)
+                    if (form.Length() == i)
                     {
                         form.flagged = true;
                         found = true;
@@ -127,11 +128,11 @@ namespace dotNETANPR.Intelligence
             }
         }
 
-        public void flagEqualLength(int length)
+        public void flagEqualLength(int Length)
         {
             foreach (PlateForm form in this.plateForms)
             {
-                if (form.length() == length)
+                if (form.Length() == Length)
                 {
                     form.flagged = true;
                 }
@@ -145,7 +146,7 @@ namespace dotNETANPR.Intelligence
         }
 
         // syntax analysis mode : 0 (do not parse)
-        //                      : 1 (only equal length)
+        //                      : 1 (only equal Length)
         //                      : 2 (equal or shorter)
         public String parse(RecognizedPlate recognizedPlate, int syntaxAnalysisMode)
         {
@@ -155,15 +156,15 @@ namespace dotNETANPR.Intelligence
                 return recognizedPlate.getString();
             }
 
-            int length = recognizedPlate.chars.Count;
+            int Length = recognizedPlate.chars.Count;
             this.unFlagAll();
             if (syntaxAnalysisMode == 1)
             {
-                this.flagEqualLength(length);
+                this.flagEqualLength(Length);
             }
             else
             {
-                this.flagEqualOrShorterLength(length);
+                this.flagEqualOrShorterLength(Length);
             }
 
             List<FinalPlate> finalPlates = new List<FinalPlate>();
@@ -171,11 +172,11 @@ namespace dotNETANPR.Intelligence
             foreach (PlateForm form in this.plateForms)
             {
                 if (!form.flagged) continue; // skip unflagged
-                for (int i = 0; i <= length - form.length(); i++)
+                for (int i = 0; i <= Length - form.Length(); i++)
                 { // posuvanie formy po znacke
-                    //                System.out.println("comparing "+recognizedPlate.getString()+" with form "+form.name+" and offset "+i );
+                    //                Console.WriteLine("comparing "+recognizedPlate.getString()+" with form "+form.name+" and offset "+i );
                     FinalPlate finalPlate = new FinalPlate();
-                    for (int ii = 0; ii < form.length(); ii++)
+                    for (int ii = 0; ii < form.Length(); ii++)
                     { // prebehnut vsetky znaky formy
                         // form.getPosition(ii).allowedChars // zoznam povolenych
                         CharacterRecognizer.RecognizedChar rc = recognizedPlate.getChar(ii + i); // znak na znacke
@@ -199,7 +200,7 @@ namespace dotNETANPR.Intelligence
                             }
                         }
                     }
-                    //                System.out.println("adding "+finalPlate.plate+" with required changes "+finalPlate.requiredChanges);
+                    //                Console.WriteLine("adding "+finalPlate.plate+" with required changes "+finalPlate.requiredChanges);
                     finalPlates.Add(finalPlate);
                 }
             }
@@ -213,10 +214,10 @@ namespace dotNETANPR.Intelligence
             // najst tu s najmensim poctom vymen
             float minimalChanges = float.PositiveInfinity;
             int minimalIndex = 0;
-            //        System.out.println("---");
+            //        Console.WriteLine("---");
             for (int i = 0; i < finalPlates.Count; i++)
             {
-                //            System.out.println("::"+finalPlates.ElementAt(i).plate+" "+finalPlates.ElementAt(i).requiredChanges);
+                //            Console.WriteLine("::"+finalPlates.ElementAt(i).plate+" "+finalPlates.ElementAt(i).requiredChanges);
                 if (finalPlates.ElementAt(i).requiredChanges <= minimalChanges)
                 {
                     minimalChanges = finalPlates.ElementAt(i).requiredChanges;

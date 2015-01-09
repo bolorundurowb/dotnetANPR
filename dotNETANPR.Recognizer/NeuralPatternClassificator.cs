@@ -115,7 +115,7 @@ namespace dotNETANPR.Recognizer
             if (alphaString.IndexOf(fileName.ToLower()[0])==-1)
                 continue; // je to nezname meno suboru, skip
 
-            ImageAnalysisChar imgChar = new ImageAnalysis.Char(path + Path.DirectorySeparatorChar + fileName);
+            ImageAnalysis.Char imgChar = new ImageAnalysis.Char(path + Path.DirectorySeparatorChar + fileName);
             imgChar.normalize();
             train.AddIOPair(this.createNewPair(fileName.ToUpper()[0], imgChar));
         }

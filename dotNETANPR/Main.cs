@@ -7,13 +7,14 @@ using dotNETANPR.GUI;
 using dotNETANPR.ImageAnalysis;
 using System.IO;
 using dotNETANPR.Recognizer;
+using dotNETANPR.Intelligence;
 
 namespace dotNETANPR
 {
     public class Main
     {
         public static ReportGenerator rg = new ReportGenerator();
-        public static Intelligence systemLogic;
+        public static Intelligence.Intelligence systemLogic;
         public static String helpText = "" +
                 "-----------------------------------------------------------\n" +
                 "Automatic number plate recognition system\n" +
@@ -89,7 +90,7 @@ namespace dotNETANPR
                 // DONE run gui
                 //UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
                 //FrameComponentInit frameComponentInit = new FrameComponentInit(); // show wait
-                dotNETANPR.Main.systemLogic = new Intelligence(false);
+                dotNETANPR.Main.systemLogic = new Intelligence.Intelligence(false);
                 //frameComponentInit.dispose(); // hide wait
                 //FrameMain mainFrame = new FrameMain();
             }
@@ -101,7 +102,7 @@ namespace dotNETANPR
                 // DONE load snapshot args[2] and recognize it
                 try
                 {
-                    dotNETANPR.Main.systemLogic = new Intelligence(false);
+                    dotNETANPR.Main.systemLogic = new Intelligence.Intelligence(false);
                     Console.WriteLine(systemLogic.recognize(new CarSnapshot(args[2])));
                 }
                 catch (IOException e)

@@ -122,7 +122,7 @@ namespace dotNETANPR
                     dotNETANPR.Main.rg = new ReportGenerator(args[4]);     //prepare report generator
                     dotNETANPR.Main.systemLogic = new Intelligence(true); //prepare intelligence
                     dotNETANPR.Main.systemLogic.recognize(new CarSnapshot(args[2]));
-                    dotNETANPR.Main.rg.finish();
+                    dotNETANPR.Main.rg.Finish();
                 }
                 catch (IOException e)
                 {
@@ -139,7 +139,7 @@ namespace dotNETANPR
                 Configurator.Configurator configurator = new Configurator.Configurator();
                 try
                 {
-                    configurator.saveConfiguration(args[2]);
+                    configurator.SaveConfiguration(args[2]);
                 }
                 catch (IOException e)
                 {

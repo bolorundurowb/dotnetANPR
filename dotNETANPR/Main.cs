@@ -66,7 +66,7 @@ namespace dotNETANPR
             }
         }
 
-        // DONE z danej abecedy precita deskriptory, tie sa nauci, a ulozi neuronovu siet
+
         public static void learnAlphabet(String destinationFile)
         {
             try
@@ -79,20 +79,15 @@ namespace dotNETANPR
             }
             Console.WriteLine();
             NeuralPatternClassificator npc = new NeuralPatternClassificator(true);
-            npc.network.saveToXml(destinationFile);
+            npc.Network.SaveToXml(destinationFile);
         }
 
-        public static void Main(String[] args)
+        public static void Main(string[] args)
         {
 
             if (args.Length == 0 || (args.Length == 1 && args[0].Equals("-gui")))
             {
-                // DONE run gui
-                //UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-                //FrameComponentInit frameComponentInit = new FrameComponentInit(); // show wait
                 dotNETANPR.Main.systemLogic = new Intelligence.Intelligence(false);
-                //frameComponentInit.dispose(); // hide wait
-                //FrameMain mainFrame = new FrameMain();
             }
             else if (args.Length == 3 &&
                     args[0].Equals("-recognize") &&

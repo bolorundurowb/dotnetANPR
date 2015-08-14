@@ -1,28 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
+﻿/*
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * 
+ */
+ 
 using System.Xml.XPath;
 using System.Xml;
+using System.IO;
 
 namespace dotNETANPR.Configurator
 {
-    public class Properties
+    class Properties
     {
-        public string getProperty(string propertyName)
+        public string GetProperty(string propertyName)
         {
             try
             {
-                //settingsFilePath is a string variable storing the path of the settings file 
                 XPathDocument doc = new XPathDocument("config.xml");
                 XPathNavigator nav = doc.CreateNavigator();
-                // Compile a standard XPath expression
                 XPathExpression expr;
                 expr = nav.Compile("properties/entry[@key='" + propertyName + "']");
                 XPathNodeIterator iterator = nav.Select(expr);
-                // Iterate on the node set
                 while (iterator.MoveNext())
                 {
                     return iterator.Current.Value;
@@ -31,18 +34,15 @@ namespace dotNETANPR.Configurator
             }
             catch
             {
-                //do some error logging here. Leaving for you to do 
                 return string.Empty;
             }
         }
 
-        public void setProperty(string propertyName, string value)
+        public void SetProperty(string propertyName, string value)
         {
-            //settingsFilePath is a string variable storing the path of the settings file 
             XmlTextReader reader = new XmlTextReader("config.xml");
             XmlDocument doc = new XmlDocument();
             doc.Load(reader);
-            //we have loaded the XML, so it's time to close the reader.
             reader.Close();
             XmlNode oldNode;
             XmlElement root = doc.DocumentElement;
@@ -51,12 +51,12 @@ namespace dotNETANPR.Configurator
             doc.Save("config.xml");
         }
 
-        public void storeToXML (FileStream fs, string comment)
+        public void StoreToXML(FileStream fs, string comment)
         {
 
         }
 
-        public void loadFromXML (FileStream fs)
+        public void LoadFromXML(FileStream fs)
         {
 
         }

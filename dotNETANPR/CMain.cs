@@ -1,17 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿/*
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * 
+ */
+
+using System;
 using dotNETANPR.GUI;
 using dotNETANPR.ImageAnalysis;
 using System.IO;
 using dotNETANPR.Recognizer;
-using dotNETANPR.Intelligence;
 
 namespace dotNETANPR
 {
-    public class Main
+    class CMain
     {
         public static ReportGenerator rg = new ReportGenerator();
         public static Intelligence.Intelligence systemLogic;
@@ -47,27 +53,26 @@ namespace dotNETANPR
                 "                  it to <dstdir>.";
 
 
-        // normalizuje abecedu v zdrojovom adresari a vysledok ulozi do cieloveho adresara
-        public static void newAlphabet(String srcdir, String dstdir)
-        { // NOT USED
+        public static void NewAlphabet(string srcdir, String dstdir)
+        {
             Configurator.Configurator configurator = new Configurator.Configurator();
             string[] folder = Directory.GetFiles(srcdir);
             if (!Directory.Exists(srcdir)) throw new IOException("Source folder doesn't exists");
             if (!Directory.Exists(dstdir)) throw new IOException("Destination folder doesn't exists");
-            int x = configurator.getIntProperty("char_normalizeddimensions_x");
-            int y = configurator.getIntProperty("char_normalizeddimensions_y");
+            int x = configurator.GetIntProperty("char_normalizeddimensions_x");
+            int y = configurator.GetIntProperty("char_normalizeddimensions_y");
             Console.WriteLine("\nCreating new alphabet (" + x + " x " + y + " px)... \n");
             foreach (String fileName in folder)
             {
                 ImageAnalysis.Char c = new ImageAnalysis.Char(srcdir + Path.DirectorySeparatorChar + fileName);
-                c.normalize();
-                c.saveImage(dstdir + Path.DirectorySeparatorChar + fileName);
+                c.Normalize();
+                c.SaveImage(dstdir + Path.DirectorySeparatorChar + fileName);
                 Console.WriteLine(fileName + " done");
             }
         }
 
 
-        public static void learnAlphabet(String destinationFile)
+        public static void LearnAlphabet(String destinationFile)
         {
             try
             {
@@ -87,17 +92,16 @@ namespace dotNETANPR
 
             if (args.Length == 0 || (args.Length == 1 && args[0].Equals("-gui")))
             {
-                dotNETANPR.Main.systemLogic = new Intelligence.Intelligence(false);
+                systemLogic = new Intelligence.Intelligence(false);
             }
             else if (args.Length == 3 &&
                     args[0].Equals("-recognize") &&
                     args[1].Equals("-i")
                     )
             {
-                // DONE load snapshot args[2] and recognize it
                 try
                 {
-                    dotNETANPR.Main.systemLogic = new Intelligence.Intelligence(false);
+                    systemLogic = new Intelligence.Intelligence(false);
                     Console.WriteLine(systemLogic.recognize(new CarSnapshot(args[2])));
                 }
                 catch (IOException e)
@@ -111,13 +115,12 @@ namespace dotNETANPR
                     args[3].Equals("-o")
                     )
             {
-                // load snapshot arg[2] and generate report into arg[4]
                 try
                 {
-                    dotNETANPR.Main.rg = new ReportGenerator(args[4]);     //prepare report generator
-                    dotNETANPR.Main.systemLogic = new Intelligence(true); //prepare intelligence
-                    dotNETANPR.Main.systemLogic.recognize(new CarSnapshot(args[2]));
-                    dotNETANPR.Main.rg.Finish();
+                    rg = new ReportGenerator(args[4]);    
+                    systemLogic = new Intelligence.Intelligence(true); 
+                    systemLogic.recognize(new CarSnapshot(args[2]));
+                    rg.Finish();
                 }
                 catch (IOException e)
                 {
@@ -130,7 +133,6 @@ namespace dotNETANPR
                     args[1].Equals("-o")
                     )
             {
-                // DONE save default config into args[2]
                 Configurator.Configurator configurator = new Configurator.Configurator();
                 try
                 {
@@ -146,10 +148,9 @@ namespace dotNETANPR
                     args[1].Equals("-o")
                     )
             {
-                // DONE learn new neural network and save it into into args[2]
                 try
                 {
-                    learnAlphabet(args[2]);
+                    LearnAlphabet(args[2]);
                 }
                 catch (Exception e)
                 {
@@ -162,10 +163,9 @@ namespace dotNETANPR
                     args[3].Equals("-o")
                     )
             {
-                // DONE transform alphabets from args[2] -> args[4]
                 try
                 {
-                    newAlphabet(args[2], args[4]);
+                    NewAlphabet(args[2], args[4]);
                 }
                 catch (Exception e)
                 {
@@ -174,7 +174,6 @@ namespace dotNETANPR
             }
             else
             {
-                // DONE display help
                 Console.WriteLine(helpText);
             }
         }

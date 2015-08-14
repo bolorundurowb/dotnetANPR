@@ -1,4 +1,15 @@
-﻿using System;
+﻿/*
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * 
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
@@ -42,11 +53,11 @@ namespace dotNETANPR.Recognizer
 
             for (int x = 0; x < this.learnLists.Count; x++)
             {
-                float fx = this.simplifiedEuclideanDistance(tested, this.learnLists.ElementAt(x));
+                float fx = this.SimplifiedEuclideanDistance(tested, this.learnLists.ElementAt(x));
 
-                recognized.addPattern(new RecognizedChar.RecognizedPattern(Alphabet[x], fx));
+                recognized.AddPattern(new RecognizedChar.RecognizedPattern(this.alphabet[x], fx));
             }
-            recognized.sort(0);
+            recognized.Sort(0);
             return recognized;
         }
 

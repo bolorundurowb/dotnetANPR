@@ -6,6 +6,7 @@ namespace dotNETANPR
     {
         public static void Main(string[] args)
         {
+            Console.WriteLine("Cool Stuff");
         }
     }
 }

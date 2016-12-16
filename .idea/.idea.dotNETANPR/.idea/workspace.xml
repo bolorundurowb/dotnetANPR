@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="0f3e8964-8c69-4049-8b67-4cbad92e7405" name="Default" comment="" />
+    <list default="true" id="0f3e8964-8c69-4049-8b67-4cbad92e7405" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../../dotNETANPR/Tools/TestStatistics.cs" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../dotNETANPR/Program.cs" afterPath="$PROJECT_DIR$/../../dotNETANPR/Program.cs" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../dotNETANPR/dotNETANPR.csproj" afterPath="$PROJECT_DIR$/../../dotNETANPR/dotNETANPR.csproj" />
+    </list>
     <ignored path="dotNETANPR.iws" />
     <ignored path=".idea/workspace.xml" />
     <ignored path=".idea/dataSources.local.xml" />
@@ -21,15 +26,36 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="Program.cs" pinned="false" current-in-tab="true">
+      <file leaf-file-name="Program.cs" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/../../dotNETANPR/Program.cs">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="126">
-              <caret line="7" column="9" selection-start-line="7" selection-start-column="9" selection-end-line="7" selection-end-column="9" />
+            <state relative-caret-position="144">
+              <caret line="8" column="44" selection-start-line="8" selection-start-column="44" selection-end-line="8" selection-end-column="44" />
               <folding>
-                <marker date="1481893715339" expanded="true" signature="35:136" ph="{...}" />
-                <marker date="1481893715339" expanded="true" signature="55:134" ph="{...}" />
-                <marker date="1481893715339" expanded="true" signature="108:128" ph="{...}" />
+                <marker date="1481907895850" expanded="true" signature="35:181" ph="{...}" />
+                <marker date="1481907895850" expanded="true" signature="55:179" ph="{...}" />
+                <marker date="1481907895850" expanded="true" signature="108:173" ph="{...}" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="TestStatistics.cs" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/../../dotNETANPR/Tools/TestStatistics.cs">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="863">
+              <caret line="72" column="49" selection-start-line="72" selection-start-column="49" selection-end-line="72" selection-end-column="49" />
+              <folding>
+                <marker date="1481908982959" expanded="true" signature="6:64" ph="..." />
+                <marker date="1481908982959" expanded="true" signature="92:5930" ph="{...}" />
+                <marker date="1481908982959" expanded="true" signature="1169:2581" ph="{...}" />
+                <marker date="1481908982959" expanded="true" signature="2654:4339" ph="{...}" />
+                <marker date="1481908982959" expanded="true" signature="3100:3302" ph="{...}" />
+                <marker date="1481908982959" expanded="true" signature="3338:4058" ph="{...}" />
+                <marker date="1481908982959" expanded="false" signature="4119:4329" ph="{...}" />
+                <marker date="1481908982959" expanded="true" signature="4411:4482" ph="{...}" />
+                <marker date="1481908982959" expanded="true" signature="4536:4597" ph="{...}" />
+                <marker date="1481908982959" expanded="true" signature="4636:5922" ph="{...}" />
               </folding>
             </state>
           </provider>
@@ -54,15 +80,16 @@
         <option value="$PROJECT_DIR$/../../dotNETANPR/ImageAnalysis/Band.cs" />
         <option value="$PROJECT_DIR$/../../dotNETANPR/ImageAnalysis/CarSnapshot.cs" />
         <option value="$PROJECT_DIR$/../../dotNETANPR/NeuralNetwork/NeuralNetwork.cs" />
-        <option value="$PROJECT_DIR$/../../dotNETANPR/Program.cs" />
         <option value="$PROJECT_DIR$/../../dotNETANPR.Tests/Tests.cs" />
+        <option value="$PROJECT_DIR$/../../dotNETANPR/Program.cs" />
+        <option value="$PROJECT_DIR$/../../dotNETANPR/Tools/TestStatistics.cs" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
     <option name="x" value="960" />
     <option name="y" value="30" />
-    <option name="width" value="960" />
+    <option name="width" value="950" />
     <option name="height" value="1050" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
@@ -122,6 +149,10 @@
       </pane>
     </panes>
   </component>
+  <component name="PropertiesComponent">
+    <property name="settings.editor.selected.configurable" value="preferences.editor" />
+    <property name="settings.editor.splitter.proportion" value="0.2" />
+  </component>
   <component name="RunManager" selected=".NET Project.Default">
     <configuration default="true" type="DotNetProject" factoryName=".NET Project">
       <option name="PROJECT_PATH" value="" />
@@ -133,6 +164,12 @@
       <option name="USE_MONO" value="0" />
       <option name="USE_EXTERNAL_CONSOLE" value="0" />
       <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="RunExe" factoryName=".NET Executable">
+      <option name="EXE_PATH" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="PROGRAM_PARAMETERS" value="" />
       <method />
     </configuration>
     <configuration default="false" name="Default" type="DotNetProject" factoryName=".NET Project">
@@ -165,12 +202,13 @@
       <option name="presentableId" value="Default" />
       <updated>1481884311444</updated>
       <workItem from="1481884324900" duration="772000" />
-      <workItem from="1481890687189" duration="2391000" />
+      <workItem from="1481890687189" duration="3830000" />
+      <workItem from="1481899832385" duration="6231000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="3163000" />
+    <option name="totallyTimeSpent" value="10833000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -182,28 +220,28 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="960" y="30" width="960" height="1050" extended-state="4" />
+    <frame x="960" y="30" width="950" height="1050" extended-state="4" />
     <editor active="true" />
     <layout>
-      <window_info id="Change Signature" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24070022" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32939914" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Errors in solution" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Build" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.17596567" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="UnitTesting" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2725322" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="NuGet" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Change Signature" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.23230088" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Build" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.22854078" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
     </layout>
@@ -218,107 +256,68 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/../../dotNETANPR/Program.cs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        <state relative-caret-position="126">
+          <caret line="7" column="9" selection-start-line="7" selection-start-column="9" selection-end-line="7" selection-end-column="9" />
           <folding>
-            <marker date="1481893715339" expanded="true" signature="35:136" ph="{...}" />
-            <marker date="1481893715339" expanded="true" signature="55:134" ph="{...}" />
-            <marker date="1481893715339" expanded="true" signature="108:128" ph="{...}" />
+            <marker date="1481907895850" expanded="true" signature="35:181" ph="{...}" />
+            <marker date="1481907895850" expanded="true" signature="55:179" ph="{...}" />
+            <marker date="1481907895850" expanded="true" signature="108:173" ph="{...}" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../../dotNETANPR/ImageAnalysis/Char.cs">
+    <entry file="file://$PROJECT_DIR$/../../dotNETANPR/Tools/TestStatistics.cs">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
+          <folding>
+            <marker date="1481908982959" expanded="true" signature="6:64" ph="..." />
+            <marker date="1481908982959" expanded="true" signature="92:5930" ph="{...}" />
+            <marker date="1481908982959" expanded="true" signature="1169:2581" ph="{...}" />
+            <marker date="1481908982959" expanded="true" signature="2654:4339" ph="{...}" />
+            <marker date="1481908982959" expanded="true" signature="3100:3302" ph="{...}" />
+            <marker date="1481908982959" expanded="true" signature="3338:4058" ph="{...}" />
+            <marker date="1481908982959" expanded="false" signature="4119:4329" ph="{...}" />
+            <marker date="1481908982959" expanded="true" signature="4411:4482" ph="{...}" />
+            <marker date="1481908982959" expanded="true" signature="4536:4597" ph="{...}" />
+            <marker date="1481908982959" expanded="true" signature="4636:5922" ph="{...}" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../../dotNETANPR/Recognizer/CharacterRecognizer.cs">
+    <entry file="file://$PROJECT_DIR$/../../dotNETANPR/Program.cs">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
+          <folding>
+            <marker date="1481907895850" expanded="true" signature="35:181" ph="{...}" />
+            <marker date="1481907895850" expanded="true" signature="55:179" ph="{...}" />
+            <marker date="1481907895850" expanded="true" signature="108:173" ph="{...}" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../../dotNETANPR/Recognizer/KnnPatternClassificator.cs">
+    <entry file="file://$PROJECT_DIR$/../../dotNETANPR/ImageAnalysis/Char.cs" />
+    <entry file="file://$PROJECT_DIR$/../../dotNETANPR/Recognizer/CharacterRecognizer.cs" />
+    <entry file="file://$PROJECT_DIR$/../../dotNETANPR/Recognizer/KnnPatternClassificator.cs" />
+    <entry file="file://$PROJECT_DIR$/../../dotNETANPR/Recognizer/NeuralPatternClassificator.cs" />
+    <entry file="file://$PROJECT_DIR$/../../dotNETANPR/Intelligence/Intelligence.cs" />
+    <entry file="file://$PROJECT_DIR$/../../dotNETANPR/Intelligence/Parser.cs" />
+    <entry file="file://$PROJECT_DIR$/../../dotNETANPR/Intelligence/RecognizedPlate.cs" />
+    <entry file="file://$PROJECT_DIR$/../../dotNETANPR/ImageAnalysis/Band.cs" />
+    <entry file="file://$PROJECT_DIR$/../../dotNETANPR/ImageAnalysis/CarSnapshot.cs" />
+    <entry file="file://$PROJECT_DIR$/../../dotNETANPR/ImageAnalysis/BandGraph.cs" />
+    <entry file="file://$PROJECT_DIR$/../../dotNETANPR/NeuralNetwork/NeuralNetwork.cs" />
+    <entry file="file://$PROJECT_DIR$/../../dotNETANPR.Tests/Tests.cs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../dotNETANPR/Recognizer/NeuralPatternClassificator.cs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../dotNETANPR/Intelligence/Intelligence.cs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../dotNETANPR/Intelligence/Parser.cs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../dotNETANPR/Intelligence/RecognizedPlate.cs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../dotNETANPR/ImageAnalysis/Band.cs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../dotNETANPR/ImageAnalysis/CarSnapshot.cs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../dotNETANPR/ImageAnalysis/BandGraph.cs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="10" column="8" selection-start-line="10" selection-start-column="8" selection-end-line="10" selection-end-column="8" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../dotNETANPR/NeuralNetwork/NeuralNetwork.cs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
+        <state relative-caret-position="252">
+          <caret line="14" column="1" selection-start-line="14" selection-start-column="1" selection-end-line="14" selection-end-column="1" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/../../dotNETANPR/Properties/AssemblyInfo.cs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
+        <state relative-caret-position="-44">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <marker date="1481884257059" expanded="true" signature="6:101" ph="..." />
@@ -329,22 +328,33 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../../dotNETANPR.Tests/Tests.cs">
+    <entry file="file://$PROJECT_DIR$/../../dotNETANPR/Program.cs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="252">
-          <caret line="14" column="1" selection-start-line="14" selection-start-column="1" selection-end-line="14" selection-end-column="1" />
-          <folding />
+        <state relative-caret-position="144">
+          <caret line="8" column="44" selection-start-line="8" selection-start-column="44" selection-end-line="8" selection-end-column="44" />
+          <folding>
+            <marker date="1481907895850" expanded="true" signature="35:181" ph="{...}" />
+            <marker date="1481907895850" expanded="true" signature="55:179" ph="{...}" />
+            <marker date="1481907895850" expanded="true" signature="108:173" ph="{...}" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../../dotNETANPR/Program.cs">
+    <entry file="file://$PROJECT_DIR$/../../dotNETANPR/Tools/TestStatistics.cs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="126">
-          <caret line="7" column="9" selection-start-line="7" selection-start-column="9" selection-end-line="7" selection-end-column="9" />
+        <state relative-caret-position="863">
+          <caret line="72" column="49" selection-start-line="72" selection-start-column="49" selection-end-line="72" selection-end-column="49" />
           <folding>
-            <marker date="1481893715339" expanded="true" signature="35:136" ph="{...}" />
-            <marker date="1481893715339" expanded="true" signature="55:134" ph="{...}" />
-            <marker date="1481893715339" expanded="true" signature="108:128" ph="{...}" />
+            <marker date="1481908982959" expanded="true" signature="6:64" ph="..." />
+            <marker date="1481908982959" expanded="true" signature="92:5930" ph="{...}" />
+            <marker date="1481908982959" expanded="true" signature="1169:2581" ph="{...}" />
+            <marker date="1481908982959" expanded="true" signature="2654:4339" ph="{...}" />
+            <marker date="1481908982959" expanded="true" signature="3100:3302" ph="{...}" />
+            <marker date="1481908982959" expanded="true" signature="3338:4058" ph="{...}" />
+            <marker date="1481908982959" expanded="false" signature="4119:4329" ph="{...}" />
+            <marker date="1481908982959" expanded="true" signature="4411:4482" ph="{...}" />
+            <marker date="1481908982959" expanded="true" signature="4536:4597" ph="{...}" />
+            <marker date="1481908982959" expanded="true" signature="4636:5922" ph="{...}" />
           </folding>
         </state>
       </provider>

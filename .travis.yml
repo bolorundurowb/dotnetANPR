@@ -1,0 +1,6 @@
+language: csharp
+solution: Document_Manager.sln
+mono:
+  - latest
+before_script:
+  - nuget restore Document_Manager.sln

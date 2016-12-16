@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="0f3e8964-8c69-4049-8b67-4cbad92e7405" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../dotNETANPR.sln" afterPath="$PROJECT_DIR$/../../dotNETANPR.sln" />
-    </list>
+    <list default="true" id="0f3e8964-8c69-4049-8b67-4cbad92e7405" name="Default" comment="" />
     <ignored path="dotNETANPR.iws" />
     <ignored path=".idea/workspace.xml" />
     <ignored path=".idea/dataSources.local.xml" />
@@ -23,26 +21,16 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="Program.cs" pinned="false" current-in-tab="false">
+      <file leaf-file-name="Program.cs" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/../../dotNETANPR/Program.cs">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="126">
               <caret line="7" column="9" selection-start-line="7" selection-start-column="9" selection-end-line="7" selection-end-column="9" />
               <folding>
-                <marker date="1481893152074" expanded="true" signature="35:136" ph="{...}" />
-                <marker date="1481893152074" expanded="true" signature="55:134" ph="{...}" />
-                <marker date="1481893152074" expanded="true" signature="108:128" ph="{...}" />
+                <marker date="1481893715339" expanded="true" signature="35:136" ph="{...}" />
+                <marker date="1481893715339" expanded="true" signature="55:134" ph="{...}" />
+                <marker date="1481893715339" expanded="true" signature="108:128" ph="{...}" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Tests.cs" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/../../dotNETANPR.Tests/Tests.cs">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="198">
-              <caret line="11" column="12" selection-start-line="11" selection-start-column="12" selection-end-line="11" selection-end-column="12" />
-              <folding />
             </state>
           </provider>
         </entry>
@@ -67,6 +55,7 @@
         <option value="$PROJECT_DIR$/../../dotNETANPR/ImageAnalysis/CarSnapshot.cs" />
         <option value="$PROJECT_DIR$/../../dotNETANPR/NeuralNetwork/NeuralNetwork.cs" />
         <option value="$PROJECT_DIR$/../../dotNETANPR/Program.cs" />
+        <option value="$PROJECT_DIR$/../../dotNETANPR.Tests/Tests.cs" />
       </list>
     </option>
   </component>
@@ -176,12 +165,12 @@
       <option name="presentableId" value="Default" />
       <updated>1481884311444</updated>
       <workItem from="1481884324900" duration="772000" />
-      <workItem from="1481890687189" duration="2311000" />
+      <workItem from="1481890687189" duration="2391000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="3083000" />
+    <option name="totallyTimeSpent" value="3163000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -194,10 +183,10 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="960" y="30" width="960" height="1050" extended-state="4" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="Change Signature" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24070022" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24070022" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Errors in solution" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Build" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.17596567" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -232,9 +221,9 @@
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <marker date="1481893152074" expanded="true" signature="35:136" ph="{...}" />
-            <marker date="1481893152074" expanded="true" signature="55:134" ph="{...}" />
-            <marker date="1481893152074" expanded="true" signature="108:128" ph="{...}" />
+            <marker date="1481893715339" expanded="true" signature="35:136" ph="{...}" />
+            <marker date="1481893715339" expanded="true" signature="55:134" ph="{...}" />
+            <marker date="1481893715339" expanded="true" signature="108:128" ph="{...}" />
           </folding>
         </state>
       </provider>
@@ -340,23 +329,23 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/../../dotNETANPR.Tests/Tests.cs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="252">
+          <caret line="14" column="1" selection-start-line="14" selection-start-column="1" selection-end-line="14" selection-end-column="1" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/../../dotNETANPR/Program.cs">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="126">
           <caret line="7" column="9" selection-start-line="7" selection-start-column="9" selection-end-line="7" selection-end-column="9" />
           <folding>
-            <marker date="1481893152074" expanded="true" signature="35:136" ph="{...}" />
-            <marker date="1481893152074" expanded="true" signature="55:134" ph="{...}" />
-            <marker date="1481893152074" expanded="true" signature="108:128" ph="{...}" />
+            <marker date="1481893715339" expanded="true" signature="35:136" ph="{...}" />
+            <marker date="1481893715339" expanded="true" signature="55:134" ph="{...}" />
+            <marker date="1481893715339" expanded="true" signature="108:128" ph="{...}" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../dotNETANPR.Tests/Tests.cs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="198">
-          <caret line="11" column="12" selection-start-line="11" selection-start-column="12" selection-end-line="11" selection-end-column="12" />
-          <folding />
         </state>
       </provider>
     </entry>

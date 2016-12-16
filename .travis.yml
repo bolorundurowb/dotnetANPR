@@ -1,6 +1,6 @@
 language: csharp
-solution: Document_Manager.sln
+solution: dotNETANPR.sln
 mono:
   - latest
 before_script:
-  - nuget restore Document_Manager.sln
+  - nuget restore dotNETANPR.sln

@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="0f3e8964-8c69-4049-8b67-4cbad92e7405" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../../dotNETANPR/Tools/TestStatistics.cs" />
+    <list default="true" id="0f3e8964-8c69-4049-8b67-4cbad92e7405" name="Default" comment="feature: implement time meter">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../../dotNETANPR/GUI/TimeMeter.cs" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../dotNETANPR/Program.cs" afterPath="$PROJECT_DIR$/../../dotNETANPR/Program.cs" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../dotNETANPR/dotNETANPR.csproj" afterPath="$PROJECT_DIR$/../../dotNETANPR/dotNETANPR.csproj" />
     </list>
     <ignored path="dotNETANPR.iws" />
@@ -31,31 +30,44 @@
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="144">
               <caret line="8" column="44" selection-start-line="8" selection-start-column="44" selection-end-line="8" selection-end-column="44" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="TestStatistics.cs" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../../dotNETANPR/Tools/TestStatistics.cs">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="248">
+              <caret line="39" column="14" selection-start-line="39" selection-start-column="14" selection-end-line="39" selection-end-column="14" />
               <folding>
-                <marker date="1481907895850" expanded="true" signature="35:181" ph="{...}" />
-                <marker date="1481907895850" expanded="true" signature="55:179" ph="{...}" />
-                <marker date="1481907895850" expanded="true" signature="108:173" ph="{...}" />
+                <marker date="1482080291338" expanded="true" signature="6:64" ph="..." />
+                <marker date="1482080291338" expanded="true" signature="92:5930" ph="{...}" />
+                <marker date="1482080291338" expanded="true" signature="126:2587" ph="{...}" />
+                <marker date="1482080291338" expanded="true" signature="1169:2581" ph="{...}" />
+                <marker date="1482080291338" expanded="true" signature="2616:5928" ph="{...}" />
+                <marker date="1482080291338" expanded="true" signature="2654:4339" ph="{...}" />
+                <marker date="1482080291338" expanded="true" signature="3100:3302" ph="{...}" />
+                <marker date="1482080291338" expanded="true" signature="3338:4058" ph="{...}" />
+                <marker date="1482080291338" expanded="true" signature="4119:4329" ph="{...}" />
+                <marker date="1482080291338" expanded="true" signature="4411:4482" ph="{...}" />
+                <marker date="1482080291338" expanded="true" signature="4536:4597" ph="{...}" />
+                <marker date="1482080291338" expanded="true" signature="4636:5922" ph="{...}" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="TestStatistics.cs" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/../../dotNETANPR/Tools/TestStatistics.cs">
+      <file leaf-file-name="TimeMeter.cs" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/../../dotNETANPR/GUI/TimeMeter.cs">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="863">
-              <caret line="72" column="49" selection-start-line="72" selection-start-column="49" selection-end-line="72" selection-end-column="49" />
+            <state relative-caret-position="252">
+              <caret line="14" column="50" selection-start-line="14" selection-start-column="50" selection-end-line="14" selection-end-column="50" />
               <folding>
-                <marker date="1481908982959" expanded="true" signature="6:64" ph="..." />
-                <marker date="1481908982959" expanded="true" signature="92:5930" ph="{...}" />
-                <marker date="1481908982959" expanded="true" signature="1169:2581" ph="{...}" />
-                <marker date="1481908982959" expanded="true" signature="2654:4339" ph="{...}" />
-                <marker date="1481908982959" expanded="true" signature="3100:3302" ph="{...}" />
-                <marker date="1481908982959" expanded="true" signature="3338:4058" ph="{...}" />
-                <marker date="1481908982959" expanded="false" signature="4119:4329" ph="{...}" />
-                <marker date="1481908982959" expanded="true" signature="4411:4482" ph="{...}" />
-                <marker date="1481908982959" expanded="true" signature="4536:4597" ph="{...}" />
-                <marker date="1481908982959" expanded="true" signature="4636:5922" ph="{...}" />
+                <marker date="1482081983511" expanded="true" signature="39:377" ph="{...}" />
+                <marker date="1482081983511" expanded="true" signature="68:375" ph="{...}" />
+                <marker date="1482081983511" expanded="true" signature="134:232" ph="{...}" />
+                <marker date="1482081983511" expanded="true" signature="262:369" ph="{...}" />
               </folding>
             </state>
           </provider>
@@ -83,13 +95,13 @@
         <option value="$PROJECT_DIR$/../../dotNETANPR.Tests/Tests.cs" />
         <option value="$PROJECT_DIR$/../../dotNETANPR/Program.cs" />
         <option value="$PROJECT_DIR$/../../dotNETANPR/Tools/TestStatistics.cs" />
+        <option value="$PROJECT_DIR$/../../dotNETANPR/GUI/TimeMeter.cs" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="960" />
     <option name="y" value="30" />
-    <option name="width" value="950" />
+    <option name="width" value="1920" />
     <option name="height" value="1050" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
@@ -204,11 +216,12 @@
       <workItem from="1481884324900" duration="772000" />
       <workItem from="1481890687189" duration="3830000" />
       <workItem from="1481899832385" duration="6231000" />
+      <workItem from="1482080603199" duration="1467000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="10833000" />
+    <option name="totallyTimeSpent" value="12300000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -220,21 +233,21 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="960" y="30" width="950" height="1050" extended-state="4" />
+    <frame x="0" y="30" width="1920" height="1050" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32939914" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2832618" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Errors in solution" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="UnitTesting" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2725322" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24034335" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="NuGet" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Change Signature" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.23230088" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.18783352" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Build" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.22854078" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -242,12 +255,17 @@
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="feature: implement time meter" />
+    <option name="LAST_COMMIT_MESSAGE" value="feature: implement time meter" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -256,13 +274,9 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/../../dotNETANPR/Program.cs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="126">
-          <caret line="7" column="9" selection-start-line="7" selection-start-column="9" selection-end-line="7" selection-end-column="9" />
-          <folding>
-            <marker date="1481907895850" expanded="true" signature="35:181" ph="{...}" />
-            <marker date="1481907895850" expanded="true" signature="55:179" ph="{...}" />
-            <marker date="1481907895850" expanded="true" signature="108:173" ph="{...}" />
-          </folding>
+        <state relative-caret-position="144">
+          <caret line="8" column="44" selection-start-line="8" selection-start-column="44" selection-end-line="8" selection-end-column="44" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -271,16 +285,47 @@
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <marker date="1481908982959" expanded="true" signature="6:64" ph="..." />
-            <marker date="1481908982959" expanded="true" signature="92:5930" ph="{...}" />
-            <marker date="1481908982959" expanded="true" signature="1169:2581" ph="{...}" />
-            <marker date="1481908982959" expanded="true" signature="2654:4339" ph="{...}" />
-            <marker date="1481908982959" expanded="true" signature="3100:3302" ph="{...}" />
-            <marker date="1481908982959" expanded="true" signature="3338:4058" ph="{...}" />
-            <marker date="1481908982959" expanded="false" signature="4119:4329" ph="{...}" />
-            <marker date="1481908982959" expanded="true" signature="4411:4482" ph="{...}" />
-            <marker date="1481908982959" expanded="true" signature="4536:4597" ph="{...}" />
-            <marker date="1481908982959" expanded="true" signature="4636:5922" ph="{...}" />
+            <marker date="1482080291338" expanded="true" signature="6:64" ph="..." />
+            <marker date="1482080291338" expanded="true" signature="92:5930" ph="{...}" />
+            <marker date="1482080291338" expanded="true" signature="126:2587" ph="{...}" />
+            <marker date="1482080291338" expanded="true" signature="1169:2581" ph="{...}" />
+            <marker date="1482080291338" expanded="true" signature="2616:5928" ph="{...}" />
+            <marker date="1482080291338" expanded="true" signature="2654:4339" ph="{...}" />
+            <marker date="1482080291338" expanded="true" signature="3100:3302" ph="{...}" />
+            <marker date="1482080291338" expanded="true" signature="3338:4058" ph="{...}" />
+            <marker date="1482080291338" expanded="true" signature="4119:4329" ph="{...}" />
+            <marker date="1482080291338" expanded="true" signature="4411:4482" ph="{...}" />
+            <marker date="1482080291338" expanded="true" signature="4536:4597" ph="{...}" />
+            <marker date="1482080291338" expanded="true" signature="4636:5922" ph="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../dotNETANPR/Program.cs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="126">
+          <caret line="7" column="9" selection-start-line="7" selection-start-column="9" selection-end-line="7" selection-end-column="9" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../dotNETANPR/Tools/TestStatistics.cs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <marker date="1482080291338" expanded="true" signature="6:64" ph="..." />
+            <marker date="1482080291338" expanded="true" signature="92:5930" ph="{...}" />
+            <marker date="1482080291338" expanded="true" signature="126:2587" ph="{...}" />
+            <marker date="1482080291338" expanded="true" signature="1169:2581" ph="{...}" />
+            <marker date="1482080291338" expanded="true" signature="2616:5928" ph="{...}" />
+            <marker date="1482080291338" expanded="true" signature="2654:4339" ph="{...}" />
+            <marker date="1482080291338" expanded="true" signature="3100:3302" ph="{...}" />
+            <marker date="1482080291338" expanded="true" signature="3338:4058" ph="{...}" />
+            <marker date="1482080291338" expanded="true" signature="4119:4329" ph="{...}" />
+            <marker date="1482080291338" expanded="true" signature="4411:4482" ph="{...}" />
+            <marker date="1482080291338" expanded="true" signature="4536:4597" ph="{...}" />
+            <marker date="1482080291338" expanded="true" signature="4636:5922" ph="{...}" />
           </folding>
         </state>
       </provider>
@@ -289,11 +334,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <marker date="1481907895850" expanded="true" signature="35:181" ph="{...}" />
-            <marker date="1481907895850" expanded="true" signature="55:179" ph="{...}" />
-            <marker date="1481907895850" expanded="true" signature="108:173" ph="{...}" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -319,12 +360,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-44">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <marker date="1481884257059" expanded="true" signature="6:101" ph="..." />
-            <marker date="1481884257059" expanded="true" signature="103:290" ph="/* General Information about an assembly is controlled through the following ... */" />
-            <marker date="1481884257059" expanded="true" signature="597:807" ph="/* Setting ComVisible to false makes the types in this assembly not visible ... */" />
-            <marker date="1481884257059" expanded="true" signature="982:1309" ph="/* Version information for an assembly consists of the following four values: ... */" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -332,29 +367,40 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="144">
           <caret line="8" column="44" selection-start-line="8" selection-start-column="44" selection-end-line="8" selection-end-column="44" />
-          <folding>
-            <marker date="1481907895850" expanded="true" signature="35:181" ph="{...}" />
-            <marker date="1481907895850" expanded="true" signature="55:179" ph="{...}" />
-            <marker date="1481907895850" expanded="true" signature="108:173" ph="{...}" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/../../dotNETANPR/Tools/TestStatistics.cs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="863">
-          <caret line="72" column="49" selection-start-line="72" selection-start-column="49" selection-end-line="72" selection-end-column="49" />
+        <state relative-caret-position="248">
+          <caret line="39" column="14" selection-start-line="39" selection-start-column="14" selection-end-line="39" selection-end-column="14" />
           <folding>
-            <marker date="1481908982959" expanded="true" signature="6:64" ph="..." />
-            <marker date="1481908982959" expanded="true" signature="92:5930" ph="{...}" />
-            <marker date="1481908982959" expanded="true" signature="1169:2581" ph="{...}" />
-            <marker date="1481908982959" expanded="true" signature="2654:4339" ph="{...}" />
-            <marker date="1481908982959" expanded="true" signature="3100:3302" ph="{...}" />
-            <marker date="1481908982959" expanded="true" signature="3338:4058" ph="{...}" />
-            <marker date="1481908982959" expanded="false" signature="4119:4329" ph="{...}" />
-            <marker date="1481908982959" expanded="true" signature="4411:4482" ph="{...}" />
-            <marker date="1481908982959" expanded="true" signature="4536:4597" ph="{...}" />
-            <marker date="1481908982959" expanded="true" signature="4636:5922" ph="{...}" />
+            <marker date="1482080291338" expanded="true" signature="6:64" ph="..." />
+            <marker date="1482080291338" expanded="true" signature="92:5930" ph="{...}" />
+            <marker date="1482080291338" expanded="true" signature="126:2587" ph="{...}" />
+            <marker date="1482080291338" expanded="true" signature="1169:2581" ph="{...}" />
+            <marker date="1482080291338" expanded="true" signature="2616:5928" ph="{...}" />
+            <marker date="1482080291338" expanded="true" signature="2654:4339" ph="{...}" />
+            <marker date="1482080291338" expanded="true" signature="3100:3302" ph="{...}" />
+            <marker date="1482080291338" expanded="true" signature="3338:4058" ph="{...}" />
+            <marker date="1482080291338" expanded="true" signature="4119:4329" ph="{...}" />
+            <marker date="1482080291338" expanded="true" signature="4411:4482" ph="{...}" />
+            <marker date="1482080291338" expanded="true" signature="4536:4597" ph="{...}" />
+            <marker date="1482080291338" expanded="true" signature="4636:5922" ph="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../dotNETANPR/GUI/TimeMeter.cs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="252">
+          <caret line="14" column="50" selection-start-line="14" selection-start-column="50" selection-end-line="14" selection-end-column="50" />
+          <folding>
+            <marker date="1482081983511" expanded="true" signature="39:377" ph="{...}" />
+            <marker date="1482081983511" expanded="true" signature="68:375" ph="{...}" />
+            <marker date="1482081983511" expanded="true" signature="134:232" ph="{...}" />
+            <marker date="1482081983511" expanded="true" signature="262:369" ph="{...}" />
           </folding>
         </state>
       </provider>

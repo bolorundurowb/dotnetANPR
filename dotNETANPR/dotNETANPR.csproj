@@ -42,13 +42,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GUI\TimeMeter.cs" />
+      <Compile Include="ImageAnalysis\Graph.cs"/>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tools\TestStatistics.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Configurator" />
-    <Folder Include="ImageAnalysis" />
     <Folder Include="Intelligence" />
     <Folder Include="NeuralNetwork" />
     <Folder Include="Recognizer" />

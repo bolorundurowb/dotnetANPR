@@ -1,0 +1,6 @@
+language: csharp
+solution: dotNETANPR.sln
+mono:
+  - latest
+before_script:
+  - nuget restore dotNETANPR.sln

@@ -26,6 +26,11 @@ namespace dotNETANPR.ImageAnalysis
                 Center = (left + right) / 2;
                 Right = right;
             }
+
+            public int GetDiff()
+            {
+                return Right - Left;
+            }
         }
 
         public class ProbabilityDistributor
@@ -59,7 +64,7 @@ namespace dotNETANPR.ImageAnalysis
                     }
                     else
                     {
-                        distributedPeaks.Add(DistributionFunction(peaks[i], (float)i/peaks.Count));
+                        distributedPeaks.Add(DistributionFunction(peaks[i], (float) i / peaks.Count));
                     }
                 }
                 return distributedPeaks;
@@ -67,9 +72,12 @@ namespace dotNETANPR.ImageAnalysis
         }
 
         public List<Peak> peaks = null;
+
         public List<float> yValues = new List<float>();
+
         // Statistical Information
         private bool actualAverageValue;
+
         private bool actualMaximumValue;
         private bool actualMinimumValue;
         private float averageValue;
@@ -88,7 +96,7 @@ namespace dotNETANPR.ImageAnalysis
         {
             foreach (Peak peak in peaks)
             {
-                if (peak.Left <= xPosition && xPosition<=peak.Right)
+                if (peak.Left <= xPosition && xPosition <= peak.Right)
                 {
                     return false;
                 }
@@ -321,15 +329,17 @@ namespace dotNETANPR.ImageAnalysis
 
 
             int x, y, x0;
-            x = 0; y = 0;
+            x = 0;
+            y = 0;
 
             Pen graphicsContentPen = new Pen(Color.Green);
 
             for (int i = 0; i < yValues.Count; i++)
             {
-                x0 = x; var y0 = y;
-                x = (int)((float)i / yValues.Count * height);
-                y = (int)((1 - yValues[i] / GetMaxValue()) * width);
+                x0 = x;
+                var y0 = y;
+                x = (int) ((float) i / yValues.Count * height);
+                y = (int) ((1 - yValues[i] / GetMaxValue()) * width);
                 graphicsContent.DrawLine(graphicsContentPen, x0, y0, x, y);
             }
 
@@ -339,7 +349,7 @@ namespace dotNETANPR.ImageAnalysis
                 graphicsContentPen.Color = Color.Red;
                 contentBrush.Color = Color.Red;
                 int i = 0;
-                double multConst = (double)height / yValues.Count;
+                double multConst = (double) height / yValues.Count;
                 foreach (Peak p in peaks)
                 {
                     graphicsContent.DrawLine(graphicsContentPen, width, (int) (p.Left * multConst), width - 30,
@@ -375,6 +385,45 @@ namespace dotNETANPR.ImageAnalysis
                 }
                 yValues[i] = (sum / size);
             }
+        }
+
+        public int IndexOfLeftPeakRel(int peak, double peakFootConstantRel)
+        {
+            int index = peak;
+            for (int i = peak; i >= 0; i--)
+            {
+                index = i;
+                if (yValues[index] < peakFootConstantRel * yValues[peak]) break;
+            }
+            return Math.Max(0, index);
+        }
+
+        public int IndexOfRightPeakRel(int peak, double peakFootConstantRel)
+        {
+            int index = peak;
+            for (int i = peak; i < yValues.Count; i++)
+            {
+                index = i;
+                if (yValues[index] < peakFootConstantRel * yValues[peak]) break;
+            }
+            return Math.Min(yValues.Count, index);
+        }
+
+
+        public float AveragePeakDiff(List<Peak> peaks)
+        {
+            float sum = 0;
+            foreach (Peak p in peaks)
+                sum += p.GetDiff();
+            return sum / peaks.Count;
+        }
+
+        public float MaximumPeakDiff(List<Peak> peaks, int from, int to)
+        {
+            float max = 0;
+            for (int i = from; i <= to; i++)
+                max = Math.Max(max, peaks[i].GetDiff());
+            return max;
         }
     }
 }

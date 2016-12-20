@@ -41,9 +41,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+<<<<<<< HEAD
     <Compile Include="GUI\TimeMeter.cs" />
       <Compile Include="ImageAnalysis\Graph.cs"/>
     <Compile Include="Program.cs" />
+=======
+>>>>>>> develop
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tools\TestStatistics.cs" />
   </ItemGroup>

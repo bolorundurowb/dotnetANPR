@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ImageAnalysis\Graph.cs" />
+      <Compile Include="ImageAnalysis\HoughTransformation.cs"/>
       <Compile Include="ImageAnalysis\Statistics.cs"/>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tools\TestStatistics.cs" />

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Imaging;
 
 namespace dotNETANPR.ImageAnalysis
 {
@@ -81,7 +83,7 @@ namespace dotNETANPR.ImageAnalysis
             actualMinimumValue = false;
         }
 
-        // Methodds for searching bands in image
+        // Methods for searching bands in image
         public bool AllowedInterval(List<Peak> peaks, int xPosition)
         {
             foreach (Peak peak in peaks)
@@ -90,8 +92,8 @@ namespace dotNETANPR.ImageAnalysis
                 {
                     return false;
                 }
-                return true;
             }
+            return true;
         }
 
         public void AddPeak(float value)
@@ -217,6 +219,84 @@ namespace dotNETANPR.ImageAnalysis
                 }
             }
             return minIndex;
+        }
+
+        public Bitmap RenderHorizontally(int width, int height)
+        {
+            Bitmap content = new Bitmap(width, height, PixelFormat.Format8bppIndexed);
+            Bitmap axis = new Bitmap(width + 40, height + 40, PixelFormat.Format8bppIndexed);
+
+            Graphics graphicsContent = Graphics.FromImage(content);
+            Graphics graphicsAxis = Graphics.FromImage(axis);
+
+            Rectangle backRect = new Rectangle(0, 0, width + 40, height + 40);
+            SolidBrush axisBrush = new SolidBrush(Color.LightGray);
+            Pen axisPen = new Pen(Color.LightGray);
+            graphicsAxis.FillRectangle(axisBrush, backRect);
+            graphicsAxis.DrawRectangle(axisPen, backRect);
+
+            backRect = new Rectangle(0, 0, width, height);
+            SolidBrush contentBrush = new SolidBrush(Color.White);
+            Pen contentPen = new Pen(Color.White);
+            graphicsContent.FillRectangle(contentBrush, backRect);
+            graphicsContent.DrawRectangle(contentPen, backRect);
+
+            int x, y;
+            int y0;
+            x = 0;
+            y = 0;
+
+            Pen graphicsContentPen = new Pen(Color.Green);
+
+            for (int i = 0; i < yValues.Count; i++)
+            {
+                var x0 = x;
+                y0 = y;
+                x = (int) ((float) i / yValues.Count * width);
+                y = (int) ((1 - yValues[i] / GetMaxValue()) * height);
+                graphicsContent.DrawLine(graphicsContentPen, x0, y0, x, y);
+            }
+
+            Font graphicsContentFont = new Font("Consolas", 20F);
+            if (peaks != null)
+            {
+                graphicsContentPen.Color = Color.Red;
+                contentBrush.Color = Color.Red;
+                int i = 0;
+                double multConst = (double) width / yValues.Count;
+                foreach (Peak p in peaks)
+                {
+                    graphicsContent.DrawLine(graphicsContentPen, (int) (p.Left * multConst), 0,
+                        (int) (p.Center * multConst), 30);
+                    graphicsContent.DrawLine(graphicsContentPen, (int) (p.Center * multConst), 30,
+                        (int) (p.Right * multConst), 0);
+                    graphicsContent.DrawString((i++) + ".", graphicsContentFont, contentBrush,
+                        (float) (p.Center * multConst) - 5, 42F);
+                }
+            }
+
+            graphicsAxis.DrawImage(content, 35, 5);
+
+            axisPen.Color = (Color.Black);
+            axisBrush.Color = Color.Black;
+            Font graphicsAxisFont = new Font("Consolas", 20F);
+            graphicsAxis.DrawRectangle(axisPen, 35, 5, content.Width, content.Height);
+
+            for (int ax = 0; ax < content.Width; ax += 50)
+            {
+                graphicsAxis.DrawString(ax.ToString(), graphicsAxisFont, axisBrush, ax + 35, axis.Height - 10);
+                graphicsAxis.DrawLine(axisPen, ax + 35, content.Height + 5, ax + 35, content.Height + 15);
+            }
+
+            for (int ay = 0; ay < content.Height; ay += 20)
+            {
+                graphicsAxis.DrawString(Convert.ToInt32(((1 - (float) ay) / content.Height) * 100) + "%",
+                    graphicsContentFont, contentBrush, 1, ay + 15);
+                graphicsAxis.DrawLine(axisPen, 25, ay + 5, 35, ay + 5);
+            }
+            graphicsContent.Dispose();
+            graphicsAxis.Dispose();
+            return axis;
         }
     }
 }

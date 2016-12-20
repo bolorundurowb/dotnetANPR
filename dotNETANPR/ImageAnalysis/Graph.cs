@@ -298,5 +298,83 @@ namespace dotNETANPR.ImageAnalysis
             graphicsAxis.Dispose();
             return axis;
         }
+
+        public Bitmap RenderVertically(int width, int height)
+        {
+            Bitmap content = new Bitmap(width, height, PixelFormat.Format8bppIndexed);
+            Bitmap axis = new Bitmap(width + 10, height + 40, PixelFormat.Format8bppIndexed);
+
+            Graphics graphicsContent = Graphics.FromImage(content);
+            Graphics graphicsAxis = Graphics.FromImage(axis);
+
+            Rectangle backRect = new Rectangle(0, 0, width + 40, height + 40);
+            SolidBrush axisBrush = new SolidBrush(Color.LightGray);
+            Pen axisPen = new Pen(Color.LightGray);
+            graphicsAxis.FillRectangle(axisBrush, backRect);
+            graphicsAxis.DrawRectangle(axisPen, backRect);
+
+            backRect = new Rectangle(0, 0, width, height);
+            SolidBrush contentBrush = new SolidBrush(Color.White);
+            Pen contentPen = new Pen(Color.White);
+            graphicsContent.FillRectangle(contentBrush, backRect);
+            graphicsContent.DrawRectangle(contentPen, backRect);
+
+
+            int x, y, x0;
+            x = 0; y = 0;
+
+            Pen graphicsContentPen = new Pen(Color.Green);
+
+            for (int i = 0; i < yValues.Count; i++)
+            {
+                x0 = x; var y0 = y;
+                x = (int)((float)i / yValues.Count * height);
+                y = (int)((1 - yValues[i] / GetMaxValue()) * width);
+                graphicsContent.DrawLine(graphicsContentPen, x0, y0, x, y);
+            }
+
+            Font graphicsContentFont = new Font("Consolas", 20F);
+            if (peaks != null)
+            {
+                graphicsContentPen.Color = Color.Red;
+                contentBrush.Color = Color.Red;
+                int i = 0;
+                double multConst = (double)height / yValues.Count;
+                foreach (Peak p in peaks)
+                {
+                    graphicsContent.DrawLine(graphicsContentPen, width, (int) (p.Left * multConst), width - 30,
+                        (int) (p.Center * multConst));
+                    graphicsContent.DrawLine(graphicsContentPen, width - 30, (int) (p.Center * multConst), width,
+                        (int) (p.Right * multConst));
+                    graphicsContent.DrawString((i++) + ".", graphicsContentFont, contentBrush, width - 38,
+                        (float) (p.Center * multConst) + 5);
+                }
+            }
+
+            graphicsAxis.DrawImage(content, 5, 5);
+
+            axisPen.Color = (Color.Black);
+            axisBrush.Color = Color.Black;
+            graphicsAxis.DrawRectangle(axisPen, 5, 5, content.Width, content.Height);
+
+            graphicsContent.Dispose();
+            graphicsAxis.Dispose();
+            return axis;
+        }
+
+        public void RankFilter(int size)
+        {
+            int halfSize = size / 2;
+            List<float> clone = new List<float>(yValues);
+            for (int i = halfSize; i < yValues.Count - halfSize; i++)
+            {
+                float sum = 0;
+                for (int ii = i - halfSize; ii < i + halfSize; ii++)
+                {
+                    sum += clone[ii];
+                }
+                yValues[i] = (sum / size);
+            }
+        }
     }
 }

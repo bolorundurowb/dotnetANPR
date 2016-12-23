@@ -109,7 +109,6 @@ namespace dotNETANPR.ImageAnalysis
 
         public Bitmap Render(int renderType, int colorType)
         {
-
             float average = GetAverageValue();
             Bitmap output = new Bitmap(width, height, PixelFormat.Format8bppIndexed);
             Graphics g = Graphics.FromImage(output);

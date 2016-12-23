@@ -1,9 +1,37 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace dotNETANPR.NeuralNetwork
 {
     public class NeuralNetwork
     {
+        private List<NeuralLayer> listLayers = new List<NeuralLayer>();
+        private Random _random;
+
+        public NeuralNetwork(List<int> dimensions)
+        {
+            for (int i = 0; i < dimensions.Count; i++)
+            {
+                listLayers.Add(new NeuralLayer(dimensions[i], this));
+            }
+            _random = new Random();
+        }
+
+        public NeuralNetwork(string filePath)
+        {
+            LoadFromXml(filePath);
+            _random = new Random();
+        }
+
+        public class SetOfIOPairs
+        {
+            public List<IOPair> _pairs;
+
+            public class IOPair
+            {
+
+            }
+        }
 
         class NeuralInput
         {
@@ -207,6 +235,58 @@ namespace dotNETANPR.NeuralNetwork
                 }
                 return currE;
             }
+
+            private double DoubleVectorAbs(List<List<double>> doubleList)
+            {
+                double totalX = 0;
+                foreach (List<double> list in doubleList)
+                {
+                    totalX += Math.Pow(VectorAbs(list), 2);
+                }
+                return Math.Sqrt(totalX);
+            }
+
+            private double VectorAbs(List<double> doubles)
+            {
+                double totalX = 0;
+                foreach (double x in doubles)
+                {
+                    totalX += Math.Pow(x, 2);
+                }
+                return Math.Sqrt(totalX);
+            }
+        }
+
+        private double Random()
+        {
+            return _random.NextDouble();
+        }
+
+        private NeuralLayer GetLayer(int index)
+        {
+            return listLayers[index];
+        }
+
+        private double GainFunction(double x)
+        {
+            return 1 / (1 + Math.Exp(-x));
+        }
+
+        private void LoadFromXml(string filePath)
+        {
+
+        }
+
+        public List<double> Test(List<double> inputs)
+        {
+            if (inputs.Count != GetLayer(0).NumberOfNeurons())
+            {
+                throw new IndexOutOfRangeException("[Error] NN-Test: You are trying to pass vector with " +
+                                                   inputs.Count + " values into neural layer with " +
+                                                   GetLayer(0).NumberOfNeurons() +
+                                                   " neurons. Consider using another network, or another descriptor.");
+            }
+            return Activites(inputs);
         }
     }
 }

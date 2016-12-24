@@ -25,11 +25,38 @@ namespace dotNETANPR.NeuralNetwork
 
         public class SetOfIOPairs
         {
-            public List<IOPair> _pairs;
+            public int Count
+            {
+                get { return Pairs.Count; }
+            }
+
+            public List<IOPair> Pairs { get; }
 
             public class IOPair
             {
+                public List<double> Inputs { get; set; }
+                public List<double> Outputs { get; set; }
 
+                public IOPair(List<double> inputs, List<double> outputs)
+                {
+                    Inputs = new List<double>(inputs);
+                    Outputs = new List<double>(outputs);
+                }
+            }
+
+            public SetOfIOPairs()
+            {
+                Pairs = new List<IOPair>();
+            }
+
+            public void AddIOPair(List<double> inputs, List<double> outputs)
+            {
+                AddIOPair(new IOPair(inputs, outputs));
+            }
+
+            public void AddIOPair(IOPair ioPair)
+            {
+                Pairs.Add(ioPair);
             }
         }
 
@@ -274,6 +301,7 @@ namespace dotNETANPR.NeuralNetwork
 
         private void LoadFromXml(string filePath)
         {
+            Console.WriteLine("NeuralNetwork : loading network topology from file " + filePath);
 
         }
 
@@ -287,6 +315,37 @@ namespace dotNETANPR.NeuralNetwork
                                                    " neurons. Consider using another network, or another descriptor.");
             }
             return Activites(inputs);
+        }
+
+        public void Learn(SetOfIOPairs trainingSet, int maxK, double eps, double lambda, double micro)
+        {
+            if (trainingSet.Pairs.Count == 0)
+            {
+                throw new NullReferenceException(
+                    "[Error] NN-Learn: You are using an empty training set, neural network couldn't be trained.");
+            }
+            if (trainingSet.Pairs[0].Inputs.Count != GetLayer(0).NumberOfNeurons())
+            {
+                throw new IndexOutOfRangeException("[Error] NN-Test: You are trying to pass vector with " +
+                                                   trainingSet.Pairs[0].Inputs.Count +
+                                                   " values into neural layer with " +
+                                                   GetLayer(0).NumberOfNeurons() +
+                                                   " neurons. Consider using another network, or another descriptors.");
+            }
+            if (trainingSet.Pairs[0].Outputs.Count!= GetLayer(NumberOfLayers() - 1).NumberOfNeurons())
+            {
+                throw new IndexOutOfRangeException("[Error] NN-Test:  You are trying to pass vector with " +
+                                                   trainingSet.Pairs[0].Inputs.Count +
+                                                   " values into neural layer with " +
+                                                   GetLayer(0).NumberOfNeurons() +
+                                                   " neurons. Consider using another network, or another descriptors.");
+            }
+            Adaptation(trainingSet, maxK, eps, lambda, micro);
+        }
+
+        public int NumberOfLayers()
+        {
+            return listLayers.Count;
         }
     }
 }

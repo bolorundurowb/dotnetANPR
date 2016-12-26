@@ -77,7 +77,7 @@ namespace dotNETANPR.NeuralNetwork
 
         class Neuron
         {
-            private List<NeuralInput> listInputs = new List<NeuralInput>();
+            public List<NeuralInput> listInputs = new List<NeuralInput>();
             public int Index { get; set; }
             public double Threshold { get; set; }
             public double Output { get; set; }
@@ -114,7 +114,7 @@ namespace dotNETANPR.NeuralNetwork
 
         class NeuralLayer
         {
-            private List<Neuron> listNeurons = new List<Neuron>();
+            public List<Neuron> listNeurons = new List<Neuron>();
             public int Index { get; set; }
             public NeuralNetwork NeuralNetwork { get; set; }
 
@@ -303,7 +303,54 @@ namespace dotNETANPR.NeuralNetwork
         private void LoadFromXml(string filePath)
         {
             Console.WriteLine("NeuralNetwork : loading network topology from file " + filePath);
+            // Read XML to XmlDocument
+            XmlDocument xmlDocument = new XmlDocument();
+            xmlDocument.Load(filePath);
+            string rootNodeName = xmlDocument.Name;
+            if (rootNodeName != "neuralNetwork")
+            {
+                throw new InvalidOperationException(
+                    "[Error] NN-Load: Parse error in XML file, neural network couldn't be loaded.");
+            }
+            var nodeList = xmlDocument.ChildNodes;
+            for (int i = 0; i < nodeList.Count; i++)
+            {
+                var nodeStructure = nodeList.Item(i);
+                if (nodeStructure != null && nodeStructure.Name == "structure")
+                {
+                    var nodeStructureContent = nodeStructure.ChildNodes;
+                    for (int j = 0; j < nodeStructureContent.Count; j++)
+                    {
+                        var nodeLayer = nodeStructureContent.Item(j);
+                        if (nodeLayer != null && nodeLayer.Name == "layer")
+                        {
+                            NeuralLayer neuralLayer = new NeuralLayer(this);
+                            listLayers.Add(neuralLayer);
 
+                            var nodeLayerContent = nodeLayer.ChildNodes;
+                            for (int k = 0; k < nodeLayerContent.Count; k++)
+                            {
+                                var nodeNeuron = nodeLayerContent.Item(k);
+                                if (nodeNeuron != null && nodeNeuron.Name == "neuron")
+                                {
+                                    Neuron neuron = new Neuron(double.Parse(nodeNeuron.Attributes["threshold"].ToString()), neuralLayer);
+                                    neuralLayer.listNeurons.Add(neuron);
+                                    var nodeNeuronContent = nodeNeuron.ChildNodes;
+                                    for (int l = 0; l < nodeNeuronContent.Count; l++)
+                                    {
+                                        var nodeNeuralInput = nodeNeuronContent.Item(l);
+                                        if (nodeNeuralInput != null && nodeNeuralInput.Name == "input")
+                                        {
+                                            var neuralInput = new NeuralInput(double.Parse(nodeNeuralInput.Attributes["weight"].ToString()), neuron);
+                                            neuron.listInputs.Add(neuralInput);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         private void SaveToXml(string filePath)

@@ -1,5 +1,6 @@
 ﻿﻿using System;
 using System.Collections.Generic;
+ using System.Xml;
 
 namespace dotNETANPR.NeuralNetwork
 {
@@ -307,7 +308,38 @@ namespace dotNETANPR.NeuralNetwork
 
         private void SaveToXml(string filePath)
         {
+            XmlDocument xmlDocument = new XmlDocument();
+            var root = xmlDocument.CreateElement("neuralNetwork");
+            root.SetAttribute("dateOfExport", new DateTime().ToString());
+            var layers = xmlDocument.CreateElement("structure");
+            layers.SetAttribute("numberOfLayers", NumberOfLayers().ToString());
+            for (int i = 0; i < NumberOfLayers(); i++)
+            {
+                var layer = xmlDocument.CreateElement("layer");
+                layer.SetAttribute("index", i.ToString());
+                layer.SetAttribute("numberOfNeutrons", GetLayer(i).NumberOfNeurons().ToString());
 
+                for (int j = 0; j < GetLayer(i).NumberOfNeurons(); j++)
+                {
+                    var neuron = xmlDocument.CreateElement("neuron");
+                    neuron.SetAttribute("index", j.ToString());
+                    neuron.SetAttribute("NumberOfInputs", GetLayer(i).GetNeuron(j).NumberOfInputs().ToString());
+                    neuron.SetAttribute("threshold", GetLayer(i).GetNeuron(j).Threshold.ToString());
+                    for (int k = 0; k < GetLayer(i).GetNeuron(j).NumberOfInputs(); k++)
+                    {
+                        var input = xmlDocument.CreateElement("input");
+                        input.SetAttribute("index", k.ToString());
+                        input.SetAttribute("weight", GetLayer(i).GetNeuron(j).GetInput(k).Weight.ToString());
+                        neuron.AppendChild(input);
+                    }
+                    layer.AppendChild(neuron);
+                }
+                layers.AppendChild(layer);
+            }
+            root.AppendChild(layers);
+            xmlDocument.AppendChild(root);
+            // Save XML
+            xmlDocument.Save(filePath);
         }
 
         public List<double> Test(List<double> inputs)

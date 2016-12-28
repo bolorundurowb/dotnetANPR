@@ -33,14 +33,13 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+      <Compile Include="Configurator\Configurator.cs"/>
+      <Compile Include="Configurator\PropertyConfig.cs"/>
     <Compile Include="ImageAnalysis\Graph.cs" />
       <Compile Include="ImageAnalysis\HoughTransformation.cs"/>
       <Compile Include="ImageAnalysis\Statistics.cs"/>
@@ -49,7 +48,6 @@
     <Compile Include="Tools\TestStatistics.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Configurator" />
     <Folder Include="Intelligence" />
     <Folder Include="Recognizer" />
   </ItemGroup>

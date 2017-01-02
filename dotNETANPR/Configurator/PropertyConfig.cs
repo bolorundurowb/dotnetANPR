@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Collections.Specialized;
+﻿using System.Collections.Specialized;
 using System.IO;
+using System.Linq;
 using System.Xml;
 
 namespace dotNETANPR.Configurator
@@ -16,9 +16,10 @@ namespace dotNETANPR.Configurator
             }
             XmlDocument xmlDocument = new XmlDocument();
             xmlDocument.Load(filePath);
+            if (xmlDocument.DocumentElement == null) return;
             foreach (XmlNode node in xmlDocument.DocumentElement.ChildNodes[0])
             {
-                this[node.Name] = node.Value;
+                this[node.Name] = node.InnerText;
             }
         }
 
@@ -29,10 +30,11 @@ namespace dotNETANPR.Configurator
             // Insert Comment
             var xmlComment = xmlDocument.CreateComment(comment);
             root.AppendChild(xmlComment);
-            foreach (KeyValuePair<string, string> pair in this)
+            var allConfigs = AllKeys.Distinct();
+            foreach (var pair in allConfigs)
             {
-                var configItem = xmlDocument.CreateElement(pair.Key);
-                configItem.Value = pair.Value;
+                var configItem = xmlDocument.CreateElement(pair);
+                configItem.InnerText = this[pair];
                 root.AppendChild(configItem);
             }
             xmlDocument.AppendChild(root);

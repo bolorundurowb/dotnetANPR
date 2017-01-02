@@ -19,7 +19,6 @@ namespace dotNETANPR.Configurator
             list = new PropertyConfig();
 
             // PHOTO
-            // adaptive thresholding radius (0 = no adaptive)
             SetIntProperty("photo_adaptivethresholdingradius", 7); // 7 is recommended
 
             // BANDGRAPH
@@ -66,12 +65,12 @@ namespace dotNETANPR.Configurator
             SetIntProperty("intelligence_minimumChars", 5);
             SetIntProperty("intelligence_maximumChars", 15);
 
-            // plate heuristics
+            // PLATE HEURISTICS
             SetDoubleProperty("intelligence_maxCharWidthDispersion", 0.5); // in plate
             SetDoubleProperty("intelligence_minPlateWidthHeightRatio", 0.5);
             SetDoubleProperty("intelligence_maxPlateWidthHeightRatio", 15.0);
 
-            // char heuristics
+            // CHAR HEURISTICS
             SetDoubleProperty("intelligence_minCharWidthHeightRatio", 0.1);
             SetDoubleProperty("intelligence_maxCharWidthHeightRatio", 0.92);
             SetDoubleProperty("intelligence_maxBrightnessCostDispersion", 0.161);
@@ -92,7 +91,6 @@ namespace dotNETANPR.Configurator
             SetDoubleProperty("neural_eps", 0.07); // epsilon
             SetDoubleProperty("neural_lambda", 0.05); // lambda factor
             SetDoubleProperty("neural_micro", 0.5); // micro
-            // top(log(m recognized units)) = 6
             SetIntProperty("neural_topology", 20);
 
             /* ***** END ***** Definition of property defaults  ******* */

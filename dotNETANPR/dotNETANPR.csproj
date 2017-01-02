@@ -40,12 +40,14 @@
   <ItemGroup>
       <Compile Include="Configurator\Configurator.cs"/>
       <Compile Include="Configurator\PropertyConfig.cs"/>
+      <Compile Include="ImageAnalysis\Character.cs"/>
     <Compile Include="ImageAnalysis\Graph.cs" />
       <Compile Include="ImageAnalysis\HoughTransformation.cs"/>
       <Compile Include="ImageAnalysis\Statistics.cs"/>
       <Compile Include="NeuralNetwork\NeuralNetwork.cs"/>
     <Compile Include="Properties\AssemblyInfo.cs" />
       <Compile Include="Recognizer\CharacterRecognizer.cs"/>
+      <Compile Include="Recognizer\ICharacterRecognizer.cs"/>
     <Compile Include="Tools\TestStatistics.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -43,6 +43,8 @@
       <Compile Include="ImageAnalysis\Character.cs"/>
     <Compile Include="ImageAnalysis\Graph.cs" />
       <Compile Include="ImageAnalysis\HoughTransformation.cs"/>
+      <Compile Include="ImageAnalysis\Photo.cs"/>
+      <Compile Include="ImageAnalysis\PlateGraph.cs"/>
       <Compile Include="ImageAnalysis\Statistics.cs"/>
       <Compile Include="NeuralNetwork\NeuralNetwork.cs"/>
     <Compile Include="Properties\AssemblyInfo.cs" />

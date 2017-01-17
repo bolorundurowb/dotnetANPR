@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Security.Cryptography.X509Certificates;
 
 namespace dotNETANPR.ImageAnalysis
 {
@@ -92,17 +93,20 @@ namespace dotNETANPR.ImageAnalysis
 
         public static float GetBrightness(Bitmap bitmap, int x, int y)
         {
-            int r = bitmap;
+            //TODO: get image brightness
+            return 0f;
         }
 
         public static float GetSaturation(Bitmap bitmap, int x, int y)
         {
-            int r = bitmap;
+            //TODO: get image saturation
+            return 0f;
         }
 
         public static float GetHue(Bitmap bitmap, int x, int y)
         {
-            int r = bitmap;
+            //TODO: get image hue
+            return 0f;
         }
 
         public float GetBrightness(int x, int y)
@@ -229,8 +233,74 @@ namespace dotNETANPR.ImageAnalysis
 
         public static Bitmap DuplicateBitmap(Bitmap bmp)
         {
-            Bitmap bitmap = new Bitmap(bmp.Width, bmp.Height, PixelFormat.Format8bppIndexed);
-            bitmap.
+            Bitmap bitmap = new Bitmap(bmp);
+            return bitmap;
+        }
+
+        public static void Thresholding(Bitmap bitmap)
+        {
+            short[] threshold = new short[256];
+            for (short i = 0; i < 36; i++)
+            {
+                threshold[i] = 0;
+            }
+            for (short i = 36; i < 256; i++)
+            {
+                threshold[i] = i;
+            }
+            //TODO: perform the equivalent of LookUpOp
+        }
+
+        public void VerticalEdgeDetector(Bitmap source)
+        {
+            Bitmap destination = DuplicateBitmap(source);
+            float[] datset1 = {
+                -1, 0, 1,
+                -2, 0, 2,
+                -1, 0, 1
+            };
+            float[] dataset2 = {
+                1, 0, -1,
+                2, 0, -2,
+                1, 0, -1
+            };
+            //TODO: perform the ConvolveOp
+        }
+
+        public float[,] BitmapToArray(Bitmap bitmap, int width, int height)
+        {
+            float[,] array = new float[width, height];
+            for (int i = 0; i < width; i++)
+            {
+                for (int j = 0; j < height; j++)
+                {
+                    array[i + 1, j + 1] = Photo.GetBrightness(bitmap, i, j);
+                }
+            }
+            for (int i = 0; i < width + 2; i++)
+            {
+                array[i, 0] = 1;
+                array[i, height + 1] = 1;
+            }
+            for (int j = 0; j < height + 2; j++)
+            {
+                array[0, j] = 1;
+                array[width + 1, j] = 1;
+            }
+            return array;
+        }
+
+        public static Bitmap ArrayToBitmap(float[,] array, int width, int height)
+        {
+            Bitmap bitmap = new Bitmap(width, height, PixelFormat.Format8bppIndexed);
+            for (int i = 0; i < width; i++)
+            {
+                for (int j = 0; j < height; j++)
+                {
+                    Photo.SetBrightness(bitmap, width, height, array[i, j]);
+                }
+            }
+            return bitmap;
         }
     }
 }

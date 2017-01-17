@@ -2,6 +2,6 @@
 {
     public class PlateGraph : Graph
     {
-        public Plate
+
     }
 }

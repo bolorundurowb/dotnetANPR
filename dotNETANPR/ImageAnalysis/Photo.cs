@@ -202,11 +202,11 @@ namespace dotNETANPR.ImageAnalysis
             for (int i = 0; i < width; i++)
             {
                 int x0min = (int) Math.Round(i * xScale);
-                int x0max = (int)Math.Round((i + 1) * xScale);
+                int x0max = (int) Math.Round((i + 1) * xScale);
                 for (int j = 0; j < height; j++)
                 {
-                    int y0min = (int)Math.Round(j * yScale);
-                    int y0max = (int)Math.Round((j + 1) * yScale);
+                    int y0min = (int) Math.Round(j * yScale);
+                    int y0max = (int) Math.Round((j + 1) * yScale);
 
                     float sum = 0;
                     int sumCount = 0;
@@ -403,7 +403,7 @@ namespace dotNETANPR.ImageAnalysis
         }
 
         //Code from CodeProject "Manipulating colors in .NET" by Guillaume Leparmentier
-        public static Color HSBtoRGB(double hue, double saturation, double brightness)
+        public static Color HsbToRgb(double hue, double saturation, double brightness)
         {
             double r = 0;
             double g = 0;

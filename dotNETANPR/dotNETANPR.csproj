@@ -30,6 +30,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+      <Reference Include="PropertyConfig, Version=1.0.2.0, Culture=neutral, PublicKeyToken=null">
+          <HintPath>..\packages\PropertyConfig.dll.1.0.2\lib\net45\PropertyConfig.dll</HintPath>
+      </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -39,7 +42,6 @@
   </ItemGroup>
   <ItemGroup>
       <Compile Include="Configurator\Configurator.cs"/>
-      <Compile Include="Configurator\PropertyConfig.cs"/>
       <Compile Include="ImageAnalysis\Character.cs"/>
     <Compile Include="ImageAnalysis\Graph.cs" />
       <Compile Include="ImageAnalysis\HoughTransformation.cs"/>
@@ -55,6 +57,9 @@
   <ItemGroup>
     <Folder Include="Intelligence" />
   </ItemGroup>
+    <ItemGroup>
+        <Content Include="packages.config"/>
+    </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

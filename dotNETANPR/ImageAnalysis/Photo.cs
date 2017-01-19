@@ -302,5 +302,174 @@ namespace dotNETANPR.ImageAnalysis
             }
             return bitmap;
         }
+
+        public static Bitmap CreateBlankBitmap(Bitmap bitmap)
+        {
+            Bitmap copy = new Bitmap(bitmap.Width, bitmap.Height, PixelFormat.Format8bppIndexed);
+            return copy;
+        }
+
+        public Bitmap CreateBlankBitmap(int width, int height)
+        {
+            Bitmap copy = new Bitmap(width, height);
+            return copy;
+        }
+
+        public Bitmap SumBitmaps(Bitmap bitmap1, Bitmap bitmap2)
+        {
+            Bitmap output = new Bitmap(Math.Min(bitmap1.Width, bitmap2.Width), Math.Min(bitmap1.Height, bitmap2.Height),
+                PixelFormat.Format8bppIndexed);
+            for (int i = 0; i < output.Width; i++)
+            {
+                for (int j = 0; j < output.Height; j++)
+                {
+                    SetBrightness(output, i, j,
+                        (float) Math.Min(1.0, GetBrightness(bitmap1, i, j) + GetBrightness(bitmap2, i, j)));
+                }
+            }
+            return output;
+        }
+
+        public void PlainThresholding(Statistics statistics)
+        {
+            int width = GetWidth();
+            int height = GetHeight();
+            for (int i = 0; i < width; i++)
+            {
+                for (int j = 0; j < height; j++)
+                {
+                    SetBrightness(i, j, statistics.ThresholdBrightness(GetBrightness(i, j), 1.0f));
+                }
+            }
+        }
+
+        public void AdaptiveThresholding()
+        {
+            Statistics statistics = new Statistics(this.Image);
+            Configurator.Configurator configurator = new Configurator.Configurator();
+            int radius = configurator.GetIntProperty("photo_adaptivethresholdingradius");
+            if (radius == 0)
+            {
+                PlainThresholding(statistics);
+                return;
+            }
+            int width = GetWidth();
+            int height = GetHeight();
+
+            float[,] source = BitmapToArray(Image, width, height);
+            float[,] destination = BitmapToArray(Image, width, height);
+            for (int i = 0; i < width; i++)
+            {
+                for (int j = 0; j < height; j++)
+                {
+                    int count = 0;
+                    var neighbourhood = 0.0f;
+                    for (int k = i - radius; k <= i + radius; k++)
+                    {
+                        for (int l = j - radius; l <= j + radius; l++)
+                        {
+                            if (k >= 0 && l >= 0 && k < width && l < height)
+                            {
+                                neighbourhood += source[k, l];
+                                count++;
+                            }
+                        }
+                    }
+                    neighbourhood /= count;
+                    if (destination[i, j] < neighbourhood)
+                    {
+                        destination[i, j] = 0f;
+                    }
+                    else
+                    {
+                        destination[i, j] = 1f;
+                    }
+                }
+            }
+            Image = ArrayToBitmap(destination, width, height);
+        }
+
+        public HoughTransformation GetHoughTransformation()
+        {
+            HoughTransformation houghTransformation = new HoughTransformation(GetWidth(), GetHeight());
+            for (int i = 0; i < GetWidth(); i++)
+            {
+                for (int j = 0; j < GetHeight(); j++)
+                {
+                    houghTransformation.AddLine(i, j, GetBrightness(i, j));
+                }
+            }
+            return houghTransformation;
+        }
+
+        //Code from CodeProject "Manipulating colors in .NET" by Guillaume Leparmentier
+        public static Color HSBtoRGB(double hue, double saturation, double brightness)
+        {
+            double r = 0;
+            double g = 0;
+            double b = 0;
+
+            if (saturation.Equals(0f))
+            {
+                r = g = b = brightness;
+            }
+            else
+            {
+                // The color wheel consists of 6 sectors.
+                // Figure out which sector you're in.
+                double sectorPos = hue / 60.0;
+                int sectorNumber = (int)(Math.Floor(sectorPos));
+
+                // get the fractional part of the sector
+                double fractionalSector = sectorPos - sectorNumber;
+
+                // calculate values for the three axes of the color.
+                double p = brightness * (1.0 - saturation);
+                double q = brightness * (1.0 - (saturation * fractionalSector));
+                double t = brightness * (1.0 - (saturation * (1 - fractionalSector)));
+
+                // assign the fractional colors to r, g, and b
+                // based on the sector the angle is in.
+                switch (sectorNumber)
+                {
+                    case 0:
+                        r = brightness;
+                        g = t;
+                        b = p;
+                        break;
+                    case 1:
+                        r = q;
+                        g = brightness;
+                        b = p;
+                        break;
+                    case 2:
+                        r = p;
+                        g = brightness;
+                        b = t;
+                        break;
+                    case 3:
+                        r = p;
+                        g = q;
+                        b = brightness;
+                        break;
+                    case 4:
+                        r = t;
+                        g = p;
+                        b = brightness;
+                        break;
+                    case 5:
+                        r = brightness;
+                        g = p;
+                        b = q;
+                        break;
+                }
+            }
+
+            return Color.FromArgb(
+                (int)(r * 255.0 + 0.5),
+                (int)(g * 255.0 + 0.5),
+                (int)(b * 255.0 + 0.5)
+            );
+        }
     }
 }

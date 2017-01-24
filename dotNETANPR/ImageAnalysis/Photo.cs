@@ -93,20 +93,20 @@ namespace dotNETANPR.ImageAnalysis
 
         public static float GetBrightness(Bitmap bitmap, int x, int y)
         {
-            //TODO: get image brightness
-            return 0f;
+            Color color = bitmap.GetPixel(x, y);
+            return color.GetBrightness();
         }
 
         public static float GetSaturation(Bitmap bitmap, int x, int y)
         {
-            //TODO: get image saturation
-            return 0f;
+            Color color = bitmap.GetPixel(x, y);
+            return color.GetSaturation();
         }
 
         public static float GetHue(Bitmap bitmap, int x, int y)
         {
-            //TODO: get image hue
-            return 0f;
+            Color color = bitmap.GetPixel(x, y);
+            return color.GetHue();
         }
 
         public float GetBrightness(int x, int y)
@@ -135,8 +135,9 @@ namespace dotNETANPR.ImageAnalysis
                 graphics.Dispose();
                 Image = image;
             }
-            catch (IOException)
+            catch (IOException ex)
             {
+                Console.WriteLine($"An error occurred in dotNETANPR.\nMessage:{ex.Message}");
                 throw;
             }
         }

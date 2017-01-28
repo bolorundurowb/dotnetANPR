@@ -30,6 +30,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+      <Reference Include="PropertyConfig, Version=1.0.2.0, Culture=neutral, PublicKeyToken=null">
+          <HintPath>..\packages\PropertyConfig.dll.1.0.2\lib\net45\PropertyConfig.dll</HintPath>
+      </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -39,10 +42,14 @@
   </ItemGroup>
   <ItemGroup>
       <Compile Include="Configurator\Configurator.cs"/>
-      <Compile Include="Configurator\PropertyConfig.cs"/>
       <Compile Include="ImageAnalysis\Character.cs"/>
+      <Compile Include="ImageAnalysis\Convolution\ConvolutionKernel.cs"/>
+      <Compile Include="ImageAnalysis\Convolution\ConvolveOp.cs"/>
     <Compile Include="ImageAnalysis\Graph.cs" />
       <Compile Include="ImageAnalysis\HoughTransformation.cs"/>
+      <Compile Include="ImageAnalysis\LookUp\LookupOp.cs"/>
+      <Compile Include="ImageAnalysis\Photo.cs"/>
+      <Compile Include="ImageAnalysis\PlateGraph.cs"/>
       <Compile Include="ImageAnalysis\Statistics.cs"/>
       <Compile Include="NeuralNetwork\NeuralNetwork.cs"/>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -53,6 +60,9 @@
   <ItemGroup>
     <Folder Include="Intelligence" />
   </ItemGroup>
+    <ItemGroup>
+        <Content Include="packages.config"/>
+    </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

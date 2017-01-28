@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.IO;
+using PropertyConfig;
 
 namespace dotNETANPR.Configurator
 {
@@ -12,11 +13,11 @@ namespace dotNETANPR.Configurator
         // Default class file comment
         private string comment = "This is the global configuration file for dotNETANPR";
 
-        private PropertyConfig list;
+        private Configuration list;
 
         public Configurator()
         {
-            list = new PropertyConfig();
+            list = new Configuration();
 
             // PHOTO
             SetIntProperty("photo_adaptivethresholdingradius", 7); // 7 is recommended

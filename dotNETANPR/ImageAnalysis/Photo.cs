@@ -5,6 +5,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
 using dotNETANPR.ImageAnalysis.Convolution;
+using dotNETANPR.ImageAnalysis.LookUp;
 
 namespace dotNETANPR.ImageAnalysis
 {
@@ -241,7 +242,7 @@ namespace dotNETANPR.ImageAnalysis
 
         public static void Thresholding(Bitmap bitmap)
         {
-            short[] threshold = new short[256];
+            int[] threshold = new int[256];
             for (short i = 0; i < 36; i++)
             {
                 threshold[i] = 0;
@@ -251,6 +252,9 @@ namespace dotNETANPR.ImageAnalysis
                 threshold[i] = i;
             }
             //TODO: perform the equivalent of LookUpOp
+            LookupOp lookupOp = new LookupOp();
+            lookupOp.LookupTable = threshold;
+            var result = lookupOp.Filter(bitmap);
         }
 
         public void VerticalEdgeDetector(Bitmap source)

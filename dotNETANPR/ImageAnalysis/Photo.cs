@@ -4,6 +4,7 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
+using dotNETANPR.ImageAnalysis.Convolution;
 
 namespace dotNETANPR.ImageAnalysis
 {
@@ -255,17 +256,20 @@ namespace dotNETANPR.ImageAnalysis
         public void VerticalEdgeDetector(Bitmap source)
         {
             Bitmap destination = DuplicateBitmap(source);
-            float[] datset1 = {
-                -1, 0, 1,
-                -2, 0, 2,
-                -1, 0, 1
+            int[,] datset1 =
+            {
+                {-1, 0, 1},
+                {-2, 0, 2},
+                {-1, 0, 1}
             };
-            float[] dataset2 = {
-                1, 0, -1,
-                2, 0, -2,
-                1, 0, -1
+
+            var convolveOp = new ConvolveOp();
+            var kernel = new ConvolutionKernel
+            {
+                Size = 3,
+                Matrix = datset1
             };
-            //TODO: perform the ConvolveOp
+            destination = convolveOp.Convolve(source, kernel);
         }
 
         public float[,] BitmapToArray(Bitmap bitmap, int width, int height)
@@ -275,7 +279,7 @@ namespace dotNETANPR.ImageAnalysis
             {
                 for (int j = 0; j < height; j++)
                 {
-                    array[i + 1, j + 1] = Photo.GetBrightness(bitmap, i, j);
+                    array[i + 1, j + 1] = GetBrightness(bitmap, i, j);
                 }
             }
             for (int i = 0; i < width + 2; i++)
@@ -298,7 +302,7 @@ namespace dotNETANPR.ImageAnalysis
             {
                 for (int j = 0; j < height; j++)
                 {
-                    Photo.SetBrightness(bitmap, width, height, array[i, j]);
+                    SetBrightness(bitmap, width, height, array[i, j]);
                 }
             }
             return bitmap;

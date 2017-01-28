@@ -43,6 +43,8 @@
   <ItemGroup>
       <Compile Include="Configurator\Configurator.cs"/>
       <Compile Include="ImageAnalysis\Character.cs"/>
+      <Compile Include="ImageAnalysis\Convolution\ConvolutionKernel.cs"/>
+      <Compile Include="ImageAnalysis\Convolution\ConvolveOp.cs"/>
     <Compile Include="ImageAnalysis\Graph.cs" />
       <Compile Include="ImageAnalysis\HoughTransformation.cs"/>
       <Compile Include="ImageAnalysis\Photo.cs"/>

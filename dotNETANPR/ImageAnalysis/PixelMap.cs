@@ -8,7 +8,7 @@ namespace dotNETANPR.ImageAnalysis
 {
     public class PixelMap
     {
-        private Piece bestPiece = null;
+        private Piece bestPiece;
         private int height;
         private int width;
         public static bool[,] matrix;
@@ -378,6 +378,134 @@ namespace dotNETANPR.ImageAnalysis
                 boundaryPoints.Clear();
                 flaggedPoints.Clear();
             } while (cont);
+            return this;
+        }
+
+        public PixelMap ReduceNoise()
+        {
+            PointSet pointsToReduce = new PointSet();
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    if (N(x, y) < 4)
+                    {
+                        pointsToReduce.Add(new Point(x, y));
+                    }
+                }
+            }
+
+            foreach (Point point in pointsToReduce)
+            {
+                matrix[point.X, point.Y] = false;
+            }
+            return this;
+        }
+
+        public bool IsInPieces(PieceSet pieces, int x, int y)
+        {
+            foreach (Piece piece in pieces)
+            {
+                foreach (Point point in piece)
+                {
+                    if (point.Equals(x, y))
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        public bool SeedShouldBeAdded(Piece piece, Point point)
+        {
+            if (point.X < 0 || point.Y < 0 || point.X >= width || point.Y >= height)
+            {
+                return false;
+            }
+            if (!matrix[point.X, point.Y])
+            {
+                return false;
+            }
+            foreach (Point piecePoint in piece)
+            {
+                if (piecePoint.Equals(point))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        private Piece CreatePiece(PointSet unsorted)
+        {
+            Piece piece = new Piece();
+
+            PointSet stack = new PointSet();
+            stack.Push(unsorted.FindLast(x => true));
+
+            while (stack.Count != 0)
+            {
+                Point p = stack.Pop();
+                if (SeedShouldBeAdded(piece, p))
+                {
+                    piece.Add(p);
+                    unsorted.RemovePoint(p);
+                    stack.Push(new Point(p.X + 1, p.Y));
+                    stack.Push(new Point(p.X - 1, p.Y));
+                    stack.Push(new Point(p.X, p.Y + 1));
+                    stack.Push(new Point(p.X, p.Y - 1));
+                }
+            }
+            piece.CreateStatistics();
+            return piece;
+        }
+
+        public PieceSet FindPieces()
+        {
+            PieceSet pieces = new PieceSet();
+            PointSet unsorted = new PointSet();
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    if (matrix[x, y])
+                    {
+                        unsorted.Add(new Point(x, y));
+                    }
+                }
+            }
+
+            while (unsorted.Count != 0)
+            {
+                pieces.Add(CreatePiece(unsorted));
+            }
+            return pieces;
+        }
+
+        public PixelMap ReduceOtherPieces()
+        {
+            if (bestPiece != null)
+            {
+                return this;
+            }
+            PieceSet pieces = FindPieces();
+            int maxCost = 0;
+            int maxIndex = 0;
+            for (int i = 0; i < pieces.Count; i++)
+            {
+                if (pieces[i].Cost() > maxCost)
+                {
+                    maxCost = pieces[i].Cost();
+                    maxIndex = i;
+                }
+            }
+
+            for (int i = 0; i < pieces.Count; i++)
+            {
+                if (i != maxIndex) pieces[i].BleachPiece();
+            }
+            if (pieces.Count != 0) bestPiece = pieces[maxIndex];
             return this;
         }
     }

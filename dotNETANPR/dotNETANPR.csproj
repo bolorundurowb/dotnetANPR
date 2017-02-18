@@ -44,6 +44,8 @@
       <Compile Include="Configurator\Configurator.cs"/>
       <Compile Include="ImageAnalysis\Band.cs"/>
       <Compile Include="ImageAnalysis\BandGraph.cs"/>
+      <Compile Include="ImageAnalysis\CarSnapshot.cs"/>
+      <Compile Include="ImageAnalysis\CarSnapshotGraph.cs"/>
       <Compile Include="ImageAnalysis\Character.cs"/>
       <Compile Include="ImageAnalysis\Convolution\ConvolutionKernel.cs"/>
       <Compile Include="ImageAnalysis\Convolution\ConvolveOp.cs"/>
@@ -57,14 +59,12 @@
       <Compile Include="ImageAnalysis\PlateGraph.cs"/>
       <Compile Include="ImageAnalysis\Statistics.cs"/>
       <Compile Include="ImageAnalysis\Util\CustomStack.cs"/>
+      <Compile Include="Intelligence\Intelligence.cs"/>
       <Compile Include="NeuralNetwork\NeuralNetwork.cs"/>
     <Compile Include="Properties\AssemblyInfo.cs" />
       <Compile Include="Recognizer\CharacterRecognizer.cs"/>
       <Compile Include="Recognizer\ICharacterRecognizer.cs"/>
     <Compile Include="Tools\TestStatistics.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Intelligence" />
   </ItemGroup>
     <ItemGroup>
         <Content Include="packages.config"/>

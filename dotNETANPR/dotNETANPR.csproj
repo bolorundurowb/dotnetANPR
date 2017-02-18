@@ -42,11 +42,13 @@
   </ItemGroup>
   <ItemGroup>
       <Compile Include="Configurator\Configurator.cs"/>
+      <Compile Include="ImageAnalysis\Band.cs"/>
       <Compile Include="ImageAnalysis\Character.cs"/>
       <Compile Include="ImageAnalysis\Convolution\ConvolutionKernel.cs"/>
       <Compile Include="ImageAnalysis\Convolution\ConvolveOp.cs"/>
     <Compile Include="ImageAnalysis\Graph.cs" />
       <Compile Include="ImageAnalysis\HoughTransformation.cs"/>
+      <Compile Include="ImageAnalysis\Intelligence.cs"/>
       <Compile Include="ImageAnalysis\LookUp\LookupOp.cs"/>
       <Compile Include="ImageAnalysis\Photo.cs"/>
       <Compile Include="ImageAnalysis\PixelMap.cs"/>

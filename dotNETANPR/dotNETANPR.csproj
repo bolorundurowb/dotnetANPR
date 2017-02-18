@@ -53,6 +53,7 @@
       <Compile Include="ImageAnalysis\LookUp\LookupOp.cs"/>
       <Compile Include="ImageAnalysis\Photo.cs"/>
       <Compile Include="ImageAnalysis\PixelMap.cs"/>
+      <Compile Include="ImageAnalysis\Plate.cs"/>
       <Compile Include="ImageAnalysis\PlateGraph.cs"/>
       <Compile Include="ImageAnalysis\Statistics.cs"/>
       <Compile Include="ImageAnalysis\Util\CustomStack.cs"/>

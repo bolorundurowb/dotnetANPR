@@ -43,6 +43,7 @@
   <ItemGroup>
       <Compile Include="Configurator\Configurator.cs"/>
       <Compile Include="ImageAnalysis\Band.cs"/>
+      <Compile Include="ImageAnalysis\BandGraph.cs"/>
       <Compile Include="ImageAnalysis\Character.cs"/>
       <Compile Include="ImageAnalysis\Convolution\ConvolutionKernel.cs"/>
       <Compile Include="ImageAnalysis\Convolution\ConvolveOp.cs"/>

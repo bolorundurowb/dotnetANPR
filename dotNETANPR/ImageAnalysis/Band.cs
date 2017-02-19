@@ -10,10 +10,10 @@ namespace dotNETANPR.ImageAnalysis
         public static Graph.ProbabilityDistributor Distributor =
             new Graph.ProbabilityDistributor(0, 0, 25, 25);
 
-        private static int numberOfCandidates =
+        private static readonly int numberOfCandidates =
             Intelligence.Configurator.GetIntProperty("intelligence_numberOfPlates");
 
-        private BandGraph graphHandle;
+        private BandGraph _graphHandle;
 
         public Band()
         {
@@ -24,26 +24,24 @@ namespace dotNETANPR.ImageAnalysis
 
         public Bitmap RenderGraph() {
             ComputeGraph();
-            return graphHandle.RenderHorizontally(GetWidth(), 100);
+            return _graphHandle.RenderHorizontally(GetWidth(), 100);
         }
 
         private List<Graph.Peak> ComputeGraph() {
-            if (graphHandle != null) return graphHandle.peaks;
+            if (_graphHandle != null) return _graphHandle.peaks;
             Bitmap imageCopy = DuplicateBitmap(Image);
             FullEdgeDetector(imageCopy);
-            graphHandle = Histogram(imageCopy);
-            graphHandle.RankFilter(Image.Height);
-            graphHandle.ApplyProbabilityDistributor(Distributor);
-            graphHandle.FindPeaks(numberOfCandidates);
-            return graphHandle.peaks;
+            _graphHandle = Histogram(imageCopy);
+            _graphHandle.RankFilter(Image.Height);
+            _graphHandle.ApplyProbabilityDistributor(Distributor);
+            _graphHandle.FindPeaks(numberOfCandidates);
+            return _graphHandle.peaks;
         }
 
         public List<Plate> GetPlates()
         {
             List<Plate> output = new List<Plate>();
-
             List<Graph.Peak> peaks = ComputeGraph();
-
             for (int i = 0; i < peaks.Count; i++)
             {
                 Graph.Peak p = peaks[i];

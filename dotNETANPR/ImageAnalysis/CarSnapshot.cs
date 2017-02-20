@@ -6,13 +6,13 @@ namespace dotNETANPR.ImageAnalysis
 {
     public class CarSnapshot : Photo
     {
-        private static int distributorMargins =
+        private static readonly int distributorMargins =
             Intelligence.Configurator.GetIntProperty("carsnapshot_distributormargins");
 
-        private static int carSnapshotGraphRankFilter =
+        private static readonly int carSnapshotGraphRankFilter =
             Intelligence.Configurator.GetIntProperty("carsnapshot_graphrankfilter");
 
-        private static int numberOfCandidates =
+        private static readonly int numberOfCandidates =
             Intelligence.Configurator.GetIntProperty("intelligence_numberOfBands");
 
         public static Graph.ProbabilityDistributor Distributor = new Graph.ProbabilityDistributor(0, 0, distributorMargins, distributorMargins);

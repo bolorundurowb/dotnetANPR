@@ -28,14 +28,14 @@ namespace dotNETANPR.ImageAnalysis
         }
 
         private List<Graph.Peak> ComputeGraph() {
-            if (_graphHandle != null) return _graphHandle.peaks;
+            if (_graphHandle != null) return _graphHandle.Peaks;
             Bitmap imageCopy = DuplicateBitmap(Image);
             FullEdgeDetector(imageCopy);
             _graphHandle = Histogram(imageCopy);
             _graphHandle.RankFilter(Image.Height);
             _graphHandle.ApplyProbabilityDistributor(Distributor);
             _graphHandle.FindPeaks(numberOfCandidates);
-            return _graphHandle.peaks;
+            return _graphHandle.Peaks;
         }
 
         public List<Plate> GetPlates()

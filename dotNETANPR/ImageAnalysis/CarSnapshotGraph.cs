@@ -1,4 +1,4 @@
-﻿namespace dotNETANPR.ImageAnalysis
+﻿﻿namespace dotNETANPR.ImageAnalysis
 {
     public class CarSnapshotGraph : Graph
     {

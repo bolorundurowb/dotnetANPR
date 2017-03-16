@@ -2,7 +2,7 @@
 
 namespace dotNETANPR.ImageAnalysis
 {
-    public class Plate
+    public class Plate : Photo
     {
         public Plate(Bitmap bitmap)
         {

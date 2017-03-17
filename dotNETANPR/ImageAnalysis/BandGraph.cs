@@ -90,5 +90,35 @@ namespace dotNETANPR.ImageAnalysis
             base.Peaks = outPeaksFiltered;
             return outPeaksFiltered;
         }
+
+        public int IndexOfLeftPeakAbs(int peak, double peakFootConstantAbs)
+        {
+            int index = peak;
+            int counter = 0;
+            for (int i = peak; i >= 0; i--)
+            {
+                index = i;
+                if (YValues[index] < peakFootConstantAbs)
+                {
+                    break;
+                }
+            }
+            return Math.Max(0, index);
+        }
+
+        public int IndexOfRightPeakAbs(int peak, double peakFootConstantAbs)
+        {
+            int index = peak;
+            int counter = 0;
+            for (int i = peak; i < YValues.Count; i++)
+            {
+                index = i;
+                if (YValues[index] < peakFootConstantAbs)
+                {
+                    break;
+                }
+            }
+            return Math.Min(YValues.Count, index);
+        }
     }
 }

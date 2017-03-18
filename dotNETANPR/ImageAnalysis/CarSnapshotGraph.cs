@@ -1,4 +1,5 @@
-﻿﻿using System.Collections.Generic;
+﻿﻿using System;
+ using System.Collections.Generic;
 
 namespace dotNETANPR.ImageAnalysis
 {
@@ -31,18 +32,51 @@ namespace dotNETANPR.ImageAnalysis
 
             public int Compare(Peak x, Peak y)
             {
-                double comparison = GetPeakValue(y) - GetPeakValue(x);
-                if (comparison < 0)
+                double difference = GetPeakValue(y) - GetPeakValue(x);
+                if (difference < 0)
                 {
                     return -1;
                 }
-                return comparison > 0 ? 1 : 0;
-            }
+                if (difference > 0)
+                {
+                    return 1;
+                }
+                return 0;           }
         }
 
-        public void FindPeaks(int numberOfCandidates)
+        public List<Peak> FindPeaks(int numberOfCandidates)
         {
-            throw new System.NotImplementedException();
+            List<Peak> outPeaks = new List<Peak>();
+            for (int c = 0; c < numberOfCandidates; c++)
+            {
+                float maxValue = 0.0f;
+                int maxIndex = 0;
+                for (int i = 0; i < this.YValues.Count; i++)
+                {
+                    if (AllowedInterval(outPeaks, i))
+                    {
+                        if (this.YValues[i] >= maxValue)
+                        {
+                            maxValue = this.YValues[i];
+                            maxIndex = i;
+                        }
+                    }
+                }
+                int leftIndex = IndexOfLeftPeakRel(maxIndex, peakFootConstant);
+                int rightIndex = IndexOfRightPeakRel(maxIndex, peakFootConstant);
+                int diff = rightIndex - leftIndex;
+                leftIndex -= (int) peakDiffMultiplicationConstant * diff;
+                rightIndex += (int) peakDiffMultiplicationConstant * diff;
+
+                outPeaks.Add(new Peak(
+                    Math.Max(0, leftIndex),
+                    maxIndex,
+                    Math.Min(this.YValues.Count - 1, rightIndex)
+                ));
+                outPeaks.Sort(new PeakComparer(this.YValues));
+                base.Peaks = outPeaks;
+                return outPeaks;
+            }
         }
     }
 }

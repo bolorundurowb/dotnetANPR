@@ -1,4 +1,4 @@
-﻿﻿using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using dotNETANPR.ImageAnalysis.Convolution;
 
@@ -7,32 +7,23 @@ namespace dotNETANPR.ImageAnalysis
     public class CarSnapshot : Photo
     {
         private static readonly int distributorMargins =
-            Intelligence.Configurator.GetIntProperty("carsnapshot_distributormargins");
+            Intelligence.Intelligence.Configurator.GetIntProperty("carsnapshot_distributormargins");
 
         private static readonly int carSnapshotGraphRankFilter =
-            Intelligence.Configurator.GetIntProperty("carsnapshot_graphrankfilter");
+            Intelligence.Intelligence.Configurator.GetIntProperty("carsnapshot_graphrankfilter");
 
         private static readonly int numberOfCandidates =
-            Intelligence.Configurator.GetIntProperty("intelligence_numberOfBands");
+            Intelligence.Intelligence.Configurator.GetIntProperty("intelligence_numberOfBands");
 
         public static Graph.ProbabilityDistributor Distributor = new Graph.ProbabilityDistributor(0, 0, distributorMargins, distributorMargins);
 
         private CarSnapshotGraph graphHandle;
 
-        public CarSnapshot()
-        {
+        public CarSnapshot() {}
 
-        }
+        public CarSnapshot(string filePath) : base(filePath) {}
 
-        public CarSnapshot(string filePath) : base(filePath)
-        {
-
-        }
-
-        public CarSnapshot(Bitmap bitmap) : base(bitmap)
-        {
-
-        }
+        public CarSnapshot(Bitmap bitmap) : base(bitmap) {}
 
         public Bitmap RenderGraph()
         {

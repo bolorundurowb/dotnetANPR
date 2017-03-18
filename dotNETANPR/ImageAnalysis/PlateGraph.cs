@@ -9,10 +9,10 @@ namespace dotNETANPR.ImageAnalysis
         private Plate handle;
 
         private static double plateGraphRelMinPeakSize =
-            Intelligence.Configurator.GetDoubleProperty("plategraph_rel_minpeaksize");
+            Intelligence.Intelligence.Configurator.GetDoubleProperty("plategraph_rel_minpeaksize");
 
         private static double peakFootConstant =
-            Intelligence.Configurator.GetDoubleProperty("plategraph_peakfootconstant");
+            Intelligence.Intelligence.Configurator.GetDoubleProperty("plategraph_peakfootconstant");
 
         public PlateGraph(Plate handle)
         {

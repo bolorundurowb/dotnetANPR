@@ -11,7 +11,7 @@ namespace dotNETANPR.ImageAnalysis
             new Graph.ProbabilityDistributor(0, 0, 25, 25);
 
         private static readonly int numberOfCandidates =
-            Intelligence.Configurator.GetIntProperty("intelligence_numberOfPlates");
+            Intelligence.Intelligence.Configurator.GetIntProperty("intelligence_numberOfPlates");
 
         private BandGraph _graphHandle;
 

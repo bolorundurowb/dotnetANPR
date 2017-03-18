@@ -6,9 +6,9 @@ namespace dotNETANPR.ImageAnalysis
     public class CarSnapshotGraph : Graph
     {
         private static double peakFootConstant=
-            Intelligence.Configurator.GetDoubleProperty("carsnapshotgraph_peakfootconstant");
+            Intelligence.Intelligence.Configurator.GetDoubleProperty("carsnapshotgraph_peakfootconstant");
         private static double peakDiffMultiplicationConstant =
-            Intelligence.Configurator.GetDoubleProperty("carsnapshotgraph_peakDiffMultiplicationConstant");
+            Intelligence.Intelligence.Configurator.GetDoubleProperty("carsnapshotgraph_peakDiffMultiplicationConstant");
         CarSnapshot handle;
 
         public CarSnapshotGraph(CarSnapshot carSnapshot)

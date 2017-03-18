@@ -8,10 +8,10 @@ namespace dotNETANPR.ImageAnalysis
         private Band handle;
 
         private static double peakFootConstant =
-            Intelligence.Configurator.GetDoubleProperty("bandgraph_peakfootconstant");
+            Intelligence.Intelligence.Configurator.GetDoubleProperty("bandgraph_peakfootconstant");
 
         private static double peakDiffMultiplicationConstant =
-            Intelligence.Configurator.GetDoubleProperty("bandgraph_peakDiffMultiplicationConstant");
+            Intelligence.Intelligence.Configurator.GetDoubleProperty("bandgraph_peakDiffMultiplicationConstant");
 
         public BandGraph(Band band)
         {

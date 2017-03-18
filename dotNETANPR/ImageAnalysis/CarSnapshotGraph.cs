@@ -53,14 +53,10 @@ namespace dotNETANPR.ImageAnalysis
                 int maxIndex = 0;
                 for (int i = 0; i < this.YValues.Count; i++)
                 {
-                    if (AllowedInterval(outPeaks, i))
-                    {
-                        if (this.YValues[i] >= maxValue)
-                        {
-                            maxValue = this.YValues[i];
-                            maxIndex = i;
-                        }
-                    }
+                    if (!AllowedInterval(outPeaks, i)) continue;
+                    if (!(this.YValues[i] >= maxValue)) continue;
+                    maxValue = this.YValues[i];
+                    maxIndex = i;
                 }
                 int leftIndex = IndexOfLeftPeakRel(maxIndex, peakFootConstant);
                 int rightIndex = IndexOfRightPeakRel(maxIndex, peakFootConstant);

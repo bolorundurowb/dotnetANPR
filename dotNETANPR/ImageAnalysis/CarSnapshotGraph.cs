@@ -73,10 +73,10 @@ namespace dotNETANPR.ImageAnalysis
                     maxIndex,
                     Math.Min(this.YValues.Count - 1, rightIndex)
                 ));
-                outPeaks.Sort(new PeakComparer(this.YValues));
-                base.Peaks = outPeaks;
-                return outPeaks;
             }
+            outPeaks.Sort(new PeakComparer(this.YValues));
+            base.Peaks = outPeaks;
+            return outPeaks;
         }
     }
 }

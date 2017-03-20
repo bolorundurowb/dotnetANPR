@@ -56,6 +56,8 @@
     <Compile Include="ImageAnalysis\PixelMap.cs" />
     <Compile Include="ImageAnalysis\Plate.cs" />
     <Compile Include="ImageAnalysis\PlateGraph.cs" />
+    <Compile Include="ImageAnalysis\PlateHorizontalGraph.cs" />
+    <Compile Include="ImageAnalysis\PlateVerticalGraph.cs" />
     <Compile Include="ImageAnalysis\PositionInPlate.cs" />
     <Compile Include="ImageAnalysis\Statistics.cs" />
     <Compile Include="ImageAnalysis\Util\CustomStack.cs" />

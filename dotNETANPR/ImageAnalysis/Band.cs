@@ -27,7 +27,8 @@ namespace dotNETANPR.ImageAnalysis
             return _graphHandle.RenderHorizontally(GetWidth(), 100);
         }
 
-        private List<Graph.Peak> ComputeGraph() {
+        private List<Graph.Peak> ComputeGraph()
+        {
             if (_graphHandle != null) return _graphHandle.Peaks;
             Bitmap imageCopy = DuplicateBitmap(Image);
             FullEdgeDetector(imageCopy);

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
+using dotNETANPR.ImageAnalysis.Convolution;
 
 namespace dotNETANPR.ImageAnalysis
 {
@@ -84,7 +85,18 @@ namespace dotNETANPR.ImageAnalysis
 
         public void HorizontalEdgeBi(Bitmap image)
         {
-            throw new NotImplementedException();
+            int[,] matrix =
+            {
+                {-1, 0, 1}
+            };
+            Bitmap destination = DuplicateBitmap(image);
+            var convolveOp = new ConvolveOp();
+            var kernel = new ConvolutionKernel
+            {
+                Size = 3,
+                Matrix = matrix
+            };
+            destination = convolveOp.Convolve(image, kernel);
         }
 
         public void Normalize()
@@ -165,27 +177,38 @@ namespace dotNETANPR.ImageAnalysis
             return graph;
         }
 
-        public void VerticalEdgeDetector(Bitmap source)
+        public new void VerticalEdgeDetector(Bitmap source)
         {
-
-            float[] matrix = {
-                -1,0,1
+            int[,] matrix =
+            {
+                {-1, 0, 1}
             };
-
             Bitmap destination = DuplicateBitmap(source);
-
+            var convolveOp = new ConvolveOp();
+            var kernel = new ConvolutionKernel
+            {
+                Size = 3,
+                Matrix = matrix
+            };
+            destination = convolveOp.Convolve(source, kernel);
         }
 
         public void HorizontalEdgeDetector(Bitmap source)
         {
             Bitmap destination = DuplicateBitmap(source);
-
-            float[] matrix = {
-                -1,-2,-1,
-                0,0,0,
-                1,2,1
+            int[,] matrix =
+            {
+                {-1, -2, -1},
+                {0, 0, 0},
+                {1, 2, 1}
             };
-
+            var convolveOp = new ConvolveOp();
+            var kernel = new ConvolutionKernel
+            {
+                Size = 3,
+                Matrix = matrix
+            };
+            destination = convolveOp.Convolve(source, kernel);
         }
 
         public float GetCharsWidthDispersion(List<Character> chars)

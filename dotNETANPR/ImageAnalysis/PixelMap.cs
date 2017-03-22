@@ -66,17 +66,17 @@ namespace dotNETANPR.ImageAnalysis
         public class Piece : PointSet
         {
             public static long SerialVersionuid = 0;
-            private int mostLeftPoint;
-            private int mostRightPoint;
-            private int mostTopPoint;
-            private int mostBottomPoint;
-            private int width;
-            private int height;
-            private int centerX;
-            private int centerY;
-            private float magnitude;
-            private int numberOfBlackPoints;
-            private int numberOfAllPoints;
+            public int mostLeftPoint;
+            public int mostRightPoint;
+            public int mostTopPoint;
+            public int mostBottomPoint;
+            public int Width;
+            public int Height;
+            public int CenterX;
+            public int CenterY;
+            public float magnitude;
+            public int numberOfBlackPoints;
+            public int numberOfAllPoints;
 
             public Bitmap Render()
             {
@@ -84,7 +84,7 @@ namespace dotNETANPR.ImageAnalysis
                 {
                     return null;
                 }
-                Bitmap bitmap = new Bitmap(width, height, PixelFormat.Format8bppIndexed);
+                Bitmap bitmap = new Bitmap(Width, Height, PixelFormat.Format8bppIndexed);
                 for (int x = mostLeftPoint; x < mostRightPoint; x++)
                 {
                     for (int y = mostTopPoint; y < mostBottomPoint; y++)
@@ -112,10 +112,10 @@ namespace dotNETANPR.ImageAnalysis
                 mostRightPoint = MostRightPoint();
                 mostTopPoint = MostTopPoint();
                 mostBottomPoint = MostBottomPoint();
-                width = mostRightPoint - mostLeftPoint + 1;
-                height = mostBottomPoint - mostTopPoint + 1;
-                centerX = (mostLeftPoint + mostRightPoint) / 2;
-                centerY = (mostTopPoint + mostBottomPoint) / 2;
+                Width = mostRightPoint - mostLeftPoint + 1;
+                Height = mostBottomPoint - mostTopPoint + 1;
+                CenterX = (mostLeftPoint + mostRightPoint) / 2;
+                CenterY = (mostTopPoint + mostBottomPoint) / 2;
                 numberOfBlackPoints = NumberOfBlackPoints();
                 numberOfAllPoints = NumberOfAllPoints();
                 magnitude = Magnitude();
@@ -141,7 +141,7 @@ namespace dotNETANPR.ImageAnalysis
 
             private int NumberOfAllPoints()
             {
-                return width * height;
+                return Width * Height;
             }
 
             private int NumberOfBlackPoints()

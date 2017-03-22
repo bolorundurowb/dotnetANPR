@@ -4,11 +4,6 @@ namespace dotNETANPR.ImageAnalysis
 {
     public class Character
     {
-        public Character(Bitmap clone, Bitmap bitmap, PositionInPlate positionInPlate)
-        {
-            throw new System.NotImplementedException();
-        }
-
         public float FullWidth { get; set; }
         public float PieceWidth { get; set; }
         public float StatisticAverageHue { get; set; }
@@ -19,5 +14,11 @@ namespace dotNETANPR.ImageAnalysis
         public float StatisticAverageSaturation { get; set; }
         public float FullHeight { get; set; }
         public float PieceHeight { get; set; }
+
+        public Character(Bitmap clone, Bitmap bitmap, PositionInPlate positionInPlate)
+        {
+            throw new System.NotImplementedException();
+        }
+
     }
 }

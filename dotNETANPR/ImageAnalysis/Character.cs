@@ -2,7 +2,7 @@
 
 namespace dotNETANPR.ImageAnalysis
 {
-    public class Character
+    public class Character : Photo
     {
         public float FullWidth { get; set; }
         public float PieceWidth { get; set; }
@@ -15,10 +15,47 @@ namespace dotNETANPR.ImageAnalysis
         public float FullHeight { get; set; }
         public float PieceHeight { get; set; }
 
-        public Character(Bitmap clone, Bitmap bitmap, PositionInPlate positionInPlate)
+        public bool normalized = false;
+        public PositionInPlate positionInPlate = null;
+        public Bitmap thresholdedImage;
+        private PixelMap.Piece bestPiece = null;
+
+        public Character()
         {
-            throw new System.NotImplementedException();
+            Image = null;
+            Init();
         }
 
+        public Character(Bitmap bitmap) : this(bitmap, bitmap, null)
+        {
+            Init();
+        }
+
+        public Character(string filePath) : base(filePath)
+        {
+            Bitmap origin = DuplicateBitmap(Image);
+            AdaptiveThresholding();
+            thresholdedImage = Image;
+            Image = origin;
+            Init();
+        }
+
+        public Character(Bitmap clone, Bitmap bitmap, PositionInPlate positionInPlate) : base(clone)
+        {
+            thresholdedImage = bitmap;
+            this.positionInPlate = positionInPlate;
+            Init();
+        }
+
+        public new Character Clone()
+        {
+            return new Character((Bitmap)Image.Clone(), (Bitmap)thresholdedImage.Clone(), positionInPlate);
+        }
+
+        private void Init()
+        {
+            FullHeight = base.GetHeight();
+            FullWidth = base.GetWidth();
+        }
     }
 }

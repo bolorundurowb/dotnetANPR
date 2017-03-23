@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
+using dotNETANPR.Recognizer;
 
 namespace dotNETANPR.ImageAnalysis
 {
@@ -74,8 +76,8 @@ namespace dotNETANPR.ImageAnalysis
 
             ComputeStatisticBrightness(colorImage);
             ComputeStatisticContrast(colorImage);
-            this.ComputeStatisticHue(colorImage);
-            this.ComputeStatisticSaturation(colorImage);
+            ComputeStatisticHue(colorImage);
+            ComputeStatisticSaturation(colorImage);
 
             Image = bestPiece.Render() ?? new Bitmap(1, 1, PixelFormat.Format8bppIndexed);
 
@@ -162,7 +164,7 @@ namespace dotNETANPR.ImageAnalysis
                     sum += GetHue(bi, x, y);
                 }
             }
-            this.StatisticAverageHue = sum / (w * h);
+            StatisticAverageHue = sum / (w * h);
         }
 
         private void ComputeStatisticSaturation(Bitmap bi)
@@ -177,12 +179,66 @@ namespace dotNETANPR.ImageAnalysis
                     sum += GetSaturation(bi, x, y);
                 }
             }
-            this.StatisticAverageSaturation = sum / (w * h);
+            StatisticAverageSaturation = sum / (w * h);
         }
 
         public PixelMap GetPixelMap()
         {
             return new PixelMap(this);
+        }
+
+        public List<double> ExtractEdgeFeatures()
+        {
+            int w = Image.Width;
+            int h = Image.Height;
+            double featureMatch;
+
+            float[,] array = BitmapToArrayWithBounds(Image, w, h);
+            w += 2;
+            h += 2;
+
+            float[,] features = CharacterRecognizer.features;
+            double[] output = new double[features.Length * 4];
+
+            for (int f = 0; f < features.Length; f++)
+            {
+                for (int my = 0; my < h - 1; my++)
+                {
+                    for (int mx = 0; mx < w - 1; mx++)
+                    {
+                        featureMatch = 0;
+                        featureMatch += Math.Abs(array[mx, my] - features[f, 0]);
+                        featureMatch += Math.Abs(array[mx + 1, my] - features[f, 1]);
+                        featureMatch += Math.Abs(array[mx, my + 1] - features[f, 2]);
+                        featureMatch += Math.Abs(array[mx + 1, my + 1] - features[f, 3]);
+
+                        int bias = 0;
+                        if (mx >= w / 2) bias += features.Length;
+                        if (my >= h / 2) bias += features.Length * 2;
+                        output[bias + f] += featureMatch < 0.05 ? 1 : 0;
+                    }
+                }
+            }
+            List<double> outputList = new List<double>();
+            foreach (var value in output) outputList.Add(value);
+            return outputList;
+        }
+
+        public List<double> ExtractMapFeatures()
+        {
+            List<double> vectorInput = new List<double>();
+            for (int y = 0; y < GetHeight(); y++)
+            for (int x = 0; x < GetWidth(); x++)
+                vectorInput.Add(GetBrightness(x, y));
+            return vectorInput;
+        }
+
+        public List<double> ExtractFeatures()
+        {
+            int featureExtractionMethod = Intelligence.Intelligence.Configurator.GetIntProperty("char_featuresExtractionMethod");
+            if (featureExtractionMethod == 0)
+                return ExtractMapFeatures();
+            return ExtractEdgeFeatures();
         }
     }
 }

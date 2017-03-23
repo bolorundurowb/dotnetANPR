@@ -278,6 +278,19 @@ namespace dotNETANPR.ImageAnalysis
         public float[,] BitmapToArray(Bitmap bitmap, int width, int height)
         {
             float[,] array = new float[width, height];
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    array[x, y] = Photo.GetBrightness(Image, x, y);
+                }
+            }
+            return array;
+        }
+
+        public float[,] BitmapToArrayWithBounds(Bitmap bitmap, int width, int height)
+        {
+            float[,] array = new float[width, height];
             for (int i = 0; i < width; i++)
             {
                 for (int j = 0; j < height; j++)

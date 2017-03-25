@@ -67,6 +67,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Recognizer\CharacterRecognizer.cs" />
     <Compile Include="Recognizer\ICharacterRecognizer.cs" />
+      <Compile Include="Recognizer\KnnPatternClassificator.cs"/>
     <Compile Include="Tools\TestStatistics.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -6,7 +6,7 @@ using dotNETANPR.ImageAnalysis;
 
 namespace dotNETANPR.Recognizer
 {
-    public class KnnPatterClassificator : CharacterRecognizer
+    public class KnnPatterClassificator : CharacterRecognizer, ICharacterRecognizer
     {
         private readonly List<List<double>> _learnLists;
 
@@ -42,7 +42,7 @@ namespace dotNETANPR.Recognizer
             for (int x = 0; x < _learnLists.Count; x++)
             {
                 float fx = SimplifiedEuclideanDistance(tested, _learnLists.ElementAt(x));
-                recognized.AddPattern(new RecognizedChar.RecognizedPattern(alphabet[x], fx));
+                recognized.AddPattern(new RecognizedChar.RecognizedPattern(Alphabet[x], fx));
             }
             recognized.Sort(0);
             return recognized;

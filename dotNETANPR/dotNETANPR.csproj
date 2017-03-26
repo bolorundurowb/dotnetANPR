@@ -68,6 +68,7 @@
     <Compile Include="Recognizer\CharacterRecognizer.cs" />
     <Compile Include="Recognizer\ICharacterRecognizer.cs" />
       <Compile Include="Recognizer\KnnPatternClassificator.cs"/>
+      <Compile Include="Recognizer\NeuralPatternClassificator.cs"/>
     <Compile Include="Tools\TestStatistics.cs" />
   </ItemGroup>
   <ItemGroup>

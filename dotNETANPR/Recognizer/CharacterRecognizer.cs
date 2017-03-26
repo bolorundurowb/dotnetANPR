@@ -6,7 +6,7 @@ namespace dotNETANPR.Recognizer
 {
     public class CharacterRecognizer
     {
-        public static char[] alphabet =
+        public static char[] Alphabet =
         {
             '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C',
             'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
@@ -55,7 +55,7 @@ namespace dotNETANPR.Recognizer
                 public int Compare(RecognizedPattern pattern1, RecognizedPattern pattern2)
                 {
                     float cost1 = pattern1.Cost;
-                    float cost2 = pattern1.Cost;
+                    float cost2 = pattern2.Cost;
                     int ret = 0;
                     if (cost1 < cost2)
                     {

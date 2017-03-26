@@ -20,9 +20,12 @@ namespace dotNETANPR.ImageAnalysis
             Image = null;
         }
 
-        public Band(Bitmap bitmap) : base(bitmap) {}
+        public Band(Bitmap bitmap) : base(bitmap)
+        {
+        }
 
-        public Bitmap RenderGraph() {
+        public Bitmap RenderGraph()
+        {
             ComputeGraph();
             return _graphHandle.RenderHorizontally(GetWidth(), 100);
         }
@@ -91,9 +94,11 @@ namespace dotNETANPR.ImageAnalysis
             Bitmap i2 = CreateBlankBitmap(source);
 
             var convolveOp = new ConvolveOp();
-            var kernel = new ConvolutionKernel();
-            kernel.Size = 3;
-            kernel.Matrix = verticalMatrix;
+            var kernel = new ConvolutionKernel
+            {
+                Size = 3,
+                Matrix = verticalMatrix
+            };
             i1 = convolveOp.Convolve(source, kernel);
 
             kernel = new ConvolutionKernel();

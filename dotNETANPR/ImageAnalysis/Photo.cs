@@ -250,9 +250,7 @@ namespace dotNETANPR.ImageAnalysis
             {
                 threshold[i] = i;
             }
-            //TODO: perform the equivalent of LookUpOp
-            LookupOp lookupOp = new LookupOp();
-            lookupOp.LookupTable = threshold;
+            LookupOp lookupOp = new LookupOp {LookupTable = threshold};
             var result = lookupOp.Filter(bitmap);
         }
 

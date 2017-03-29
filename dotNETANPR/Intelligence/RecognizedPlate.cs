@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using dotNETANPR.Recognizer;
 
 namespace dotNETANPR.Intelligence
@@ -25,12 +26,7 @@ namespace dotNETANPR.Intelligence
 
         public string GetString()
         {
-            string ret = String.Empty;
-            for (int i = 0; i < _chars.Count; i++)
-            {
-                ret += _chars[i].GetPattern(0).Character;
-            }
-            return ret;
+            return _chars.Aggregate(string.Empty, (current, t) => current + t.GetPattern(0).Character);
         }
     }
 }

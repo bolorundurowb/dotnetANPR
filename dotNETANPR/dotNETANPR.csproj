@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="Configurator\Configurator.cs" />
     <Compile Include="Gui\ReportGenerator.cs" />
+    <Compile Include="Gui\TimeMeter.cs" />
     <Compile Include="ImageAnalysis\Band.cs" />
     <Compile Include="ImageAnalysis\BandGraph.cs" />
     <Compile Include="ImageAnalysis\CarSnapshot.cs" />

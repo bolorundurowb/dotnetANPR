@@ -322,7 +322,7 @@ namespace dotNETANPR.ImageAnalysis
             return bitmap;
         }
 
-        public static Bitmap CreateBlankBitmap(Bitmap bitmap)
+        public Bitmap CreateBlankBitmap(Bitmap bitmap)
         {
             Bitmap copy = new Bitmap(bitmap.Width, bitmap.Height, PixelFormat.Format8bppIndexed);
             return copy;

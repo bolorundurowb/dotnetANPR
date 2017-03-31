@@ -16,9 +16,9 @@ namespace dotNETANPR.ImageAnalysis
         private int width;
         private int height;
 
-        private float angle;
-        private float dx;
-        private float dy;
+        public float Angle;
+        public float Dx;
+        public float Dy;
 
         public HoughTransformation(int width, int height)
         {
@@ -147,9 +147,9 @@ namespace dotNETANPR.ImageAnalysis
 
             int dx = width;
             int dy = y1 - y0;
-            this.dx = dx;
-            this.dy = dy;
-            angle = (float)(180 * Math.Atan(this.dy / this.dx) / Math.PI);
+            this.Dx = dx;
+            this.Dy = dy;
+            Angle = (float)(180 * Math.Atan(this.Dy / this.Dx) / Math.PI);
 
             if (renderType == RenderAll)
             {

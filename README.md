@@ -6,4 +6,4 @@ This is a work in progress. I am converting the java code in javaanpr into C# wh
 
 Contibutions are very welcome.
 
-This project aims to port [this](https://github.com/oskopek/javaanpr) library from Java to .NET. Big ups to [Ondrej Martinsky](http://javaanpr.sourceforge.net/) for the original `javaanpr` library.
+This project aims to port [this](https://github.com/oskopek/javaanpr) library from Java to .NET. Big ups to [Ondrej Martinsky](https://sourceforge.net/u/martinsky/profile/) for the original `javaanpr` library.

@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
+using dotNETANPR.ImageAnalysis;
 
 namespace dotNETANPR.Recognizer
 {
-    public class CharacterRecognizer
+    public class CharacterRecognizer : ICharacterRecognizer
     {
         public static char[] Alphabet =
         {
@@ -109,6 +110,15 @@ namespace dotNETANPR.Recognizer
                 _patterns.Sort(new PatternComparer(direction));
             }
 
+            public List<RecognizedPattern> GetPatterns()
+            {
+                if (IsSorted)
+                {
+                    return _patterns;
+                }
+                return null;
+            }
+
             public RecognizedPattern GetPattern(int index)
             {
                 return _patterns[index];
@@ -155,6 +165,11 @@ namespace dotNETANPR.Recognizer
                 }
                 return histogram;
             }
+        }
+
+        public RecognizedChar Recognize(Character character)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

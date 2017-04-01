@@ -23,7 +23,7 @@ namespace dotNETANPR.Gui
             {
                 throw new IOException("Report directory '" + path + "' doesn't exists");
             }
-            this.output = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\">" +
+            output = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\">" +
                           "<html>" +
                           "<head><title>ANPR report</title>" +
                           "</head>" +
@@ -46,12 +46,12 @@ namespace dotNETANPR.Gui
         {
             if (!enabled) return;
             string imageName = image.GetHashCode() + ".jpg";
-            this.SaveImage(image, path + Path.DirectorySeparatorChar + imageName);
+            SaveImage(image, path + Path.DirectorySeparatorChar + imageName);
             if (w != 0 && h != 0)
-                this.output += "<img src='" + imageName + "' alt='' width='" + w + "' height='" + h + "' class='" +
+                output += "<img src='" + imageName + "' alt='' width='" + w + "' height='" + h + "' class='" +
                                cls + "'>\n";
             else
-                this.output += "<img src='" + imageName + "' alt='' class='" + cls + "'>\n";
+                output += "<img src='" + imageName + "' alt='' class='" + cls + "'>\n";
         }
 
         public void Finish()
@@ -60,7 +60,7 @@ namespace dotNETANPR.Gui
             {
                 return;
             }
-            this.output += "</html>";
+            output += "</html>";
             string path = this.path + Path.DirectorySeparatorChar + "index.html";
             File.WriteAllText(path, output);
             CopyFile(Intelligence.Intelligence.Configurator.GetPathProperty("reportgeneratorcss"),
@@ -91,7 +91,7 @@ namespace dotNETANPR.Gui
             }
             catch (Exception e)
             {
-                Console.WriteLine("catched " + e.ToString());
+                Console.WriteLine("catched " + e);
                 Environment.Exit(1);
             }
         }

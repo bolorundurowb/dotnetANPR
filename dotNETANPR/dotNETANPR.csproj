@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{723C59BA-7821-4F13-B58A-35EA86C43787}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>dotNETANPR</RootNamespace>
     <AssemblyName>dotNETANPR</AssemblyName>
@@ -73,7 +73,6 @@
     <Compile Include="Recognizer\ICharacterRecognizer.cs" />
     <Compile Include="Recognizer\KnnPatternClassificator.cs" />
     <Compile Include="Recognizer\NeuralPatternClassificator.cs" />
-    <Compile Include="Tools\TestStatistics.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

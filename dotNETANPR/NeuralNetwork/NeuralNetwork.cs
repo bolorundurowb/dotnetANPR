@@ -353,7 +353,7 @@ namespace dotNETANPR.NeuralNetwork
             }
         }
 
-        private void SaveToXml(string filePath)
+        public void SaveToXml(string filePath)
         {
             XmlDocument xmlDocument = new XmlDocument();
             var root = xmlDocument.CreateElement("neuralNetwork");

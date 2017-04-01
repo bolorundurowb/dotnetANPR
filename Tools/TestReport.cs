@@ -1,67 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 
-namespace dotNETANPR.Tools
+namespace Tools
 {
-    public class TestStatistics
-    {
-        public static String helpText = "" +
-                                        "-----------------------------------------------------------\n"+
-                                        "ANPR Statistics Generator\n"+
-                                        "\n"+
-                                        "Command line arguments\n"+
-                                        "\n"+
-                                        "    -help         Displays this help\n"+
-                                        "    -i <file>     Create statistics for test file\n"+
-                                        "\n"+
-                                        "Test file must be have a CSV format\n"+
-                                        "Each row must contain name of analysed snapshot,\n" +
-                                        "real plate and recognized plate string\n" +
-                                        "Example : \n"+
-                                        "001.jpg, 1B01234, 1B012??";
-        public static void Main(string[] args)
-        {
-            if (args.Length == 2 && args[0].Equals("-i")
-            )
-            {
-                // proceed analysis
-                try
-                {
-                    StreamReader input = new StreamReader(args[1]);
-                    string line;
-                    int lineCount = 0;
-                    string[] split;
-                    TestReport testReport = new TestReport();
-                    while ((line = input.ReadLine()) != null)
-                    {
-                        lineCount++;
-                        split = line.Split(',');
-                        if (split.Length != 3)
-                        {
-                            Console.WriteLine("Warning: line " + lineCount + " contains invalid CSV data (skipping)");
-                            continue;
-                        }
-                        testReport.AddRecord(new TestReport.TestRecord(split[0], split[1], split[2]))
-                        ;
-                    }
-                    input.Close();
-                    testReport.PrintStatistics();
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.StackTrace);
-                    Console.WriteLine(e.Message);
-                }
-            }
-            else
-            {
-                // DONE display help
-                Console.WriteLine(helpText);
-            }
-        }
-    }
-
     public class TestReport
     {
         public class TestRecord
@@ -117,16 +58,16 @@ namespace dotNETANPR.Tools
             }
         }
 
-        private List<TestRecord> records;
+        private List<TestRecord> _records;
 
         public TestReport()
         {
-            this.records = new List<TestRecord>();
+            this._records = new List<TestRecord>();
         }
 
         public void AddRecord(TestRecord testRecord)
         {
-           this.records.Add(testRecord);
+            this._records.Add(testRecord);
         }
 
         public void PrintStatistics()
@@ -138,7 +79,7 @@ namespace dotNETANPR.Tools
             Console.WriteLine("-------------------------------------------");
             Console.WriteLine("Defective Plates\n");
 
-            foreach (TestRecord record in this.records)
+            foreach (TestRecord record in this._records)
             {
                 characterCount += record.Length;
                 weightedScoreCount += record.Good;
@@ -151,9 +92,9 @@ namespace dotNETANPR.Tools
             }
             Console.WriteLine("\n------------------------------------------");
             Console.WriteLine("test Report Statistics\n");
-            Console.WriteLine("Total Number of Plates    :" + this.records.Count);
+            Console.WriteLine("Total Number of Plates    :" + this._records.Count);
             Console.WriteLine("Total Number of Characters:" + characterCount);
-            Console.WriteLine("Binary Score              :" + (float) binaryScoreCount / this.records.Count * 100);
+            Console.WriteLine("Binary Score              :" + (float) binaryScoreCount / this._records.Count * 100);
             Console.WriteLine("Weighted Score            :" + (float)weightedScoreCount/characterCount);
         }
     }

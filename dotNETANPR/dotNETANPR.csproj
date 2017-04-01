@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{723C59BA-7821-4F13-B58A-35EA86C43787}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>dotNETANPR</RootNamespace>
     <AssemblyName>dotNETANPR</AssemblyName>
@@ -30,28 +30,52 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="PropertyConfig, Version=1.0.2.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\packages\PropertyConfig.dll.1.0.2\lib\net45\PropertyConfig.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Configurator\Configurator.cs" />
+    <Compile Include="Gui\ReportGenerator.cs" />
+    <Compile Include="Gui\TimeMeter.cs" />
+    <Compile Include="ImageAnalysis\Band.cs" />
+    <Compile Include="ImageAnalysis\BandGraph.cs" />
+    <Compile Include="ImageAnalysis\CarSnapshot.cs" />
+    <Compile Include="ImageAnalysis\CarSnapshotGraph.cs" />
+    <Compile Include="ImageAnalysis\Character.cs" />
+    <Compile Include="ImageAnalysis\Convolution\ConvolutionKernel.cs" />
+    <Compile Include="ImageAnalysis\Convolution\ConvolveOp.cs" />
     <Compile Include="ImageAnalysis\Graph.cs" />
-      <Compile Include="ImageAnalysis\HoughTransformation.cs"/>
-      <Compile Include="ImageAnalysis\Statistics.cs"/>
+    <Compile Include="ImageAnalysis\HoughTransformation.cs" />
+    <Compile Include="ImageAnalysis\LookUp\LookupOp.cs" />
+    <Compile Include="ImageAnalysis\Photo.cs" />
+    <Compile Include="ImageAnalysis\PixelMap.cs" />
+    <Compile Include="ImageAnalysis\Plate.cs" />
+    <Compile Include="ImageAnalysis\PlateGraph.cs" />
+    <Compile Include="ImageAnalysis\PlateHorizontalGraph.cs" />
+    <Compile Include="ImageAnalysis\PlateVerticalGraph.cs" />
+    <Compile Include="ImageAnalysis\PositionInPlate.cs" />
+    <Compile Include="ImageAnalysis\Statistics.cs" />
+    <Compile Include="ImageAnalysis\Util\CustomStack.cs" />
+    <Compile Include="Intelligence\Intelligence.cs" />
+    <Compile Include="Intelligence\Parser.cs" />
+    <Compile Include="Intelligence\RecognizedPlate.cs" />
+    <Compile Include="NeuralNetwork\NeuralNetwork.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Tools\TestStatistics.cs" />
+    <Compile Include="Recognizer\CharacterRecognizer.cs" />
+    <Compile Include="Recognizer\ICharacterRecognizer.cs" />
+    <Compile Include="Recognizer\KnnPatternClassificator.cs" />
+    <Compile Include="Recognizer\NeuralPatternClassificator.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Configurator" />
-    <Folder Include="Intelligence" />
-    <Folder Include="NeuralNetwork" />
-    <Folder Include="Recognizer" />
+    <Content Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

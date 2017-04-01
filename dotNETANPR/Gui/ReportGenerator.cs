@@ -15,6 +15,23 @@ namespace dotNETANPR.Gui
             enabled = false;
         }
 
+        public ReportGenerator(string path)
+        {
+            this.path = path;
+            enabled = true;
+            if (!File.Exists(path))
+            {
+                throw new IOException("Report directory '" + path + "' doesn't exists");
+            }
+            this.output = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\">" +
+                          "<html>" +
+                          "<head><title>ANPR report</title>" +
+                          "</head>" +
+                          "<style type=\"text/css\">" +
+                          "@import \"style.css\";" +
+                          "</style>";
+        }
+
         public void InsertText(string text)
         {
             if (!enabled)
@@ -37,7 +54,25 @@ namespace dotNETANPR.Gui
                 this.output += "<img src='" + imageName + "' alt='' class='" + cls + "'>\n";
         }
 
-        public void SaveImage(Bitmap bi, string filepath)
+        public void Finish()
+        {
+            if (!enabled)
+            {
+                return;
+            }
+            this.output += "</html>";
+            string path = this.path + Path.DirectorySeparatorChar + "index.html";
+            File.WriteAllText(path, output);
+            CopyFile(Intelligence.Intelligence.Configurator.GetPathProperty("reportgeneratorcss"),
+                this.path + Path.DirectorySeparatorChar + "style.css");
+        }
+
+        private void CopyFile(string source, string dest)
+        {
+            File.Copy(source, dest);
+        }
+
+        public void SaveImage(Bitmap bitmap, string filepath)
         {
             if (!enabled) return;
             string type = filepath.Substring(filepath.LastIndexOf('.') + 1, filepath.Length).ToUpper();
@@ -45,11 +80,14 @@ namespace dotNETANPR.Gui
                 !type.Equals("JPG") &&
                 !type.Equals("JPEG") &&
                 !type.Equals("PNG")
-            ) Console.WriteLine("unsupported format exception");
+            )
+            {
+                Console.WriteLine("unsupported format exception");
+            }
 
             try
             {
-                bi.Save(filepath);
+                bitmap.Save(filepath);
             }
             catch (Exception e)
             {

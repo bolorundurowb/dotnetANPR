@@ -31,7 +31,7 @@
     <neural_micro>0.5</neural_micro>
     <neural_topology>20</neural_topology>
     <intelligence_syntaxanalysis>2</intelligence_syntaxanalysis>
-    <intelligence_syntaxDescriptionFile>./resources/syntax/syntax.xml</intelligence_syntaxDescriptionFile>
+    <intelligence_syntaxDescriptionFile>./Resources/Syntax/syntax.xml</intelligence_syntaxDescriptionFile>
     <carsnapshot_graphrankfilter>9</carsnapshot_graphrankfilter>
     <carsnapshot_distributormargins>25</carsnapshot_distributormargins>
     <carsnapshotgraph_peakDiffMultiplicationConstant>0.1</carsnapshotgraph_peakDiffMultiplicationConstant>

@@ -94,16 +94,14 @@ namespace dotNETANPR.Configurator
             SetDoubleProperty("neural_micro", 0.5); // micro
             SetIntProperty("neural_topology", 20);
 
-            /* ***** END ***** Definition of property defaults  ******* */
 
             SetStringProperty("help_file_help", "./resources/help/help.html");
             SetStringProperty("help_file_about", "./resources/help/about.html");
             SetStringProperty("reportgeneratorcss", "./resources/reportgenerator/style.css");
         }
 
-        public Configurator(string path)
+        public Configurator(string path) : this()
         {
-            new Configurator();
             try
             {
                 LoadConfiguration(path);

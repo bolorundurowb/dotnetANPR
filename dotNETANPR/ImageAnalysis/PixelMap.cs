@@ -84,7 +84,7 @@ namespace dotNETANPR.ImageAnalysis
                 {
                     return null;
                 }
-                Bitmap bitmap = new Bitmap(Width, Height, PixelFormat.Format8bppIndexed);
+                Bitmap bitmap = new Bitmap(Width, Height);
                 for (int x = mostLeftPoint; x < mostRightPoint; x++)
                 {
                     for (int y = mostTopPoint; y < mostBottomPoint; y++)

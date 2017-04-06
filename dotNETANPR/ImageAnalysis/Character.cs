@@ -19,10 +19,10 @@ namespace dotNETANPR.ImageAnalysis
         public float FullHeight { get; set; }
         public float PieceHeight { get; set; }
 
-        public bool normalized;
-        public PositionInPlate positionInPlate;
-        public Bitmap thresholdedImage;
-        private PixelMap.Piece bestPiece;
+        public bool Normalized;
+        public PositionInPlate PositionInPlate;
+        public Bitmap ThresholdedImage;
+        private PixelMap.Piece _bestPiece;
 
         public Character()
         {
@@ -39,21 +39,21 @@ namespace dotNETANPR.ImageAnalysis
         {
             Bitmap origin = DuplicateBitmap(Image);
             AdaptiveThresholding();
-            thresholdedImage = Image;
+            ThresholdedImage = Image;
             Image = origin;
             Init();
         }
 
         public Character(Bitmap clone, Bitmap bitmap, PositionInPlate positionInPlate) : base(clone)
         {
-            thresholdedImage = bitmap;
-            this.positionInPlate = positionInPlate;
+            ThresholdedImage = bitmap;
+            this.PositionInPlate = positionInPlate;
             Init();
         }
 
         public new Character Clone()
         {
-            return new Character((Bitmap)Image.Clone(), (Bitmap)thresholdedImage.Clone(), positionInPlate);
+            return new Character((Bitmap)Image.Clone(), (Bitmap)ThresholdedImage.Clone(), PositionInPlate);
         }
 
         private void Init()
@@ -64,28 +64,28 @@ namespace dotNETANPR.ImageAnalysis
 
         public void Normalize()
         {
-            if (normalized) return;
+            if (Normalized) return;
 
             Bitmap colorImage = (Bitmap)GetBitmap().Clone();
-            Image = thresholdedImage;
+            Image = ThresholdedImage;
             PixelMap pixelMap = GetPixelMap();
 
-            bestPiece = pixelMap.GetBestPiece();
+            _bestPiece = pixelMap.GetBestPiece();
 
-            colorImage = GetBestPieceInFullColor(colorImage, bestPiece);
+            colorImage = GetBestPieceInFullColor(colorImage, _bestPiece);
 
             ComputeStatisticBrightness(colorImage);
             ComputeStatisticContrast(colorImage);
             ComputeStatisticHue(colorImage);
             ComputeStatisticSaturation(colorImage);
 
-            Image = bestPiece.Render() ?? new Bitmap(1, 1, PixelFormat.Format8bppIndexed);
+            Image = _bestPiece.Render() ?? new Bitmap(1, 1, PixelFormat.Format8bppIndexed);
 
             PieceWidth = GetWidth();
             PieceHeight = GetHeight();
 
             NormalizeResizeOnly();
-            normalized = true;
+            Normalized = true;
         }
 
         private void NormalizeResizeOnly()

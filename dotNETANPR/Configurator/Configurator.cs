@@ -11,13 +11,13 @@ namespace dotNETANPR.Configurator
         public string ConfigurationFileName { get; set; } = "config.xml";
 
         // Default class file comment
-        private string comment = "This is the global configuration file for dotNETANPR";
+        private string _comment = "This is the global configuration file for dotNETANPR";
 
-        private Configuration list;
+        private Configuration _list;
 
         public Configurator()
         {
-            list = new Configuration();
+            _list = new Configuration();
 
             // PHOTO
             SetIntProperty("photo_adaptivethresholdingradius", 7); // 7 is recommended
@@ -43,8 +43,8 @@ namespace dotNETANPR.Configurator
             SetIntProperty("char_normalizeddimensions_y", 13); //13
             SetIntProperty("char_resizeMethod", 1); // 0=linear 1=average
             SetIntProperty("char_featuresExtractionMethod", 0); //0=map, 1=edge
-            SetStringProperty("char_neuralNetworkPath", "./resources/neuralnetworks/network_avgres_813_map.xml");
-            SetStringProperty("char_learnAlphabetPath", "./resources/alphabets/alphabet_8x13");
+            SetStringProperty("char_neuralNetworkPath", "./Resources/NeuralNetworks/network_avgres_813_map.xml");
+            SetStringProperty("char_learnAlphabetPath", "./Resources/Alphabets/Alphabet_8x13");
             SetIntProperty("intelligence_classification_method", 0); // 0 = pattern match ,1=nn
 
             // PLATEGRAPH
@@ -83,7 +83,7 @@ namespace dotNETANPR.Configurator
 
             // RECOGNITION
             SetIntProperty("intelligence_syntaxanalysis", 2);
-            SetStringProperty("intelligence_syntaxDescriptionFile", "./Resources/syntax/syntax.xml");
+            SetStringProperty("intelligence_syntaxDescriptionFile", "./Resources/Syntax/syntax.xml");
 
             // NEURAL NETWORK
             //int maxK, double eps, double lambda, double micro
@@ -115,67 +115,67 @@ namespace dotNETANPR.Configurator
 
         public string GetStringProperty(string name)
         {
-            return list[name];
+            return _list[name];
         }
 
         public string GetPathProperty(string name)
         {
-            return list[name].Replace("/", Path.DirectorySeparatorChar.ToString());
+            return _list[name].Replace("/", Path.DirectorySeparatorChar.ToString());
         }
 
         public void SetStringProperty(string name, string value)
         {
-            list[name] = value;
+            _list[name] = value;
         }
 
         public int GetIntProperty(string name)
         {
-            return int.Parse(list[name]);
+            return int.Parse(_list[name]);
         }
 
         public void SetIntProperty(string name, int value)
         {
-            list[name] = value.ToString();
+            _list[name] = value.ToString();
         }
 
         public double GetDoubleProperty(string name)
         {
-            return double.Parse(list[name]);
+            return double.Parse(_list[name]);
         }
 
         public void SetDoubleProperty(string name, double value)
         {
-            list[name] = value.ToString();
+            _list[name] = value.ToString();
         }
 
         public Color GetColorProperty(string name)
         {
-            return Color.FromArgb(int.Parse(list[name]));
+            return Color.FromArgb(int.Parse(_list[name]));
         }
 
         public void SetColorProperty(string name, Color value)
         {
-            list[name] = value.ToArgb().ToString();
+            _list[name] = value.ToArgb().ToString();
         }
 
         public void SaveConfiguration()
         {
-            list.StoreToXml(ConfigurationFileName, comment);
+            _list.StoreToXml(ConfigurationFileName, _comment);
         }
 
         public void SaveConfiguration(string file)
         {
-            list.StoreToXml(file, comment);
+            _list.StoreToXml(file, _comment);
         }
 
         public void LoadConfiguration()
         {
-            list.LoadFromXml(ConfigurationFileName);
+            _list.LoadFromXml(ConfigurationFileName);
         }
 
         public void LoadConfiguration(string file)
         {
-            list.LoadFromXml(file);
+            _list.LoadFromXml(file);
         }
     }
 }

@@ -130,7 +130,7 @@ namespace dotNETANPR.ImageAnalysis
             try
             {
                 Bitmap bitmap = new Bitmap(filePath);
-                Bitmap image = new Bitmap(Image.Width, Image.Height, PixelFormat.Format8bppIndexed);
+                Bitmap image = new Bitmap(bitmap.Width, bitmap.Height);
                 Graphics graphics = Graphics.FromImage(image);
                 graphics.DrawImage(bitmap, 0, 0);
                 graphics.Dispose();
@@ -198,7 +198,7 @@ namespace dotNETANPR.ImageAnalysis
             {
                 return LinearResizeBitmap(bmp, width, height);
             }
-            Bitmap bitmap = new Bitmap(width, height, PixelFormat.Format8bppIndexed);
+            Bitmap bitmap = new Bitmap(width, height);
             float xScale = (float) width / bmp.Width;
             float yScale = (float) height / bmp.Height;
             for (int i = 0; i < width; i++)
@@ -311,7 +311,7 @@ namespace dotNETANPR.ImageAnalysis
 
         public static Bitmap ArrayToBitmap(float[,] array, int width, int height)
         {
-            Bitmap bitmap = new Bitmap(width, height, PixelFormat.Format8bppIndexed);
+            Bitmap bitmap = new Bitmap(width, height);
             for (int i = 0; i < width; i++)
             {
                 for (int j = 0; j < height; j++)

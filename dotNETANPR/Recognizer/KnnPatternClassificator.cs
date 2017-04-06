@@ -18,8 +18,9 @@ namespace dotNETANPR.Recognizer
             for (int i = 0; i < alphastring.Length; i++) _learnLists.Add(null);
 
 
-            foreach (string fileName in Directory.GetFiles(path))
+            foreach (string fileNameWithPath in Directory.GetFiles(path))
             {
+                string fileName = Path.GetFileName(fileNameWithPath);
                 int alphaPosition = alphastring.IndexOf(fileName.ToLower()[0]);
                 if (alphaPosition == -1) continue;
 

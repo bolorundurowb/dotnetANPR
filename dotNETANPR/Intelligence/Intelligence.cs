@@ -186,8 +186,8 @@ namespace dotNETANPR.Intelligence
                         }
 
 
-                        if ((chr.positionInPlate.X1 < 2 ||
-                             chr.positionInPlate.X2 > _plate.GetWidth() - 1)
+                        if ((chr.PositionInPlate.X1 < 2 ||
+                             chr.PositionInPlate.X2 > _plate.GetWidth() - 1)
                             && widthHeightRatio < 0.12
                         )
                         {

@@ -20,11 +20,11 @@
     <intelligence_maxSimilarityCostDispersion>100.0</intelligence_maxSimilarityCostDispersion>
     <char_normalizeddimensions_x>8</char_normalizeddimensions_x>
     <char_normalizeddimensions_y>13</char_normalizeddimensions_y>
-    <char_learnAlphabetPath>./resources/alphabets/alphabet_8x13</char_learnAlphabetPath>
+    <char_learnAlphabetPath>./Resources/Alphabets/Alphabet_8x13</char_learnAlphabetPath>
     <char_resizeMethod>1</char_resizeMethod>
     <char_featuresExtractionMethod>0</char_featuresExtractionMethod>
     <intelligence_classification_method>0</intelligence_classification_method>
-    <char_neuralNetworkPath>./resources/neuralnetworks/network_avgres_813_map.xml</char_neuralNetworkPath>
+    <char_neuralNetworkPath>./Resources/neuralnetworks/network_avgres_813_map.xml</char_neuralNetworkPath>
     <neural_maxk>8000</neural_maxk>
     <neural_eps>0.07</neural_eps>
     <neural_lambda>0.05</neural_lambda>

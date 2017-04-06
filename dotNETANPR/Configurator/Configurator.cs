@@ -83,7 +83,7 @@ namespace dotNETANPR.Configurator
 
             // RECOGNITION
             SetIntProperty("intelligence_syntaxanalysis", 2);
-            SetStringProperty("intelligence_syntaxDescriptionFile", "./resources/syntax/syntax.xml");
+            SetStringProperty("intelligence_syntaxDescriptionFile", "./Resources/syntax/syntax.xml");
 
             // NEURAL NETWORK
             //int maxK, double eps, double lambda, double micro
@@ -95,9 +95,9 @@ namespace dotNETANPR.Configurator
             SetIntProperty("neural_topology", 20);
 
 
-            SetStringProperty("help_file_help", "./resources/help/help.html");
-            SetStringProperty("help_file_about", "./resources/help/about.html");
-            SetStringProperty("reportgeneratorcss", "./resources/reportgenerator/style.css");
+            SetStringProperty("help_file_help", "./Resources/Help/help.html");
+            SetStringProperty("help_file_about", "./Resources/Help/about.html");
+            SetStringProperty("reportgeneratorcss", "./Resources/ReportGenerator/style.css");
         }
 
         public Configurator(string path) : this()

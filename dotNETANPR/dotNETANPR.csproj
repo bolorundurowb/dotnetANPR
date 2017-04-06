@@ -33,6 +33,9 @@
     <Reference Include="PropertyConfig, Version=1.0.2.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\packages\PropertyConfig.dll.1.0.2\lib\net45\PropertyConfig.dll</HintPath>
     </Reference>
+    <Reference Include="PropertyConfig, Version=1.1.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\packages\PropertyConfig.dll.1.1.0\lib\net45\PropertyConfig.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -78,7 +81,6 @@
     <Content Include="config.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="packages.config" />
     <Content Include="Resources\Alphabets\Alphabet_8x13\0_8x13.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -199,6 +201,9 @@
     <Content Include="Resources\Syntax\syntax.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

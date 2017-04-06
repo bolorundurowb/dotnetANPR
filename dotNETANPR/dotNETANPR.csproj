@@ -195,7 +195,15 @@
     <Content Include="Resources\Help\help.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-      <Content Include="Resources\Help\logo.jpg"/>
+    <Content Include="Resources\Help\logo.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\NeuralNetworks\network_avgres_813_map.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\NeuralNetworks\network_linres_1016_edge.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\ReportGenerator\style.css">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

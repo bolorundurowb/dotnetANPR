@@ -195,6 +195,7 @@
     <Content Include="Resources\Help\help.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+      <Content Include="Resources\Help\logo.jpg"/>
     <Content Include="Resources\ReportGenerator\style.css">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

@@ -29,7 +29,7 @@ namespace dotNETANPR.Intelligence
             int classificationMethod = Configurator.GetIntProperty("intelligence_classification_method");
             if (classificationMethod == 0)
             {
-                ChrRecog = new KnnPatterClassificator();
+                ChrRecog = new KnnPatternClassificator();
             }
             else
             {

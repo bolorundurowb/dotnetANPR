@@ -6,11 +6,11 @@ using dotNETANPR.ImageAnalysis;
 
 namespace dotNETANPR.Recognizer
 {
-    public class KnnPatterClassificator : CharacterRecognizer, ICharacterRecognizer
+    public class KnnPatternClassificator : CharacterRecognizer, ICharacterRecognizer
     {
         private readonly List<List<double>> _learnLists;
 
-        public KnnPatterClassificator()
+        public KnnPatternClassificator()
         {
             string path = Intelligence.Intelligence.Configurator.GetPathProperty("char_learnAlphabetPath");
             string alphastring = "0123456789abcdefghijklmnopqrstuvwxyz";

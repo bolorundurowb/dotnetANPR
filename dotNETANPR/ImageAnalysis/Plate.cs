@@ -10,7 +10,7 @@ namespace dotNETANPR.ImageAnalysis
     {
         public static Graph.ProbabilityDistributor Distributor = new Graph.ProbabilityDistributor(0, 0, 0, 0);
         private static readonly int NumberOfCandidates =
-            Intelligence.Intelligence.Configurator.GetIntProperty("intelligence_numberOfImageAnalysis.Chars");
+            Intelligence.Intelligence.Configurator.GetIntProperty("intelligence_numberOfChars");
         private static readonly int HorizontalDetectionType =
             Intelligence.Intelligence.Configurator.GetIntProperty("platehorizontalgraph_detectionType");
         private PlateGraph _graphHandle;
@@ -181,6 +181,8 @@ namespace dotNETANPR.ImageAnalysis
         {
             int[,] matrix =
             {
+                {-1, 0, 1},
+                {-1, 0, 1},
                 {-1, 0, 1}
             };
             Bitmap destination = DuplicateBitmap(source);

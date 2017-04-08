@@ -5,31 +5,31 @@ namespace dotNETANPR.ImageAnalysis
 {
     public class BandGraph : Graph
     {
-        private Band handle;
+        private Band _handle;
 
-        private static double peakFootConstant =
+        private static double _peakFootConstant =
             Intelligence.Intelligence.Configurator.GetDoubleProperty("bandgraph_peakfootconstant");
 
-        private static double peakDiffMultiplicationConstant =
+        private static double _peakDiffMultiplicationConstant =
             Intelligence.Intelligence.Configurator.GetDoubleProperty("bandgraph_peakDiffMultiplicationConstant");
 
         public BandGraph(Band band)
         {
-            handle = band;
+            _handle = band;
         }
 
         public class PeakComparer : IComparer<Peak>
         {
-            private List<float> yValues = null;
+            private List<float> _yValues;
 
             public PeakComparer(List<float> yValues)
             {
-                this.yValues = yValues;
+                _yValues = yValues;
             }
 
             private float GetPeakValue(Peak peak)
             {
-                return this.yValues[peak.Center];
+                return _yValues[peak.Center];
             }
 
             public int Compare(Peak x, Peak y)
@@ -54,47 +54,46 @@ namespace dotNETANPR.ImageAnalysis
             {
                 float maxValue = 0.0f;
                 int maxIndex = 0;
-                for (int i = 0; i < this.YValues.Count; i++)
+                for (int i = 0; i < YValues.Count; i++)
                 {
                     if (AllowedInterval(outPeaks, i))
                     {
-                        if (this.YValues[i] >= maxValue)
+                        if (YValues[i] >= maxValue)
                         {
-                            maxValue = this.YValues[i];
+                            maxValue = YValues[i];
                             maxIndex = i;
                         }
                     }
                 }
-                int leftIndex = IndexOfLeftPeakRel(maxIndex, peakFootConstant);
-                int rightIndex = IndexOfRightPeakRel(maxIndex, peakFootConstant);
+                int leftIndex = IndexOfLeftPeakRel(maxIndex, _peakFootConstant);
+                int rightIndex = IndexOfRightPeakRel(maxIndex, _peakFootConstant);
                 int diff = rightIndex - leftIndex;
-                leftIndex -= (int) peakDiffMultiplicationConstant * diff;
-                rightIndex += (int) peakDiffMultiplicationConstant * diff;
+                leftIndex -= (int) _peakDiffMultiplicationConstant * diff;
+                rightIndex += (int) _peakDiffMultiplicationConstant * diff;
 
                 outPeaks.Add(new Peak(
                     Math.Max(0, leftIndex),
                     maxIndex,
-                    Math.Min(this.YValues.Count - 1, rightIndex)
+                    Math.Min(YValues.Count - 1, rightIndex)
                 ));
             }
             List<Peak> outPeaksFiltered = new List<Peak>();
             foreach (Peak peak in outPeaks)
             {
-                if (peak.GetDiff() > 2 * handle.GetHeight()
-                    && peak.GetDiff() < 15 * handle.GetHeight())
+                if (peak.GetDiff() > 2 * _handle.GetHeight()
+                    && peak.GetDiff() < 15 * _handle.GetHeight())
                 {
                     outPeaksFiltered.Add(peak);
                 }
             }
-            outPeaksFiltered.Sort(new PeakComparer(this.YValues));
-            base.Peaks = outPeaksFiltered;
+            outPeaksFiltered.Sort(new PeakComparer(YValues));
+            Peaks = outPeaksFiltered;
             return outPeaksFiltered;
         }
 
         public int IndexOfLeftPeakAbs(int peak, double peakFootConstantAbs)
         {
             int index = peak;
-            int counter = 0;
             for (int i = peak; i >= 0; i--)
             {
                 index = i;
@@ -109,7 +108,6 @@ namespace dotNETANPR.ImageAnalysis
         public int IndexOfRightPeakAbs(int peak, double peakFootConstantAbs)
         {
             int index = peak;
-            int counter = 0;
             for (int i = peak; i < YValues.Count; i++)
             {
                 index = i;

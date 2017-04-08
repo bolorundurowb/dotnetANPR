@@ -49,15 +49,18 @@ namespace dotNETANPR.ImageAnalysis
             for (int i = 0; i < peaks.Count; i++)
             {
                 Graph.Peak p = peaks[i];
-                output.Add(new Plate(
-                    Image.Clone(new Rectangle(
-                            p.Left,
-                            0,
-                            p.GetDiff(),
-                            Image.Height
-                        ),
-                        Image.PixelFormat
-                    )));
+                Rectangle rectangle = new Rectangle(
+                    p.Left,
+                    0,
+                    p.GetDiff(),
+                    Image.Height
+                );
+                var clone = Image.Clone(
+                    rectangle,
+                    Image.PixelFormat
+                );
+                var plate = new Plate(clone);
+                output.Add(plate);
             }
             return output;
         }

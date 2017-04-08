@@ -13,7 +13,7 @@ namespace dotNETANPR
 
         public static string helpText = "" +
                                         "-----------------------------------------------------------\n" +
-                                        "Automatic number plate recognition system\n" +
+                                        "Automatic Number Plate recognition System\n" +
                                         "Copyright (c) Bolorunduro Winner-Timothy, 2014-2017\n" +
                                         "Based on the work of Ondrej Martinsky\n" +
                                         "\n" +
@@ -24,7 +24,7 @@ namespace dotNETANPR
                                         "Where options include:\n" +
                                         "\n" +
                                         "    -help         Displays this help\n" +
-//                                        "    -gui          Run GUI viewer (default choice)\n" +
+                                        "    -gui          Run GUI viewer (default choice)\n" +
                                         "    -recognize -i <snapshot>\n" +
                                         "                  Recognize single snapshot\n" +
                                         "    -recognize -i <snapshot> -o <dstdir>\n" +

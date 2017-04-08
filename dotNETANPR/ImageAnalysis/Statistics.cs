@@ -40,6 +40,11 @@ namespace dotNETANPR.ImageAnalysis
                 output = coef + (1 - coef) * (value - Average) / (Maximum - Average);
             else
                 output = (1 - coef) * (value - Minimum) / (Average - Minimum);
+            // HACK: to prevent NaN being returned
+            if (float.IsNaN(output))
+            {
+                return 0f;
+            }
             return output;
         }
     }

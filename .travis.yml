@@ -3,5 +3,5 @@ solution: dotnetANPR.sln
 mono:
   - latest
 install:
-  - ls src/dotnetANPR
+  - ls src
   - nuget restore dotnetANPR.sln

@@ -2,5 +2,7 @@ language: csharp
 solution: dotnetANPR.sln
 mono:
   - latest
-before_script:
+install:
+  - pwd
+  - ls
   - nuget restore ./dotnetANPR.sln

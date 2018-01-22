@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dotNETANPR", "src\dotNETANPR\dotNETANPR.csproj", "{723C59BA-7821-4F13-B58A-35EA86C43787}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dotnetANPR", "src\dotnetANPR\dotnetANPR.csproj", "{723C59BA-7821-4F13-B58A-35EA86C43787}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dotNETANPR.Tests", "tests\dotNETANPR.Tests\dotNETANPR.Tests.csproj", "{60BB9786-FE58-4F50-862C-CF51042DEE82}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dotnetANPR.Tests", "tests\dotnetANPR.Tests\dotnetANPR.Tests.csproj", "{60BB9786-FE58-4F50-862C-CF51042DEE82}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tools", "src\Tools\Tools.csproj", "{D8BC233F-4020-4724-97F8-D132CD3C9C2F}"
 EndProject

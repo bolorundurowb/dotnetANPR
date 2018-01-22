@@ -35,6 +35,7 @@ namespace dotNETANPR.Intelligence
             {
                 ChrRecog = new NeuralPatternClassificator();
             }
+
             Parser = new Parser();
         }
 
@@ -96,10 +97,11 @@ namespace dotNETANPR.Intelligence
                         renderedHoughTransform =
                             hough.Render(HoughTransformation.RenderAll, HoughTransformation.ColorBw);
                     }
+
                     if (skewDetectionMode != 0)
                     {
                         Matrix matrix = new Matrix();
-                        matrix.Shear(0f, - hough.Dy/ hough.Dx);
+                        matrix.Shear(0f, -hough.Dy / hough.Dx);
                         Bitmap core = _plate.CreateBlankBitmap(_plate.GetBitmap());
                         Graphics graphics = Graphics.FromImage(core);
                         graphics.Transform = matrix;
@@ -157,6 +159,7 @@ namespace dotNETANPR.Intelligence
                             Program.ReportGenerator.InsertImage(Photo.LinearResizeBitmap(chr.GetBitmap(), 70, 100), "",
                                 0, 0);
                         }
+
                         Program.ReportGenerator.InsertText("</div>");
                     }
 
@@ -209,24 +212,28 @@ namespace dotNETANPR.Intelligence
                             ok = false;
                             if (!EnableReportGeneration) continue;
                         }
+
                         if (contrastCost > Configurator.GetDoubleProperty("intelligence_maxContrastCostDispersion"))
                         {
                             errorFlags += "CON ";
                             ok = false;
                             if (!EnableReportGeneration) continue;
                         }
+
                         if (hueCost > Configurator.GetDoubleProperty("intelligence_maxHueCostDispersion"))
                         {
                             errorFlags += "HUE ";
                             ok = false;
                             if (!EnableReportGeneration) continue;
                         }
+
                         if (saturationCost > Configurator.GetDoubleProperty("intelligence_maxSaturationCostDispersion"))
                         {
                             errorFlags += "SAT ";
                             ok = false;
                             if (!EnableReportGeneration) continue;
                         }
+
                         if (heightCost < -Configurator.GetDoubleProperty("intelligence_maxHeightCostDispersion"))
                         {
                             errorFlags += "HEI ";
@@ -247,7 +254,6 @@ namespace dotNETANPR.Intelligence
                                 ok = false;
                                 if (!EnableReportGeneration) continue;
                             }
-
                         }
 
                         if (ok)
@@ -296,7 +302,6 @@ namespace dotNETANPR.Intelligence
                     }
 
                     return parsedOutput;
-
                 }
             }
 

@@ -9,9 +9,9 @@ namespace dotNETANPR
     public class Program
     {
         public static ReportGenerator ReportGenerator = new ReportGenerator();
-        public static Intelligence.Intelligence systemLogic;
+        private static Intelligence.Intelligence _systemLogic;
 
-        public static string helpText = "" +
+        private static readonly string helpText = "" +
                                         "-----------------------------------------------------------\n" +
                                         "Automatic Number Plate recognition System\n" +
                                         "Copyright (c) Bolorunduro Winner-Timothy, 2014-2017\n" +
@@ -48,10 +48,12 @@ namespace dotNETANPR
             {
                 throw new IOException("Source folder doesn't exist");
             }
+
             if (!Directory.Exists(dest))
             {
                 throw new IOException("Destination folder doesn't exist");
             }
+
             int x = Intelligence.Intelligence.Configurator.GetIntProperty("char_normalizeddimensions_x");
             int y = Intelligence.Intelligence.Configurator.GetIntProperty("char_normalizeddimensions_y");
             Console.WriteLine($"\nCreating new alphabet ({x} x {y} px)... \n");
@@ -74,6 +76,7 @@ namespace dotNETANPR
             {
                 throw new IOException("Cannot find the path specified");
             }
+
             Console.WriteLine();
             NeuralPatternClassificator npc = new NeuralPatternClassificator(true);
             npc.Network.SaveToXml(dest);
@@ -92,8 +95,8 @@ namespace dotNETANPR
             {
                 try
                 {
-                    systemLogic = new Intelligence.Intelligence(false);
-                    Console.WriteLine(systemLogic.Recognize(new CarSnapshot(args[2])));
+                    _systemLogic = new Intelligence.Intelligence(false);
+                    Console.WriteLine(_systemLogic.Recognize(new CarSnapshot(args[2])));
                 }
                 catch (IOException e)
                 {
@@ -109,15 +112,14 @@ namespace dotNETANPR
                 try
                 {
                     ReportGenerator = new ReportGenerator(args[4]);
-                    systemLogic = new Intelligence.Intelligence(true);
-                    systemLogic.Recognize(new CarSnapshot(args[2]));
+                    _systemLogic = new Intelligence.Intelligence(true);
+                    _systemLogic.Recognize(new CarSnapshot(args[2]));
                     ReportGenerator.Finish();
                 }
                 catch (IOException e)
                 {
                     Console.WriteLine(e.Message);
                 }
-
             }
             else if (args.Length == 3 &&
                      args[0].Equals("-newconfig") &&

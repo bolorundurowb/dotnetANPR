@@ -12,37 +12,37 @@ namespace dotNETANPR.Recognizer
 
         public KnnPatternClassificator()
         {
-            string path = Intelligence.Intelligence.Configurator.GetPathProperty("char_learnAlphabetPath");
-            string alphastring = "0123456789abcdefghijklmnopqrstuvwxyz";
+            var path = Intelligence.Intelligence.Configurator.GetPathProperty("char_learnAlphabetPath");
+            var alphastring = "0123456789abcdefghijklmnopqrstuvwxyz";
             _learnLists = new List<List<double>>();
-            for (int i = 0; i < alphastring.Length; i++) _learnLists.Add(null);
+            for (var i = 0; i < alphastring.Length; i++) _learnLists.Add(null);
 
 
-            foreach (string fileNameWithPath in Directory.GetFiles(path))
+            foreach (var fileNameWithPath in Directory.GetFiles(path))
             {
-                string fileName = Path.GetFileName(fileNameWithPath);
-                int alphaPosition = alphastring.IndexOf(fileName.ToLower()[0]);
+                var fileName = Path.GetFileName(fileNameWithPath);
+                var alphaPosition = alphastring.IndexOf(fileName.ToLower()[0]);
                 if (alphaPosition == -1) continue;
 
-                Character imgChar = new Character(path + Path.DirectorySeparatorChar + fileName);
+                var imgChar = new Character(path + Path.DirectorySeparatorChar + fileName);
                 imgChar.Normalize();
                 _learnLists.Insert(alphaPosition, imgChar.ExtractFeatures());
             }
 
-            for (int i = 0; i < alphastring.Length; i++)
+            for (var i = 0; i < alphastring.Length; i++)
                 if (_learnLists.ElementAt(i) == null)
                     throw new IOException("Warning : alphabet in " + path + " is not complete");
         }
         
-        public RecognizedChar Recognize(Character chr)
+        public override RecognizedChar Recognize(Character chr)
         {
-            List<double> tested = chr.ExtractFeatures();
-            int minx = 0;
-            float minfx = float.PositiveInfinity;
-            RecognizedChar recognized = new RecognizedChar();
-            for (int x = 0; x < _learnLists.Count; x++)
+            var tested = chr.ExtractFeatures();
+            var minx = 0;
+            var minfx = float.PositiveInfinity;
+            var recognized = new RecognizedChar();
+            for (var x = 0; x < _learnLists.Count; x++)
             {
-                float fx = SimplifiedEuclideanDistance(tested, _learnLists.ElementAt(x));
+                var fx = SimplifiedEuclideanDistance(tested, _learnLists.ElementAt(x));
                 recognized.AddPattern(new RecognizedChar.RecognizedPattern(Alphabet[x], fx));
             }
             recognized.Sort(0);

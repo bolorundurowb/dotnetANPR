@@ -19,9 +19,9 @@ namespace dotNETANPR.Gui
         {
             this.path = path;
             enabled = true;
-            if (!File.Exists(path))
+            if (!Directory.Exists(path))
             {
-                throw new IOException("Report directory '" + path + "' doesn't exists");
+                throw new IOException("Report directory '" + path + "' doesn't exist");
             }
             output = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\">" +
                           "<html>" +

@@ -167,7 +167,7 @@ namespace dotNETANPR.Recognizer
             }
         }
 
-        public RecognizedChar Recognize(Character character)
+        public virtual RecognizedChar Recognize(Character character)
         {
             throw new System.NotImplementedException();
         }

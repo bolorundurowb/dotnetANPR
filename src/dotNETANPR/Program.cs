@@ -54,12 +54,12 @@ namespace dotNETANPR
                 throw new IOException("Destination folder doesn't exist");
             }
 
-            int x = Intelligence.Intelligence.Configurator.GetIntProperty("char_normalizeddimensions_x");
-            int y = Intelligence.Intelligence.Configurator.GetIntProperty("char_normalizeddimensions_y");
+            var x = Intelligence.Intelligence.Configurator.GetIntProperty("char_normalizeddimensions_x");
+            var y = Intelligence.Intelligence.Configurator.GetIntProperty("char_normalizeddimensions_y");
             Console.WriteLine($"\nCreating new alphabet ({x} x {y} px)... \n");
-            foreach (string file in Directory.EnumerateFiles(source))
+            foreach (var file in Directory.EnumerateFiles(source))
             {
-                Character c = new Character(source + Path.DirectorySeparatorChar + file);
+                var c = new Character(source + Path.DirectorySeparatorChar + file);
                 c.Normalize();
                 c.SaveImage(dest + Path.DirectorySeparatorChar + file);
                 Console.WriteLine(file + " done.");
@@ -78,7 +78,7 @@ namespace dotNETANPR
             }
 
             Console.WriteLine();
-            NeuralPatternClassificator npc = new NeuralPatternClassificator(true);
+            var npc = new NeuralPatternClassificator(true);
             npc.Network.SaveToXml(dest);
         }
 
@@ -126,7 +126,7 @@ namespace dotNETANPR
                      args[1].Equals("-o")
             )
             {
-                Configurator.Configurator configurator = new Configurator.Configurator();
+                var configurator = new Configurator.Configurator();
                 try
                 {
                     configurator.SaveConfiguration(args[2]);

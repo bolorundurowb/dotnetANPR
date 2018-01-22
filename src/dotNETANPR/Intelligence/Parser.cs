@@ -20,8 +20,8 @@ namespace dotNETANPR.Intelligence
 
                 public bool IsAllowed(char chr)
                 {
-                    bool ret = false;
-                    foreach (char t in AllowedChars)
+                    var ret = false;
+                    foreach (var t in AllowedChars)
                         if (t == chr)
                             ret = true;
                     return ret;
@@ -81,23 +81,23 @@ namespace dotNETANPR.Intelligence
 
         public List<PlateForm> LoadFromXml(string fileName)
         {
-            List<PlateForm> plateForms = new List<PlateForm>();
-            XmlDocument doc = new XmlDocument();
+            var plateForms = new List<PlateForm>();
+            var doc = new XmlDocument();
             doc.Load(fileName);
 
             XmlNode structureNode = doc.DocumentElement;
-            XmlNodeList structureNodeContent = structureNode.ChildNodes;
-            for (int i = 0; i < structureNodeContent.Count; i++)
+            var structureNodeContent = structureNode.ChildNodes;
+            for (var i = 0; i < structureNodeContent.Count; i++)
             {
-                XmlNode typeNode = structureNodeContent.Item(i);
+                var typeNode = structureNodeContent.Item(i);
                 if (!typeNode.Name.Equals("type")) continue;
-                PlateForm form = new PlateForm(((XmlElement) typeNode).GetAttribute("name"));
-                XmlNodeList typeNodeContent = typeNode.ChildNodes;
-                for (int ii = 0; ii < typeNodeContent.Count; ii++)
+                var form = new PlateForm(((XmlElement) typeNode).GetAttribute("name"));
+                var typeNodeContent = typeNode.ChildNodes;
+                for (var ii = 0; ii < typeNodeContent.Count; ii++)
                 {
-                    XmlNode charNode = typeNodeContent.Item(ii);
+                    var charNode = typeNodeContent.Item(ii);
                     if (!charNode.Name.Equals("char")) continue;
-                    string content = ((XmlElement) charNode).GetAttribute("content");
+                    var content = ((XmlElement) charNode).GetAttribute("content");
 
                     form.AddPosition(new PlateForm.Position(content.ToUpper()));
                 }
@@ -108,16 +108,16 @@ namespace dotNETANPR.Intelligence
 
         public void UnFlagAll()
         {
-            foreach (PlateForm form in _plateForms)
+            foreach (var form in _plateForms)
                 form.Flagged = false;
         }
 
         public void FlagEqualOrShorterLength(int length)
         {
-            bool found = false;
-            for (int i = length; i >= 1 && !found; i--)
+            var found = false;
+            for (var i = length; i >= 1 && !found; i--)
             {
-                foreach (PlateForm form in _plateForms)
+                foreach (var form in _plateForms)
                 {
                     if (form.Length() == i)
                     {
@@ -130,7 +130,7 @@ namespace dotNETANPR.Intelligence
 
         public void FlagEqualLength(int length)
         {
-            foreach (PlateForm form in _plateForms)
+            foreach (var form in _plateForms)
             {
                 if (form.Length() == length)
                 {
@@ -141,7 +141,7 @@ namespace dotNETANPR.Intelligence
 
         public void InvertFlags()
         {
-            foreach (PlateForm form in _plateForms)
+            foreach (var form in _plateForms)
                 form.Flagged = !form.Flagged;
         }
 
@@ -154,7 +154,7 @@ namespace dotNETANPR.Intelligence
                 return recognizedPlate.GetString();
             }
 
-            int length = recognizedPlate.Chars.Count;
+            var length = recognizedPlate.Chars.Count;
             UnFlagAll();
             if (syntaxAnalysisMode == 1)
             {
@@ -165,17 +165,17 @@ namespace dotNETANPR.Intelligence
                 FlagEqualOrShorterLength(length);
             }
 
-            List<FinalPlate> finalPlates = new List<FinalPlate>();
+            var finalPlates = new List<FinalPlate>();
 
-            foreach (PlateForm form in _plateForms)
+            foreach (var form in _plateForms)
             {
                 if (!form.Flagged) continue;
-                for (int i = 0; i <= length - form.Length(); i++)
+                for (var i = 0; i <= length - form.Length(); i++)
                 {
-                    FinalPlate finalPlate = new FinalPlate();
-                    for (int ii = 0; ii < form.Length(); ii++)
+                    var finalPlate = new FinalPlate();
+                    for (var ii = 0; ii < form.Length(); ii++)
                     {
-                        CharacterRecognizer.RecognizedChar rc = recognizedPlate.GetChar(ii + i);
+                        var rc = recognizedPlate.GetChar(ii + i);
 
                         if (form.GetPosition(ii).IsAllowed(rc.GetPattern(0).Character))
                         {
@@ -184,10 +184,10 @@ namespace dotNETANPR.Intelligence
                         else
                         {
                             finalPlate.RequiredChanges++;
-                            for (int x = 0; x < rc.Patterns.Count; x++)
+                            for (var x = 0; x < rc.Patterns.Count; x++)
                             {
                                 if (!form.GetPosition(ii).IsAllowed(rc.GetPattern(x).Character)) continue;
-                                CharacterRecognizer.RecognizedChar.RecognizedPattern rp = rc.GetPattern(x);
+                                var rp = rc.GetPattern(x);
                                 finalPlate.RequiredChanges += rp.Cost / 100;
                                 finalPlate.AddChar(rp.Character);
                                 break;
@@ -198,16 +198,16 @@ namespace dotNETANPR.Intelligence
                 }
             }
             if (finalPlates.Count == 0) return recognizedPlate.GetString();
-            float minimalChanges = float.PositiveInfinity;
-            int minimalIndex = 0;
-            for (int i = 0; i < finalPlates.Count; i++)
+            var minimalChanges = float.PositiveInfinity;
+            var minimalIndex = 0;
+            for (var i = 0; i < finalPlates.Count; i++)
             {
                 if (!(finalPlates.ElementAt(i).RequiredChanges <= minimalChanges)) continue;
                 minimalChanges = finalPlates.ElementAt(i).RequiredChanges;
                 minimalIndex = i;
             }
 
-            string toReturn = recognizedPlate.GetString();
+            var toReturn = recognizedPlate.GetString();
             if (finalPlates.ElementAt(minimalIndex).RequiredChanges <= 2)
                 toReturn = finalPlates.ElementAt(minimalIndex).Plate;
             return toReturn;

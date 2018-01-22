@@ -11,7 +11,7 @@ namespace dotNETANPR.NeuralNetwork
 
         public NeuralNetwork(List<int> dimensions)
         {
-            for (int i = 0; i < dimensions.Count; i++)
+            for (var i = 0; i < dimensions.Count; i++)
             {
                 listLayers.Add(new NeuralLayer(dimensions[i], this));
             }
@@ -95,7 +95,7 @@ namespace dotNETANPR.NeuralNetwork
                 Threshold = threshold;
                 NeuralLayer = neuralLayer;
                 Index = NeuralLayer.NumberOfNeurons();
-                for (int i = 0; i < numberOfInputs; i++)
+                for (var i = 0; i < numberOfInputs; i++)
                 {
                     listInputs.Add(new NeuralInput(1.0, this));
                 }
@@ -128,7 +128,7 @@ namespace dotNETANPR.NeuralNetwork
             {
                 NeuralNetwork = neuralNetwork;
                 Index = neuralNetwork.NumberOfLayers();
-                for (int i = 0; i < numberOfNeurons; i++)
+                for (var i = 0; i < numberOfNeurons; i++)
                 {
                     if (Index == 0)
                     {
@@ -192,15 +192,15 @@ namespace dotNETANPR.NeuralNetwork
             {
                 thresholds = new List<List<double>>();
                 weights = new List<List<List<double>>>();
-                for (int i = 0; i < NeuralNetwork.NumberOfLayers(); i++)
+                for (var i = 0; i < NeuralNetwork.NumberOfLayers(); i++)
                 {
                     thresholds.Add(new List<double>());
                     weights.Add(new List<List<double>>());
-                    for (int j = 0; j < NeuralNetwork.GetLayer(i).NumberOfNeurons(); j++)
+                    for (var j = 0; j < NeuralNetwork.GetLayer(i).NumberOfNeurons(); j++)
                     {
                         thresholds[i].Add(0.0);
                         weights[i].Add(new List<double>());
-                        for (int k = 0; k < NeuralNetwork.GetLayer(i).GetNeuron(j).NumberOfInputs(); k++)
+                        for (var k = 0; k < NeuralNetwork.GetLayer(i).GetNeuron(j).NumberOfInputs(); k++)
                         {
                             weights[i][j].Add(0.0);
                         }
@@ -210,12 +210,12 @@ namespace dotNETANPR.NeuralNetwork
 
             public void ResetGradients()
             {
-                for (int i = 0; i < NeuralNetwork.NumberOfLayers(); i++)
+                for (var i = 0; i < NeuralNetwork.NumberOfLayers(); i++)
                 {
-                    for (int j = 0; j < NeuralNetwork.GetLayer(i).NumberOfNeurons(); j++)
+                    for (var j = 0; j < NeuralNetwork.GetLayer(i).NumberOfNeurons(); j++)
                     {
                         SetThreshold(i, j, 0.0);
-                        for (int k = 0; k < NeuralNetwork.GetLayer(i).GetNeuron(j).NumberOfInputs(); k++)
+                        for (var k = 0; k < NeuralNetwork.GetLayer(i).GetNeuron(j).NumberOfInputs(); k++)
                         {
                             SetWeight(i, j, k, 0.0);
                         }
@@ -256,7 +256,7 @@ namespace dotNETANPR.NeuralNetwork
             public double GetGradientAbs()
             {
                 double currE = 0;
-                for (int i = 1; i < NeuralNetwork.NumberOfLayers(); i++)
+                for (var i = 1; i < NeuralNetwork.NumberOfLayers(); i++)
                 {
                     currE += VectorAbs(thresholds[i]);
                     currE += DoubleVectorAbs(weights[i]);
@@ -267,7 +267,7 @@ namespace dotNETANPR.NeuralNetwork
             private double DoubleVectorAbs(List<List<double>> doubleList)
             {
                 double totalX = 0;
-                foreach (List<double> list in doubleList)
+                foreach (var list in doubleList)
                 {
                     totalX += Math.Pow(VectorAbs(list), 2);
                 }
@@ -277,7 +277,7 @@ namespace dotNETANPR.NeuralNetwork
             private double VectorAbs(List<double> doubles)
             {
                 double totalX = 0;
-                foreach (double x in doubles)
+                foreach (var x in doubles)
                 {
                     totalX += Math.Pow(x, 2);
                 }
@@ -304,39 +304,39 @@ namespace dotNETANPR.NeuralNetwork
         {
             Console.WriteLine("NeuralNetwork : loading network topology from file " + filePath);
             // Read XML to XmlDocument
-            XmlDocument xmlDocument = new XmlDocument();
+            var xmlDocument = new XmlDocument();
             xmlDocument.Load(filePath);
-            string rootNodeName = xmlDocument.Name;
+            var rootNodeName = xmlDocument.Name;
             if (rootNodeName != "neuralNetwork")
             {
                 throw new InvalidOperationException(
                     "[Error] NN-Load: Parse error in XML file, neural network couldn't be loaded.");
             }
             var nodeList = xmlDocument.ChildNodes;
-            for (int i = 0; i < nodeList.Count; i++)
+            for (var i = 0; i < nodeList.Count; i++)
             {
                 var nodeStructure = nodeList.Item(i);
                 if (nodeStructure != null && nodeStructure.Name == "structure")
                 {
                     var nodeStructureContent = nodeStructure.ChildNodes;
-                    for (int j = 0; j < nodeStructureContent.Count; j++)
+                    for (var j = 0; j < nodeStructureContent.Count; j++)
                     {
                         var nodeLayer = nodeStructureContent.Item(j);
                         if (nodeLayer != null && nodeLayer.Name == "layer")
                         {
-                            NeuralLayer neuralLayer = new NeuralLayer(this);
+                            var neuralLayer = new NeuralLayer(this);
                             listLayers.Add(neuralLayer);
 
                             var nodeLayerContent = nodeLayer.ChildNodes;
-                            for (int k = 0; k < nodeLayerContent.Count; k++)
+                            for (var k = 0; k < nodeLayerContent.Count; k++)
                             {
                                 var nodeNeuron = nodeLayerContent.Item(k);
                                 if (nodeNeuron != null && nodeNeuron.Name == "neuron")
                                 {
-                                    Neuron neuron = new Neuron(double.Parse(nodeNeuron.Attributes["threshold"].ToString()), neuralLayer);
+                                    var neuron = new Neuron(double.Parse(nodeNeuron.Attributes["threshold"].ToString()), neuralLayer);
                                     neuralLayer.listNeurons.Add(neuron);
                                     var nodeNeuronContent = nodeNeuron.ChildNodes;
-                                    for (int l = 0; l < nodeNeuronContent.Count; l++)
+                                    for (var l = 0; l < nodeNeuronContent.Count; l++)
                                     {
                                         var nodeNeuralInput = nodeNeuronContent.Item(l);
                                         if (nodeNeuralInput != null && nodeNeuralInput.Name == "input")
@@ -355,24 +355,24 @@ namespace dotNETANPR.NeuralNetwork
 
         public void SaveToXml(string filePath)
         {
-            XmlDocument xmlDocument = new XmlDocument();
+            var xmlDocument = new XmlDocument();
             var root = xmlDocument.CreateElement("neuralNetwork");
             root.SetAttribute("dateOfExport", new DateTime().ToString());
             var layers = xmlDocument.CreateElement("structure");
             layers.SetAttribute("numberOfLayers", NumberOfLayers().ToString());
-            for (int i = 0; i < NumberOfLayers(); i++)
+            for (var i = 0; i < NumberOfLayers(); i++)
             {
                 var layer = xmlDocument.CreateElement("layer");
                 layer.SetAttribute("index", i.ToString());
                 layer.SetAttribute("numberOfNeutrons", GetLayer(i).NumberOfNeurons().ToString());
 
-                for (int j = 0; j < GetLayer(i).NumberOfNeurons(); j++)
+                for (var j = 0; j < GetLayer(i).NumberOfNeurons(); j++)
                 {
                     var neuron = xmlDocument.CreateElement("neuron");
                     neuron.SetAttribute("index", j.ToString());
                     neuron.SetAttribute("NumberOfInputs", GetLayer(i).GetNeuron(j).NumberOfInputs().ToString());
                     neuron.SetAttribute("threshold", GetLayer(i).GetNeuron(j).Threshold.ToString());
-                    for (int k = 0; k < GetLayer(i).GetNeuron(j).NumberOfInputs(); k++)
+                    for (var k = 0; k < GetLayer(i).GetNeuron(j).NumberOfInputs(); k++)
                     {
                         var input = xmlDocument.CreateElement("input");
                         input.SetAttribute("index", k.ToString());
@@ -435,26 +435,26 @@ namespace dotNETANPR.NeuralNetwork
         private void ComputeGradient(Gradients gradients, List<double> inputs, List<double> requiredOutputs)
         {
             Activities(inputs);
-            for (int i = NumberOfLayers() - 1; i >= 1; i--)
+            for (var i = NumberOfLayers() - 1; i >= 1; i--)
             {
-                NeuralLayer currentLayer = GetLayer(i);
+                var currentLayer = GetLayer(i);
 
                 if (currentLayer.IsLayerTop())
                 {
-                    for (int j = 0; j < currentLayer.NumberOfNeurons(); j++)
+                    for (var j = 0; j < currentLayer.NumberOfNeurons(); j++)
                     {
-                        Neuron currentNeuron = currentLayer.GetNeuron(j);
+                        var currentNeuron = currentLayer.GetNeuron(j);
                         gradients.SetThreshold(i, j,
                             currentNeuron.Output * (1 - currentNeuron.Output) *
                             (currentNeuron.Output - requiredOutputs[j]));
                     }
 
-                    for (int j = 0; j < currentLayer.NumberOfNeurons(); j++)
+                    for (var j = 0; j < currentLayer.NumberOfNeurons(); j++)
                     {
-                        Neuron currentNeuron = currentLayer.GetNeuron(j);
-                        for (int k = 0; k < currentNeuron.NumberOfInputs(); k++)
+                        var currentNeuron = currentLayer.GetNeuron(j);
+                        for (var k = 0; k < currentNeuron.NumberOfInputs(); k++)
                         {
-                            NeuralInput currentInput = currentNeuron.GetInput(k);
+                            var currentInput = currentNeuron.GetInput(k);
                             gradients.SetWeight(i, j, k,
                                 gradients.GetThreshold(i, j) * currentLayer.LowerLayer().GetNeuron(k).Output);
                         }
@@ -463,10 +463,10 @@ namespace dotNETANPR.NeuralNetwork
                 }
                 else
                 {
-                    for (int j = 0; j < currentLayer.NumberOfNeurons(); j++)
+                    for (var j = 0; j < currentLayer.NumberOfNeurons(); j++)
                     {
                         double aux = 0;
-                        for (int ia = 0; ia < currentLayer.UpperLayer().NumberOfNeurons(); ia++)
+                        for (var ia = 0; ia < currentLayer.UpperLayer().NumberOfNeurons(); ia++)
                         {
                             aux += gradients.GetThreshold(i + 1, ia) *
                                    currentLayer.UpperLayer().GetNeuron(ia).GetInput(j).Weight;
@@ -475,13 +475,13 @@ namespace dotNETANPR.NeuralNetwork
                             currentLayer.GetNeuron(j).Output * (1 - currentLayer.GetNeuron(j).Output) * aux);
                     }
 
-                    for (int j = 0; j < currentLayer.NumberOfNeurons(); j++)
+                    for (var j = 0; j < currentLayer.NumberOfNeurons(); j++)
                     {
-                        Neuron currentNeuron = currentLayer.GetNeuron(j)
+                        var currentNeuron = currentLayer.GetNeuron(j)
                         ;
-                        for (int k = 0; k < currentNeuron.NumberOfInputs(); k++)
+                        for (var k = 0; k < currentNeuron.NumberOfInputs(); k++)
                         {
-                            NeuralInput currentInput = currentNeuron.GetInput(k);
+                            var currentInput = currentNeuron.GetInput(k);
                             gradients.SetWeight(i, j, k,
                                 gradients.GetThreshold(i, j) * currentLayer.LowerLayer().GetNeuron(k).Output);
                         }
@@ -497,16 +497,16 @@ namespace dotNETANPR.NeuralNetwork
         {
             totalGradients.ResetGradients();
 
-            foreach (SetOfIOPairs.IOPair pair in trainingSet.Pairs)
+            foreach (var pair in trainingSet.Pairs)
             {
                 ComputeGradient(partialGradients, pair.Inputs, pair.Outputs);
-                for (int i = NumberOfLayers() - 1; i >= 1; i--)
+                for (var i = NumberOfLayers() - 1; i >= 1; i--)
                 {
-                    NeuralLayer currentLayer = GetLayer(i);
-                    for (int j = 0; j < currentLayer.NumberOfNeurons(); j++)
+                    var currentLayer = GetLayer(i);
+                    for (var j = 0; j < currentLayer.NumberOfNeurons(); j++)
                     {
                         totalGradients.IncrementThreshold(i, j, partialGradients.GetThreshold(i, j));
-                        for (int k = 0; k < currentLayer.LowerLayer().NumberOfNeurons(); k++)
+                        for (var k = 0; k < currentLayer.LowerLayer().NumberOfNeurons(); k++)
                         {
                             totalGradients.IncrementWeight(i, j, k, partialGradients.GetWeight(i, j, k));
                         }
@@ -519,50 +519,50 @@ namespace dotNETANPR.NeuralNetwork
         private void Adaptation(SetOfIOPairs trainingSet, int maxK, double eps, double lambda, double micro)
         {
             double delta;
-            Gradients deltaGradients = new Gradients(this);
-            Gradients totalGradients = new Gradients(this);
-            Gradients partialGradients = new Gradients(this);
+            var deltaGradients = new Gradients(this);
+            var totalGradients = new Gradients(this);
+            var partialGradients = new Gradients(this);
 
             Console.WriteLine("setting up random weights and thresholds ...");
 
-            for (int i = NumberOfLayers() - 1; i >= 1; i--)
+            for (var i = NumberOfLayers() - 1; i >= 1; i--)
             {
-                NeuralLayer currentLayer = GetLayer(i);
-                for (int j = 0; j < currentLayer.NumberOfNeurons(); j++)
+                var currentLayer = GetLayer(i);
+                for (var j = 0; j < currentLayer.NumberOfNeurons(); j++)
                 {
-                    Neuron currentNeuron = currentLayer.GetNeuron(j)
+                    var currentNeuron = currentLayer.GetNeuron(j)
                         ;
                     currentNeuron.Threshold = 2 * Random() - 1;
-                    for (int k = 0; k < currentNeuron.NumberOfInputs(); k++)
+                    for (var k = 0; k < currentNeuron.NumberOfInputs(); k++)
                     {
                         currentNeuron.GetInput(k).Weight = 2 * Random() - 1;
                     }
                 }
             }
 
-            int currK = 0;
-            double currE = double.PositiveInfinity;
+            var currK = 0;
+            var currE = double.PositiveInfinity;
             Console.WriteLine("entering adaptation loop ... (maxK = " + maxK + ")");
 
             while (currK < maxK && currE > eps)
             {
                 ComputeTotalGradient(totalGradients, partialGradients, trainingSet);
-                for (int i = NumberOfLayers() - 1; i >= 1; i--)
+                for (var i = NumberOfLayers() - 1; i >= 1; i--)
                 {
-                    NeuralLayer currentLayer = GetLayer(i);
-                    for (int j = 0; j < currentLayer.NumberOfNeurons(); j++)
+                    var currentLayer = GetLayer(i);
+                    for (var j = 0; j < currentLayer.NumberOfNeurons(); j++)
                     {
-                        Neuron currentNeuron = currentLayer.GetNeuron(j);
+                        var currentNeuron = currentLayer.GetNeuron(j);
                         delta = -lambda * totalGradients.GetThreshold(i, j)
                                 + micro * deltaGradients.GetThreshold(i, j);
                         currentNeuron.Threshold += delta;
                         deltaGradients.SetThreshold(i, j, delta);
                     }
 
-                    for (int k = 0; k < currentLayer.NumberOfNeurons(); k++)
+                    for (var k = 0; k < currentLayer.NumberOfNeurons(); k++)
                     {
-                        Neuron currentNeuron = currentLayer.GetNeuron(k);
-                        for (int l = 0; l < currentNeuron.NumberOfInputs(); l++)
+                        var currentNeuron = currentLayer.GetNeuron(k);
+                        for (var l = 0; l < currentNeuron.NumberOfInputs(); l++)
                         {
                             delta = -lambda * totalGradients.GetWeight(i, k, l) +
                                     micro * deltaGradients.GetWeight(i, k, l);
@@ -583,12 +583,12 @@ namespace dotNETANPR.NeuralNetwork
 
         private List<double> Activities(List<double> inputs)
         {
-            for (int i = 0; i < NumberOfLayers(); i++)
+            for (var i = 0; i < NumberOfLayers(); i++)
             {
-                for (int j = 0; j < GetLayer(i).NumberOfNeurons(); j++)
+                for (var j = 0; j < GetLayer(i).NumberOfNeurons(); j++)
                 {
-                    double sum = GetLayer(i).GetNeuron(j).Threshold;
-                    for (int k = 0; k < GetLayer(i).GetNeuron(j).NumberOfInputs(); k++)
+                    var sum = GetLayer(i).GetNeuron(j).Threshold;
+                    for (var k = 0; k < GetLayer(i).GetNeuron(j).NumberOfInputs(); k++)
                     {
                         if (i == 0)
                         {
@@ -605,8 +605,8 @@ namespace dotNETANPR.NeuralNetwork
                 }
             }
 
-            List<double> output = new List<double>();
-            for (int i = 0; i < GetLayer(NumberOfLayers() - 1).NumberOfNeurons(); i++)
+            var output = new List<double>();
+            for (var i = 0; i < GetLayer(NumberOfLayers() - 1).NumberOfNeurons(); i++)
             {
                 output.Add(GetLayer(NumberOfLayers() - 1).GetNeuron(i).Output);
             }

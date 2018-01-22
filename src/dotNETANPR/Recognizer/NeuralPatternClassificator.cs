@@ -21,7 +21,7 @@ namespace dotNETANPR.Recognizer
 
         public NeuralPatternClassificator(bool learn)
         {
-            List<int> dimensions = new List<int>();
+            var dimensions = new List<int>();
             int inputLayerSize;
             if (Intelligence.Intelligence.Configurator.GetIntProperty("char_featuresExtractionMethod") == 0)
                 inputLayerSize = NormalizeX * NormalizeY;
@@ -46,9 +46,9 @@ namespace dotNETANPR.Recognizer
         public RecognizedChar Recognize(Character imgChar)
         {
             imgChar.Normalize();
-            List<double> output = Network.Test(imgChar.ExtractFeatures());
-            RecognizedChar recognized = new RecognizedChar();
-            for (int i = 0; i < output.Count; i++)
+            var output = Network.Test(imgChar.ExtractFeatures());
+            var recognized = new RecognizedChar();
+            for (var i = 0; i < output.Count; i++)
             {
                 recognized.AddPattern(new RecognizedChar.RecognizedPattern(Alphabet[i], (float) output[i]));
             }
@@ -59,22 +59,22 @@ namespace dotNETANPR.Recognizer
 
         public NeuralNetwork.NeuralNetwork.SetOfIOPairs.IOPair CreateNewPair(char chr, Character imgChar)
         {
-            List<double> vectorInput = imgChar.ExtractFeatures();
-            List<double> vectorOutput = Alphabet.Select(t => chr == t ? 1.0 : 0.0).ToList();
+            var vectorInput = imgChar.ExtractFeatures();
+            var vectorOutput = Alphabet.Select(t => chr == t ? 1.0 : 0.0).ToList();
             return new NeuralNetwork.NeuralNetwork.SetOfIOPairs.IOPair(vectorInput, vectorOutput);
         }
 
         public void LearnAlphabet(string path)
         {
-            string alphastring = "0123456789abcdefghijklmnopqrstuvwxyz";
-            string[] files = Directory.GetFiles(path);
-            NeuralNetwork.NeuralNetwork.SetOfIOPairs train = new NeuralNetwork.NeuralNetwork.SetOfIOPairs();
-            foreach (string fileName in files)
+            var alphastring = "0123456789abcdefghijklmnopqrstuvwxyz";
+            var files = Directory.GetFiles(path);
+            var train = new NeuralNetwork.NeuralNetwork.SetOfIOPairs();
+            foreach (var fileName in files)
             {
                 if (alphastring.IndexOf(fileName.ToLower()[0]) == -1)
                     continue;
 
-                Character imgChar = new Character(path + Path.DirectorySeparatorChar + fileName);
+                var imgChar = new Character(path + Path.DirectorySeparatorChar + fileName);
                 imgChar.Normalize();
                 train.AddIOPair(CreateNewPair(fileName.ToUpper()[0], imgChar));
             }

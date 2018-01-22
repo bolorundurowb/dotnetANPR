@@ -45,7 +45,7 @@ namespace dotNETANPR.Gui
         public void InsertImage(Bitmap image, string cls, int w, int h)
         {
             if (!enabled) return;
-            string imageName = image.GetHashCode() + ".jpg";
+            var imageName = image.GetHashCode() + ".jpg";
             SaveImage(image, path + Path.DirectorySeparatorChar + imageName);
             if (w != 0 && h != 0)
                 output += "<img src='" + imageName + "' alt='' width='" + w + "' height='" + h + "' class='" +
@@ -61,7 +61,7 @@ namespace dotNETANPR.Gui
                 return;
             }
             output += "</html>";
-            string path = this.path + Path.DirectorySeparatorChar + "index.html";
+            var path = this.path + Path.DirectorySeparatorChar + "index.html";
             File.WriteAllText(path, output);
             CopyFile(Intelligence.Intelligence.Configurator.GetPathProperty("reportgeneratorcss"),
                 this.path + Path.DirectorySeparatorChar + "style.css");
@@ -75,7 +75,7 @@ namespace dotNETANPR.Gui
         public void SaveImage(Bitmap bitmap, string filepath)
         {
             if (!enabled) return;
-            string type = filepath.Substring(filepath.LastIndexOf('.') + 1, filepath.Length).ToUpper();
+            var type = filepath.Substring(filepath.LastIndexOf('.') + 1, filepath.Length).ToUpper();
             if (!type.Equals("BMP") &&
                 !type.Equals("JPG") &&
                 !type.Equals("JPEG") &&

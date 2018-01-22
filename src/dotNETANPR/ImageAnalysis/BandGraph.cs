@@ -49,12 +49,12 @@ namespace dotNETANPR.ImageAnalysis
 
         public List<Peak> FindPeaks(int numOfCandidates)
         {
-            List<Peak> outPeaks = new List<Peak>();
-            for (int c = 0; c < numOfCandidates; c++)
+            var outPeaks = new List<Peak>();
+            for (var c = 0; c < numOfCandidates; c++)
             {
-                float maxValue = 0.0f;
-                int maxIndex = 0;
-                for (int i = 0; i < YValues.Count; i++)
+                var maxValue = 0.0f;
+                var maxIndex = 0;
+                for (var i = 0; i < YValues.Count; i++)
                 {
                     if (AllowedInterval(outPeaks, i))
                     {
@@ -65,9 +65,9 @@ namespace dotNETANPR.ImageAnalysis
                         }
                     }
                 }
-                int leftIndex = IndexOfLeftPeakRel(maxIndex, _peakFootConstant);
-                int rightIndex = IndexOfRightPeakRel(maxIndex, _peakFootConstant);
-                int diff = rightIndex - leftIndex;
+                var leftIndex = IndexOfLeftPeakRel(maxIndex, _peakFootConstant);
+                var rightIndex = IndexOfRightPeakRel(maxIndex, _peakFootConstant);
+                var diff = rightIndex - leftIndex;
                 leftIndex -= (int) _peakDiffMultiplicationConstant * diff;
                 rightIndex += (int) _peakDiffMultiplicationConstant * diff;
 
@@ -77,8 +77,8 @@ namespace dotNETANPR.ImageAnalysis
                     Math.Min(YValues.Count - 1, rightIndex)
                 ));
             }
-            List<Peak> outPeaksFiltered = new List<Peak>();
-            foreach (Peak peak in outPeaks)
+            var outPeaksFiltered = new List<Peak>();
+            foreach (var peak in outPeaks)
             {
                 if (peak.GetDiff() > 2 * _handle.GetHeight()
                     && peak.GetDiff() < 15 * _handle.GetHeight())
@@ -93,8 +93,8 @@ namespace dotNETANPR.ImageAnalysis
 
         public int IndexOfLeftPeakAbs(int peak, double peakFootConstantAbs)
         {
-            int index = peak;
-            for (int i = peak; i >= 0; i--)
+            var index = peak;
+            for (var i = peak; i >= 0; i--)
             {
                 index = i;
                 if (YValues[index] < peakFootConstantAbs)
@@ -107,8 +107,8 @@ namespace dotNETANPR.ImageAnalysis
 
         public int IndexOfRightPeakAbs(int peak, double peakFootConstantAbs)
         {
-            int index = peak;
-            for (int i = peak; i < YValues.Count; i++)
+            var index = peak;
+            for (var i = peak; i < YValues.Count; i++)
             {
                 index = i;
                 if (YValues[index] < peakFootConstantAbs)

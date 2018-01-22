@@ -55,8 +55,8 @@ namespace dotNETANPR.ImageAnalysis
 
             public List<float> Distribute(List<float> peaks)
             {
-                List<float> distributedPeaks = new List<float>();
-                for (int i = 0; i < peaks.Count; i++)
+                var distributedPeaks = new List<float>();
+                for (var i = 0; i < peaks.Count; i++)
                 {
                     if (i < LeftMargin || i > peaks.Count - RightMargin)
                     {
@@ -67,6 +67,7 @@ namespace dotNETANPR.ImageAnalysis
                         distributedPeaks.Add(DistributionFunction(peaks[i], (float) i / peaks.Count));
                     }
                 }
+
                 return distributedPeaks;
             }
         }
@@ -94,13 +95,14 @@ namespace dotNETANPR.ImageAnalysis
         // Methods for searching bands in image
         public bool AllowedInterval(List<Peak> peaks, int xPosition)
         {
-            foreach (Peak peak in peaks)
+            foreach (var peak in peaks)
             {
                 if (peak.Left <= xPosition && xPosition <= peak.Right)
                 {
                     return false;
                 }
             }
+
             return true;
         }
 
@@ -118,8 +120,8 @@ namespace dotNETANPR.ImageAnalysis
 
         public void Negate()
         {
-            float max = GetMaxValue();
-            for (int i = 0; i < YValues.Count; i++)
+            var max = GetMaxValue();
+            for (var i = 0; i < YValues.Count; i++)
             {
                 YValues[i] = max - YValues[i];
             }
@@ -132,16 +134,18 @@ namespace dotNETANPR.ImageAnalysis
                 _averageValue = GetAverageValue(0, YValues.Count);
                 _actualAverageValue = true;
             }
+
             return _averageValue;
         }
 
         public float GetAverageValue(int a, int b)
         {
-            float sum = 0.0f;
-            for (int i = a; i < b; i++)
+            var sum = 0.0f;
+            for (var i = a; i < b; i++)
             {
                 sum += YValues[i];
             }
+
             return sum / YValues.Count;
         }
 
@@ -152,31 +156,33 @@ namespace dotNETANPR.ImageAnalysis
                 _maximumValue = GetMaxValue(0, YValues.Count);
                 _actualMaximumValue = true;
             }
+
             return _maximumValue;
         }
 
         public float GetMaxValue(int a, int b)
         {
-            float maxValue = 0.0f;
-            for (int i = a; i < b; i++)
+            var maxValue = 0.0f;
+            for (var i = a; i < b; i++)
             {
                 maxValue = Math.Max(maxValue, YValues[i]);
             }
+
             return maxValue;
         }
 
         public float GetMaxValue(float a, float b)
         {
-            int ia = (int) (a * YValues.Count);
-            int ib = (int) (b * YValues.Count);
+            var ia = (int) (a * YValues.Count);
+            var ib = (int) (b * YValues.Count);
             return GetMaxValue(ia, ib);
         }
 
         public int GetMaxValueIndex(int a, int b)
         {
-            float maxValue = 0.0f;
-            int maxIndex = a;
-            for (int i = a; i < b; i++)
+            var maxValue = 0.0f;
+            var maxIndex = a;
+            for (var i = a; i < b; i++)
             {
                 if (YValues[i] >= maxValue)
                 {
@@ -184,6 +190,7 @@ namespace dotNETANPR.ImageAnalysis
                     maxIndex = i;
                 }
             }
+
             return maxIndex;
         }
 
@@ -194,31 +201,33 @@ namespace dotNETANPR.ImageAnalysis
                 _minimumValue = GetMinValue(0, YValues.Count);
                 _actualMinimumValue = true;
             }
+
             return _minimumValue;
         }
 
         public float GetMinValue(int a, int b)
         {
-            float minValue = float.PositiveInfinity;
-            for (int i = a; i < b; i++)
+            var minValue = float.PositiveInfinity;
+            for (var i = a; i < b; i++)
             {
                 minValue = Math.Min(minValue, YValues[i]);
             }
+
             return minValue;
         }
 
         public float GetMinValue(float a, float b)
         {
-            int ia = (int) (a * YValues.Count);
-            int ib = (int) (b * YValues.Count);
+            var ia = (int) (a * YValues.Count);
+            var ib = (int) (b * YValues.Count);
             return GetMinValue(ia, ib);
         }
 
         public int GetMinValueIndex(int a, int b)
         {
-            float minValue = float.PositiveInfinity;
-            int minIndex = b;
-            for (int i = a; i < b; i++)
+            var minValue = float.PositiveInfinity;
+            var minIndex = b;
+            for (var i = a; i < b; i++)
             {
                 if (YValues[i] <= minValue)
                 {
@@ -226,53 +235,52 @@ namespace dotNETANPR.ImageAnalysis
                     minIndex = i;
                 }
             }
+
             return minIndex;
         }
 
         public Bitmap RenderHorizontally(int width, int height)
         {
-            Bitmap content = new Bitmap(width, height, PixelFormat.Format8bppIndexed);
-            Bitmap axis = new Bitmap(width + 40, height + 40, PixelFormat.Format8bppIndexed);
+            var content = new Bitmap(width, height, PixelFormat.Format8bppIndexed);
+            var axis = new Bitmap(width + 40, height + 40, PixelFormat.Format8bppIndexed);
 
-            Graphics graphicsContent = Graphics.FromImage(content);
-            Graphics graphicsAxis = Graphics.FromImage(axis);
+            var graphicsContent = Graphics.FromImage(content);
+            var graphicsAxis = Graphics.FromImage(axis);
 
-            Rectangle backRect = new Rectangle(0, 0, width + 40, height + 40);
-            SolidBrush axisBrush = new SolidBrush(Color.LightGray);
-            Pen axisPen = new Pen(Color.LightGray);
+            var backRect = new Rectangle(0, 0, width + 40, height + 40);
+            var axisBrush = new SolidBrush(Color.LightGray);
+            var axisPen = new Pen(Color.LightGray);
             graphicsAxis.FillRectangle(axisBrush, backRect);
             graphicsAxis.DrawRectangle(axisPen, backRect);
 
             backRect = new Rectangle(0, 0, width, height);
-            SolidBrush contentBrush = new SolidBrush(Color.White);
-            Pen contentPen = new Pen(Color.White);
+            var contentBrush = new SolidBrush(Color.White);
+            var contentPen = new Pen(Color.White);
             graphicsContent.FillRectangle(contentBrush, backRect);
             graphicsContent.DrawRectangle(contentPen, backRect);
 
-            int x, y;
-            int y0;
-            x = 0;
-            y = 0;
+            var x = 0;
+            var y = 0;
 
-            Pen graphicsContentPen = new Pen(Color.Green);
+            var graphicsContentPen = new Pen(Color.Green);
 
-            for (int i = 0; i < YValues.Count; i++)
+            for (var i = 0; i < YValues.Count; i++)
             {
                 var x0 = x;
-                y0 = y;
+                var y0 = y;
                 x = (int) ((float) i / YValues.Count * width);
                 y = (int) ((1 - YValues[i] / GetMaxValue()) * height);
                 graphicsContent.DrawLine(graphicsContentPen, x0, y0, x, y);
             }
 
-            Font graphicsContentFont = new Font("Consolas", 20F);
+            var graphicsContentFont = new Font("Consolas", 20F);
             if (Peaks != null)
             {
                 graphicsContentPen.Color = Color.Red;
                 contentBrush.Color = Color.Red;
-                int i = 0;
-                double multConst = (double) width / YValues.Count;
-                foreach (Peak p in Peaks)
+                var i = 0;
+                var multConst = (double) width / YValues.Count;
+                foreach (var p in Peaks)
                 {
                     graphicsContent.DrawLine(graphicsContentPen, (int) (p.Left * multConst), 0,
                         (int) (p.Center * multConst), 30);
@@ -287,21 +295,22 @@ namespace dotNETANPR.ImageAnalysis
 
             axisPen.Color = Color.Black;
             axisBrush.Color = Color.Black;
-            Font graphicsAxisFont = new Font("Consolas", 20F);
+            var graphicsAxisFont = new Font("Consolas", 20F);
             graphicsAxis.DrawRectangle(axisPen, 35, 5, content.Width, content.Height);
 
-            for (int ax = 0; ax < content.Width; ax += 50)
+            for (var ax = 0; ax < content.Width; ax += 50)
             {
                 graphicsAxis.DrawString(ax.ToString(), graphicsAxisFont, axisBrush, ax + 35, axis.Height - 10);
                 graphicsAxis.DrawLine(axisPen, ax + 35, content.Height + 5, ax + 35, content.Height + 15);
             }
 
-            for (int ay = 0; ay < content.Height; ay += 20)
+            for (var ay = 0; ay < content.Height; ay += 20)
             {
                 graphicsAxis.DrawString(Convert.ToInt32((1 - (float) ay) / content.Height * 100) + "%",
                     graphicsContentFont, contentBrush, 1, ay + 15);
                 graphicsAxis.DrawLine(axisPen, 25, ay + 5, 35, ay + 5);
             }
+
             graphicsContent.Dispose();
             graphicsAxis.Dispose();
             return axis;
@@ -309,21 +318,21 @@ namespace dotNETANPR.ImageAnalysis
 
         public Bitmap RenderVertically(int width, int height)
         {
-            Bitmap content = new Bitmap(width, height, PixelFormat.Format8bppIndexed);
-            Bitmap axis = new Bitmap(width + 10, height + 40, PixelFormat.Format8bppIndexed);
+            var content = new Bitmap(width, height, PixelFormat.Format8bppIndexed);
+            var axis = new Bitmap(width + 10, height + 40, PixelFormat.Format8bppIndexed);
 
-            Graphics graphicsContent = Graphics.FromImage(content);
-            Graphics graphicsAxis = Graphics.FromImage(axis);
+            var graphicsContent = Graphics.FromImage(content);
+            var graphicsAxis = Graphics.FromImage(axis);
 
-            Rectangle backRect = new Rectangle(0, 0, width + 40, height + 40);
-            SolidBrush axisBrush = new SolidBrush(Color.LightGray);
-            Pen axisPen = new Pen(Color.LightGray);
+            var backRect = new Rectangle(0, 0, width + 40, height + 40);
+            var axisBrush = new SolidBrush(Color.LightGray);
+            var axisPen = new Pen(Color.LightGray);
             graphicsAxis.FillRectangle(axisBrush, backRect);
             graphicsAxis.DrawRectangle(axisPen, backRect);
 
             backRect = new Rectangle(0, 0, width, height);
-            SolidBrush contentBrush = new SolidBrush(Color.White);
-            Pen contentPen = new Pen(Color.White);
+            var contentBrush = new SolidBrush(Color.White);
+            var contentPen = new Pen(Color.White);
             graphicsContent.FillRectangle(contentBrush, backRect);
             graphicsContent.DrawRectangle(contentPen, backRect);
 
@@ -332,9 +341,9 @@ namespace dotNETANPR.ImageAnalysis
             x = 0;
             y = 0;
 
-            Pen graphicsContentPen = new Pen(Color.Green);
+            var graphicsContentPen = new Pen(Color.Green);
 
-            for (int i = 0; i < YValues.Count; i++)
+            for (var i = 0; i < YValues.Count; i++)
             {
                 x0 = x;
                 var y0 = y;
@@ -343,14 +352,14 @@ namespace dotNETANPR.ImageAnalysis
                 graphicsContent.DrawLine(graphicsContentPen, x0, y0, x, y);
             }
 
-            Font graphicsContentFont = new Font("Consolas", 20F);
+            var graphicsContentFont = new Font("Consolas", 20F);
             if (Peaks != null)
             {
                 graphicsContentPen.Color = Color.Red;
                 contentBrush.Color = Color.Red;
-                int i = 0;
-                double multConst = (double) height / YValues.Count;
-                foreach (Peak p in Peaks)
+                var i = 0;
+                var multConst = (double) height / YValues.Count;
+                foreach (var p in Peaks)
                 {
                     graphicsContent.DrawLine(graphicsContentPen, width, (int) (p.Left * multConst), width - 30,
                         (int) (p.Center * multConst));
@@ -374,38 +383,41 @@ namespace dotNETANPR.ImageAnalysis
 
         public void RankFilter(int size)
         {
-            int halfSize = size / 2;
-            List<float> clone = new List<float>(YValues);
-            for (int i = halfSize; i < YValues.Count - halfSize; i++)
+            var halfSize = size / 2;
+            var clone = new List<float>(YValues);
+            for (var i = halfSize; i < YValues.Count - halfSize; i++)
             {
                 float sum = 0;
-                for (int ii = i - halfSize; ii < i + halfSize; ii++)
+                for (var ii = i - halfSize; ii < i + halfSize; ii++)
                 {
                     sum += clone[ii];
                 }
+
                 YValues[i] = sum / size;
             }
         }
 
         public int IndexOfLeftPeakRel(int peak, double peakFootConstantRel)
         {
-            int index = peak;
-            for (int i = peak; i >= 0; i--)
+            var index = peak;
+            for (var i = peak; i >= 0; i--)
             {
                 index = i;
                 if (YValues[index] < peakFootConstantRel * YValues[peak]) break;
             }
+
             return Math.Max(0, index);
         }
 
         public int IndexOfRightPeakRel(int peak, double peakFootConstantRel)
         {
-            int index = peak;
-            for (int i = peak; i < YValues.Count; i++)
+            var index = peak;
+            for (var i = peak; i < YValues.Count; i++)
             {
                 index = i;
                 if (YValues[index] < peakFootConstantRel * YValues[peak]) break;
             }
+
             return Math.Min(YValues.Count, index);
         }
 
@@ -413,7 +425,7 @@ namespace dotNETANPR.ImageAnalysis
         public float AveragePeakDiff(List<Peak> peaks)
         {
             float sum = 0;
-            foreach (Peak p in peaks)
+            foreach (var p in peaks)
                 sum += p.GetDiff();
             return sum / peaks.Count;
         }
@@ -421,7 +433,7 @@ namespace dotNETANPR.ImageAnalysis
         public float MaximumPeakDiff(List<Peak> peaks, int from, int to)
         {
             float max = 0;
-            for (int i = from; i <= to; i++)
+            for (var i = from; i <= to; i++)
                 max = Math.Max(max, peaks[i].GetDiff());
             return max;
         }

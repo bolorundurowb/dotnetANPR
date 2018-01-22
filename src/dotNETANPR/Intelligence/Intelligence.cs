@@ -26,7 +26,7 @@ namespace dotNETANPR.Intelligence
         public Intelligence(bool enableReportGeneration)
         {
             EnableReportGeneration = enableReportGeneration;
-            int classificationMethod = Configurator.GetIntProperty("intelligence_classification_method");
+            var classificationMethod = Configurator.GetIntProperty("intelligence_classification_method");
             if (classificationMethod == 0)
             {
                 ChrRecog = new KnnPatternClassificator();
@@ -46,9 +46,9 @@ namespace dotNETANPR.Intelligence
 
         public string Recognize(CarSnapshot carSnapshot)
         {
-            TimeMeter timeMeter = new TimeMeter();
-            int syntaxAnalysisMode = Configurator.GetIntProperty("intelligence_syntaxanalysis");
-            int skewDetectionMode = Configurator.GetIntProperty("intelligence_skewdetection");
+            var timeMeter = new TimeMeter();
+            var syntaxAnalysisMode = Configurator.GetIntProperty("intelligence_syntaxanalysis");
+            var skewDetectionMode = Configurator.GetIntProperty("intelligence_skewdetection");
 
             if (EnableReportGeneration)
             {
@@ -62,7 +62,7 @@ namespace dotNETANPR.Intelligence
                 Program.ReportGenerator.InsertImage(carSnapshot.GetBitmapWithAxes(), "snapshot", 0, 0);
             }
 
-            foreach (Band band in carSnapshot.GetBands())
+            foreach (var band in carSnapshot.GetBands())
             {
                 if (EnableReportGeneration)
                 {
@@ -73,7 +73,7 @@ namespace dotNETANPR.Intelligence
                     Program.ReportGenerator.InsertText("</div>");
                 }
 
-                foreach (Plate plate in band.GetPlates())
+                foreach (var plate in band.GetPlates())
                 {
                     var _plate = plate;
                     if (EnableReportGeneration)
@@ -100,10 +100,10 @@ namespace dotNETANPR.Intelligence
 
                     if (skewDetectionMode != 0)
                     {
-                        Matrix matrix = new Matrix();
+                        var matrix = new Matrix();
                         matrix.Shear(0f, -hough.Dy / hough.Dx);
-                        Bitmap core = _plate.CreateBlankBitmap(_plate.GetBitmap());
-                        Graphics graphics = Graphics.FromImage(core);
+                        var core = _plate.CreateBlankBitmap(_plate.GetBitmap());
+                        var graphics = Graphics.FromImage(core);
                         graphics.Transform = matrix;
                         graphics.DrawImage(_plate.GetBitmap(), core.Height, core.Width);
                         _plate = new Plate(core);
@@ -111,12 +111,12 @@ namespace dotNETANPR.Intelligence
 
                     _plate.Normalize();
 
-                    float plateWHratio = _plate.GetWidth() / (float) _plate.GetHeight();
+                    var plateWHratio = _plate.GetWidth() / (float) _plate.GetHeight();
                     if (plateWHratio < Configurator.GetDoubleProperty("intelligence_minPlateWidthHeightRatio")
                         || plateWHratio > Configurator.GetDoubleProperty("intelligence_maxPlateWidthHeightRatio")
                     ) continue;
 
-                    List<Character> chars = _plate.GetChars();
+                    var chars = _plate.GetChars();
 
                     if (chars.Count < Configurator.GetIntProperty("intelligence_minimumChars") ||
                         chars.Count > Configurator.GetIntProperty("intelligence_maximumChars")
@@ -133,7 +133,7 @@ namespace dotNETANPR.Intelligence
                         Program.ReportGenerator.InsertImage(band.GetBitmapWithAxes(), "band", 0, 0);
                         Program.ReportGenerator.InsertImage(band.RenderGraph(), "bandgraph", 0, 0);
                         Program.ReportGenerator.InsertText("<h2>Detected _plate</h2>");
-                        Plate plateCopy = _plate.Clone();
+                        var plateCopy = _plate.Clone();
                         plateCopy.LinearResize(450, 90);
                         Program.ReportGenerator.InsertImage(plateCopy.GetBitmapWithAxes(), "_plate", 0, 0);
                         Program.ReportGenerator.InsertImage(plateCopy.RenderGraph(), "_plategraph", 0, 0);
@@ -148,13 +148,13 @@ namespace dotNETANPR.Intelligence
                     }
 
 
-                    RecognizedPlate recognizedPlate = new RecognizedPlate();
+                    var recognizedPlate = new RecognizedPlate();
 
                     if (EnableReportGeneration)
                     {
                         Program.ReportGenerator.InsertText("<h2>Character segmentation</h2>");
                         Program.ReportGenerator.InsertText("<div class='charsegment'>");
-                        foreach (Character chr in chars)
+                        foreach (var chr in chars)
                         {
                             Program.ReportGenerator.InsertImage(Photo.LinearResizeBitmap(chr.GetBitmap(), 70, 100), "",
                                 0, 0);
@@ -163,20 +163,20 @@ namespace dotNETANPR.Intelligence
                         Program.ReportGenerator.InsertText("</div>");
                     }
 
-                    foreach (Character chr in chars) chr.Normalize();
+                    foreach (var chr in chars) chr.Normalize();
 
-                    float averageHeight = _plate.GetAveragePieceHeight(chars);
-                    float averageContrast = _plate.GetAveragePieceContrast(chars);
-                    float averageBrightness = _plate.GetAveragePieceBrightness(chars);
-                    float averageHue = _plate.GetAveragePieceHue(chars);
-                    float averageSaturation = _plate.GetAveragePieceSaturation(chars);
+                    var averageHeight = _plate.GetAveragePieceHeight(chars);
+                    var averageContrast = _plate.GetAveragePieceContrast(chars);
+                    var averageBrightness = _plate.GetAveragePieceBrightness(chars);
+                    var averageHue = _plate.GetAveragePieceHue(chars);
+                    var averageSaturation = _plate.GetAveragePieceSaturation(chars);
 
-                    foreach (Character chr in chars)
+                    foreach (var chr in chars)
                     {
-                        bool ok = true;
-                        string errorFlags = "";
+                        var ok = true;
+                        var errorFlags = "";
 
-                        float widthHeightRatio = chr.PieceWidth;
+                        var widthHeightRatio = chr.PieceWidth;
                         widthHeightRatio /= chr.PieceHeight;
 
                         if (widthHeightRatio < Configurator.GetDoubleProperty("intelligence_minCharWidthHeightRatio") ||
@@ -200,11 +200,11 @@ namespace dotNETANPR.Intelligence
                         }
 
 
-                        float contrastCost = Math.Abs(chr.StatisticContrast - averageContrast);
-                        float brightnessCost = Math.Abs(chr.StatisticAverageBrightness - averageBrightness);
-                        float hueCost = Math.Abs(chr.StatisticAverageHue - averageHue);
-                        float saturationCost = Math.Abs(chr.StatisticAverageSaturation - averageSaturation);
-                        float heightCost = (chr.PieceHeight - averageHeight) / averageHeight;
+                        var contrastCost = Math.Abs(chr.StatisticContrast - averageContrast);
+                        var brightnessCost = Math.Abs(chr.StatisticAverageBrightness - averageBrightness);
+                        var hueCost = Math.Abs(chr.StatisticAverageHue - averageHue);
+                        var saturationCost = Math.Abs(chr.StatisticAverageSaturation - averageSaturation);
+                        var heightCost = (chr.PieceHeight - averageHeight) / averageHeight;
 
                         if (brightnessCost > Configurator.GetDoubleProperty("intelligence_maxBrightnessCostDispersion"))
                         {
@@ -292,7 +292,7 @@ namespace dotNETANPR.Intelligence
                         Configurator.GetIntProperty("intelligence_minimumChars")) continue;
 
                     _lastProcessDuration = timeMeter.GetTime();
-                    string parsedOutput = Parser.Parse(recognizedPlate, syntaxAnalysisMode);
+                    var parsedOutput = Parser.Parse(recognizedPlate, syntaxAnalysisMode);
 
                     if (EnableReportGeneration)
                     {

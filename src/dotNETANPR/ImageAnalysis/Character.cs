@@ -37,7 +37,7 @@ namespace dotNETANPR.ImageAnalysis
 
         public Character(string filePath) : base(filePath)
         {
-            Bitmap origin = DuplicateBitmap(Image);
+            var origin = DuplicateBitmap(Image);
             AdaptiveThresholding();
             ThresholdedImage = Image;
             Image = origin;
@@ -66,9 +66,9 @@ namespace dotNETANPR.ImageAnalysis
         {
             if (Normalized) return;
 
-            Bitmap colorImage = (Bitmap)GetBitmap().Clone();
+            var colorImage = (Bitmap)GetBitmap().Clone();
             Image = ThresholdedImage;
-            PixelMap pixelMap = GetPixelMap();
+            var pixelMap = GetPixelMap();
 
             _bestPiece = pixelMap.GetBestPiece();
 
@@ -90,8 +90,8 @@ namespace dotNETANPR.ImageAnalysis
 
         private void NormalizeResizeOnly()
         {
-            int x = Intelligence.Intelligence.Configurator.GetIntProperty("char_normalizeddimensions_x");
-            int y = Intelligence.Intelligence.Configurator.GetIntProperty("char_normalizeddimensions_y");
+            var x = Intelligence.Intelligence.Configurator.GetIntProperty("char_normalizeddimensions_x");
+            var y = Intelligence.Intelligence.Configurator.GetIntProperty("char_normalizeddimensions_y");
             if (x == 0 || y == 0) return;
 
             if (Intelligence.Intelligence.Configurator.GetIntProperty("char_resizeMethod") == 0)
@@ -118,11 +118,11 @@ namespace dotNETANPR.ImageAnalysis
         private void ComputeStatisticContrast(Bitmap colorImage)
         {
             float sum = 0;
-            int w = colorImage.Width;
-            int h = colorImage.Height;
-            for (int x = 0; x < w; x++)
+            var w = colorImage.Width;
+            var h = colorImage.Height;
+            for (var x = 0; x < w; x++)
             {
-                for (int y = 0; y < h; y++)
+                for (var y = 0; y < h; y++)
                 {
                     sum += Math.Abs(StatisticAverageBrightness - GetBrightness(colorImage, x, y));
                 }
@@ -133,15 +133,15 @@ namespace dotNETANPR.ImageAnalysis
         private void ComputeStatisticBrightness(Bitmap bi)
         {
             float sum = 0;
-            float min = float.PositiveInfinity;
-            float max = float.NegativeInfinity;
-            int w = bi.Width;
-            int h = bi.Height;
-            for (int x = 0; x < w; x++)
+            var min = float.PositiveInfinity;
+            var max = float.NegativeInfinity;
+            var w = bi.Width;
+            var h = bi.Height;
+            for (var x = 0; x < w; x++)
             {
-                for (int y = 0; y < h; y++)
+                for (var y = 0; y < h; y++)
                 {
-                    float value = GetBrightness(bi, x, y);
+                    var value = GetBrightness(bi, x, y);
                     sum += value;
                     min = Math.Min(min, value);
                     max = Math.Max(max, value);
@@ -155,11 +155,11 @@ namespace dotNETANPR.ImageAnalysis
         private void ComputeStatisticHue(Bitmap bi)
         {
             float sum = 0;
-            int w = bi.Width;
-            int h = bi.Height;
-            for (int x = 0; x < w; x++)
+            var w = bi.Width;
+            var h = bi.Height;
+            for (var x = 0; x < w; x++)
             {
-                for (int y = 0; y < h; y++)
+                for (var y = 0; y < h; y++)
                 {
                     sum += GetHue(bi, x, y);
                 }
@@ -170,11 +170,11 @@ namespace dotNETANPR.ImageAnalysis
         private void ComputeStatisticSaturation(Bitmap bi)
         {
             float sum = 0;
-            int w = bi.Width;
-            int h = bi.Height;
-            for (int x = 0; x < w; x++)
+            var w = bi.Width;
+            var h = bi.Height;
+            for (var x = 0; x < w; x++)
             {
-                for (int y = 0; y < h; y++)
+                for (var y = 0; y < h; y++)
                 {
                     sum += GetSaturation(bi, x, y);
                 }
@@ -189,22 +189,22 @@ namespace dotNETANPR.ImageAnalysis
 
         public List<double> ExtractEdgeFeatures()
         {
-            int w = Image.Width;
-            int h = Image.Height;
+            var w = Image.Width;
+            var h = Image.Height;
             double featureMatch;
 
-            float[,] array = BitmapToArrayWithBounds(Image, w, h);
+            var array = BitmapToArrayWithBounds(Image, w, h);
             w += 2;
             h += 2;
 
-            float[,] features = CharacterRecognizer.features;
-            double[] output = new double[features.Length * 4];
+            var features = CharacterRecognizer.features;
+            var output = new double[features.Length * 4];
 
-            for (int f = 0; f < features.Length; f++)
+            for (var f = 0; f < features.Length; f++)
             {
-                for (int my = 0; my < h - 1; my++)
+                for (var my = 0; my < h - 1; my++)
                 {
-                    for (int mx = 0; mx < w - 1; mx++)
+                    for (var mx = 0; mx < w - 1; mx++)
                     {
                         featureMatch = 0;
                         featureMatch += Math.Abs(array[mx, my] - features[f, 0]);
@@ -212,30 +212,30 @@ namespace dotNETANPR.ImageAnalysis
                         featureMatch += Math.Abs(array[mx, my + 1] - features[f, 2]);
                         featureMatch += Math.Abs(array[mx + 1, my + 1] - features[f, 3]);
 
-                        int bias = 0;
+                        var bias = 0;
                         if (mx >= w / 2) bias += features.Length;
                         if (my >= h / 2) bias += features.Length * 2;
                         output[bias + f] += featureMatch < 0.05 ? 1 : 0;
                     }
                 }
             }
-            List<double> outputList = new List<double>();
+            var outputList = new List<double>();
             foreach (var value in output) outputList.Add(value);
             return outputList;
         }
 
         public List<double> ExtractMapFeatures()
         {
-            List<double> vectorInput = new List<double>();
-            for (int y = 0; y < GetHeight(); y++)
-            for (int x = 0; x < GetWidth(); x++)
+            var vectorInput = new List<double>();
+            for (var y = 0; y < GetHeight(); y++)
+            for (var x = 0; x < GetWidth(); x++)
                 vectorInput.Add(GetBrightness(x, y));
             return vectorInput;
         }
 
         public List<double> ExtractFeatures()
         {
-            int featureExtractionMethod = Intelligence.Intelligence.Configurator.GetIntProperty("char_featuresExtractionMethod");
+            var featureExtractionMethod = Intelligence.Intelligence.Configurator.GetIntProperty("char_featuresExtractionMethod");
             if (featureExtractionMethod == 0)
                 return ExtractMapFeatures();
             return ExtractEdgeFeatures();

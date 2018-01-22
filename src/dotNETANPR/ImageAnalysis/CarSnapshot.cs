@@ -37,7 +37,7 @@ namespace dotNETANPR.ImageAnalysis
             {
                 return graphHandle.Peaks;
             }
-            Bitmap bitmap = DuplicateBitmap(Image);
+            var bitmap = DuplicateBitmap(Image);
             VerticalEdgeBitmap(bitmap);
             Thresholding(bitmap);
 
@@ -50,11 +50,11 @@ namespace dotNETANPR.ImageAnalysis
 
         public List<Band> GetBands()
         {
-            List<Band> output = new List<Band>();
-            List<Graph.Peak> peaks = ComputeGraph();
-            for (int i = 0; i < peaks.Count; i++)
+            var output = new List<Band>();
+            var peaks = ComputeGraph();
+            for (var i = 0; i < peaks.Count; i++)
             {
-                Graph.Peak peak = peaks[i];
+                var peak = peaks[i];
                 output.Add(new Band(
                         Image.Clone(new Rectangle(
                                 0,
@@ -72,7 +72,7 @@ namespace dotNETANPR.ImageAnalysis
 
         public void VerticalEdgeBitmap(Bitmap image)
         {
-            Bitmap imageCopy = DuplicateBitmap(image);
+            var imageCopy = DuplicateBitmap(image);
             int[,] data =
             {
                 {-1, 0, 1},
@@ -80,7 +80,7 @@ namespace dotNETANPR.ImageAnalysis
                 {-1, 0, 1},
                 {-1, 0, 1}
             };
-            ConvolveOp convolveOp = new ConvolveOp();
+            var convolveOp = new ConvolveOp();
             var kernel = new ConvolutionKernel();
             kernel.Size = 3;
             kernel.Matrix = data;
@@ -89,11 +89,11 @@ namespace dotNETANPR.ImageAnalysis
 
         public CarSnapshotGraph Histogram(Bitmap bitmap)
         {
-            CarSnapshotGraph graph = new CarSnapshotGraph(this);
-            for (int y = 0; y < bitmap.Height; y++)
+            var graph = new CarSnapshotGraph(this);
+            for (var y = 0; y < bitmap.Height; y++)
             {
                 float counter = 0;
-                for (int x = 0; x < bitmap.Width; x++)
+                for (var x = 0; x < bitmap.Width; x++)
                     counter += GetBrightness(bitmap, x, y);
                 graph.AddPeak(counter);
             }

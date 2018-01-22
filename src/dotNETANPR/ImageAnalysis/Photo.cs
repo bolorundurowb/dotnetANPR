@@ -54,11 +54,11 @@ namespace dotNETANPR.ImageAnalysis
 
         public Bitmap GetBitmapWithAxes()
         {
-            Bitmap bitmap = new Bitmap(Image.Width + 40, Image.Height + 40, PixelFormat.Format8bppIndexed);
-            Graphics graphics = Graphics.FromImage(bitmap);
-            SolidBrush brush = new SolidBrush(Color.LightGray);
-            Pen pen = new Pen(Color.LightGray);
-            Rectangle rectangle = new Rectangle(0, 0, Image.Width, Image.Height);
+            var bitmap = new Bitmap(Image.Width + 40, Image.Height + 40, PixelFormat.Format8bppIndexed);
+            var graphics = Graphics.FromImage(bitmap);
+            var brush = new SolidBrush(Color.LightGray);
+            var pen = new Pen(Color.LightGray);
+            var rectangle = new Rectangle(0, 0, Image.Width, Image.Height);
 
             graphics.FillRectangle(brush, rectangle);
             graphics.DrawRectangle(pen, rectangle);
@@ -67,13 +67,13 @@ namespace dotNETANPR.ImageAnalysis
             pen.Color = Color.Black;
             graphics.DrawRectangle(pen, 35, 5, Image.Width, Image.Height);
 
-            Font font = new Font("Consolas", 20F);
-            for (int i = 0; i < Image.Width; i += 50)
+            var font = new Font("Consolas", 20F);
+            for (var i = 0; i < Image.Width; i += 50)
             {
                 graphics.DrawString(i.ToString(), font, brush, 35 + i, bitmap.Height - 10);
                 graphics.DrawLine(pen, i + 35, Image.Height + 5, i + 35, Image.Height + 15);
             }
-            for (int i = 0; i < Image.Height; i++)
+            for (var i = 0; i < Image.Height; i++)
             {
                 graphics.DrawString(i.ToString(), font, brush, 3, i + 15);
                 graphics.DrawLine(pen, 25, i + 5, 35, i + 5);
@@ -94,19 +94,19 @@ namespace dotNETANPR.ImageAnalysis
 
         public static float GetBrightness(Bitmap bitmap, int x, int y)
         {
-            Color color = bitmap.GetPixel(x, y);
+            var color = bitmap.GetPixel(x, y);
             return color.GetBrightness();
         }
 
         public static float GetSaturation(Bitmap bitmap, int x, int y)
         {
-            Color color = bitmap.GetPixel(x, y);
+            var color = bitmap.GetPixel(x, y);
             return color.GetSaturation();
         }
 
         public static float GetHue(Bitmap bitmap, int x, int y)
         {
-            Color color = bitmap.GetPixel(x, y);
+            var color = bitmap.GetPixel(x, y);
             return color.GetHue();
         }
 
@@ -129,9 +129,9 @@ namespace dotNETANPR.ImageAnalysis
         {
             try
             {
-                Bitmap bitmap = new Bitmap(filePath);
-                Bitmap image = new Bitmap(bitmap.Width, bitmap.Height);
-                Graphics graphics = Graphics.FromImage(image);
+                var bitmap = new Bitmap(filePath);
+                var image = new Bitmap(bitmap.Width, bitmap.Height);
+                var graphics = Graphics.FromImage(image);
                 graphics.DrawImage(bitmap, 0, 0);
                 graphics.Dispose();
                 Image = image;
@@ -145,7 +145,7 @@ namespace dotNETANPR.ImageAnalysis
 
         public void SaveImage(string filePath)
         {
-            string type = filePath.Substring(filePath.LastIndexOf('.') + 1, filePath.Length).ToUpper();
+            var type = filePath.Substring(filePath.LastIndexOf('.') + 1, filePath.Length).ToUpper();
             if (!type.Equals("BMP") &&
                 !type.Equals("JPG") &&
                 !type.Equals("JPEG") &&
@@ -159,10 +159,10 @@ namespace dotNETANPR.ImageAnalysis
 
         public void NormalizeBrightness(float coef)
         {
-            Statistics stats = new Statistics(Image);
-            for (int x = 0; x < GetWidth(); x++)
+            var stats = new Statistics(Image);
+            for (var x = 0; x < GetWidth(); x++)
             {
-                for (int y = 0; y < GetHeight(); y++)
+                for (var y = 0; y < GetHeight(); y++)
                 {
                     SetBrightness(Image, x, y, stats.ThresholdBrightness(GetBrightness(Image, x, y), coef));
                 }
@@ -176,11 +176,11 @@ namespace dotNETANPR.ImageAnalysis
 
         public static Bitmap LinearResizeBitmap(Bitmap bmp, int width, int height)
         {
-            Bitmap bitmap = new Bitmap(width, height, PixelFormat.Format8bppIndexed);
-            Graphics graphics = Graphics.FromImage(bitmap);
-            float xScale = (float) width / bmp.Width;
-            float yScale = (float) height / bmp.Height;
-            Matrix matrix = new Matrix(xScale, 0, 0, yScale, 0, 0);
+            var bitmap = new Bitmap(width, height, PixelFormat.Format8bppIndexed);
+            var graphics = Graphics.FromImage(bitmap);
+            var xScale = (float) width / bmp.Width;
+            var yScale = (float) height / bmp.Height;
+            var matrix = new Matrix(xScale, 0, 0, yScale, 0, 0);
             graphics.Transform = matrix;
             graphics.DrawImage(bmp, 0, 0);
             graphics.Dispose();
@@ -198,24 +198,24 @@ namespace dotNETANPR.ImageAnalysis
             {
                 return LinearResizeBitmap(bmp, width, height);
             }
-            Bitmap bitmap = new Bitmap(width, height);
-            float xScale = (float) width / bmp.Width;
-            float yScale = (float) height / bmp.Height;
-            for (int i = 0; i < width; i++)
+            var bitmap = new Bitmap(width, height);
+            var xScale = (float) width / bmp.Width;
+            var yScale = (float) height / bmp.Height;
+            for (var i = 0; i < width; i++)
             {
-                int x0min = (int) Math.Round(i * xScale);
-                int x0max = (int) Math.Round((i + 1) * xScale);
-                for (int j = 0; j < height; j++)
+                var x0min = (int) Math.Round(i * xScale);
+                var x0max = (int) Math.Round((i + 1) * xScale);
+                for (var j = 0; j < height; j++)
                 {
-                    int y0min = (int) Math.Round(j * yScale);
-                    int y0max = (int) Math.Round((j + 1) * yScale);
+                    var y0min = (int) Math.Round(j * yScale);
+                    var y0max = (int) Math.Round((j + 1) * yScale);
 
                     float sum = 0;
-                    int sumCount = 0;
+                    var sumCount = 0;
 
-                    for (int x0 = x0min; x0 < x0max; x0++)
+                    for (var x0 = x0min; x0 < x0max; x0++)
                     {
-                        for (int y0 = y0min; y0 < y0max; y0++)
+                        for (var y0 = y0min; y0 < y0max; y0++)
                         {
                             sum += GetBrightness(bmp, x0, y0);
                             sumCount++;
@@ -235,13 +235,13 @@ namespace dotNETANPR.ImageAnalysis
 
         public static Bitmap DuplicateBitmap(Bitmap bmp)
         {
-            Bitmap bitmap = new Bitmap(bmp);
+            var bitmap = new Bitmap(bmp);
             return bitmap;
         }
 
         public static void Thresholding(Bitmap bitmap)
         {
-            int[] threshold = new int[256];
+            var threshold = new int[256];
             for (short i = 0; i < 36; i++)
             {
                 threshold[i] = 0;
@@ -250,13 +250,13 @@ namespace dotNETANPR.ImageAnalysis
             {
                 threshold[i] = i;
             }
-            LookupOp lookupOp = new LookupOp {LookupTable = threshold};
+            var lookupOp = new LookupOp {LookupTable = threshold};
             var result = lookupOp.Filter(bitmap);
         }
 
         public void VerticalEdgeDetector(Bitmap source)
         {
-            Bitmap destination = DuplicateBitmap(source);
+            var destination = DuplicateBitmap(source);
             int[,] datset1 =
             {
                 {-1, 0, 1},
@@ -275,10 +275,10 @@ namespace dotNETANPR.ImageAnalysis
 
         public float[,] BitmapToArray(Bitmap bitmap, int width, int height)
         {
-            float[,] array = new float[width, height];
-            for (int x = 0; x < width; x++)
+            var array = new float[width, height];
+            for (var x = 0; x < width; x++)
             {
-                for (int y = 0; y < height; y++)
+                for (var y = 0; y < height; y++)
                 {
                     array[x, y] = Photo.GetBrightness(Image, x, y);
                 }
@@ -288,20 +288,20 @@ namespace dotNETANPR.ImageAnalysis
 
         public float[,] BitmapToArrayWithBounds(Bitmap bitmap, int width, int height)
         {
-            float[,] array = new float[width, height];
-            for (int i = 0; i < width; i++)
+            var array = new float[width, height];
+            for (var i = 0; i < width; i++)
             {
-                for (int j = 0; j < height; j++)
+                for (var j = 0; j < height; j++)
                 {
                     array[i + 1, j + 1] = GetBrightness(bitmap, i, j);
                 }
             }
-            for (int i = 0; i < width + 2; i++)
+            for (var i = 0; i < width + 2; i++)
             {
                 array[i, 0] = 1;
                 array[i, height + 1] = 1;
             }
-            for (int j = 0; j < height + 2; j++)
+            for (var j = 0; j < height + 2; j++)
             {
                 array[0, j] = 1;
                 array[width + 1, j] = 1;
@@ -311,10 +311,10 @@ namespace dotNETANPR.ImageAnalysis
 
         public static Bitmap ArrayToBitmap(float[,] array, int width, int height)
         {
-            Bitmap bitmap = new Bitmap(width, height);
-            for (int i = 0; i < width; i++)
+            var bitmap = new Bitmap(width, height);
+            for (var i = 0; i < width; i++)
             {
-                for (int j = 0; j < height; j++)
+                for (var j = 0; j < height; j++)
                 {
                     SetBrightness(bitmap, width, height, array[i, j]);
                 }
@@ -324,23 +324,23 @@ namespace dotNETANPR.ImageAnalysis
 
         public Bitmap CreateBlankBitmap(Bitmap bitmap)
         {
-            Bitmap copy = new Bitmap(bitmap.Width, bitmap.Height, PixelFormat.Format8bppIndexed);
+            var copy = new Bitmap(bitmap.Width, bitmap.Height, PixelFormat.Format8bppIndexed);
             return copy;
         }
 
         public Bitmap CreateBlankBitmap(int width, int height)
         {
-            Bitmap copy = new Bitmap(width, height);
+            var copy = new Bitmap(width, height);
             return copy;
         }
 
         public Bitmap SumBitmaps(Bitmap bitmap1, Bitmap bitmap2)
         {
-            Bitmap output = new Bitmap(Math.Min(bitmap1.Width, bitmap2.Width), Math.Min(bitmap1.Height, bitmap2.Height),
+            var output = new Bitmap(Math.Min(bitmap1.Width, bitmap2.Width), Math.Min(bitmap1.Height, bitmap2.Height),
                 PixelFormat.Format8bppIndexed);
-            for (int i = 0; i < output.Width; i++)
+            for (var i = 0; i < output.Width; i++)
             {
-                for (int j = 0; j < output.Height; j++)
+                for (var j = 0; j < output.Height; j++)
                 {
                     SetBrightness(output, i, j,
                         (float) Math.Min(1.0, GetBrightness(bitmap1, i, j) + GetBrightness(bitmap2, i, j)));
@@ -351,11 +351,11 @@ namespace dotNETANPR.ImageAnalysis
 
         public void PlainThresholding(Statistics statistics)
         {
-            int width = GetWidth();
-            int height = GetHeight();
-            for (int i = 0; i < width; i++)
+            var width = GetWidth();
+            var height = GetHeight();
+            for (var i = 0; i < width; i++)
             {
-                for (int j = 0; j < height; j++)
+                for (var j = 0; j < height; j++)
                 {
                     SetBrightness(i, j, statistics.ThresholdBrightness(GetBrightness(i, j), 1.0f));
                 }
@@ -364,28 +364,28 @@ namespace dotNETANPR.ImageAnalysis
 
         public void AdaptiveThresholding()
         {
-            Statistics statistics = new Statistics(this.Image);
-            Configurator.Configurator configurator = new Configurator.Configurator();
-            int radius = configurator.GetIntProperty("photo_adaptivethresholdingradius");
+            var statistics = new Statistics(this.Image);
+            var configurator = new Configurator.Configurator();
+            var radius = configurator.GetIntProperty("photo_adaptivethresholdingradius");
             if (radius == 0)
             {
                 PlainThresholding(statistics);
                 return;
             }
-            int width = GetWidth();
-            int height = GetHeight();
+            var width = GetWidth();
+            var height = GetHeight();
 
-            float[,] source = BitmapToArray(Image, width, height);
-            float[,] destination = BitmapToArray(Image, width, height);
-            for (int i = 0; i < width; i++)
+            var source = BitmapToArray(Image, width, height);
+            var destination = BitmapToArray(Image, width, height);
+            for (var i = 0; i < width; i++)
             {
-                for (int j = 0; j < height; j++)
+                for (var j = 0; j < height; j++)
                 {
-                    int count = 0;
+                    var count = 0;
                     var neighbourhood = 0.0f;
-                    for (int k = i - radius; k <= i + radius; k++)
+                    for (var k = i - radius; k <= i + radius; k++)
                     {
-                        for (int l = j - radius; l <= j + radius; l++)
+                        for (var l = j - radius; l <= j + radius; l++)
                         {
                             if (k >= 0 && l >= 0 && k < width && l < height)
                             {
@@ -410,10 +410,10 @@ namespace dotNETANPR.ImageAnalysis
 
         public HoughTransformation GetHoughTransformation()
         {
-            HoughTransformation houghTransformation = new HoughTransformation(GetWidth(), GetHeight());
-            for (int i = 0; i < GetWidth(); i++)
+            var houghTransformation = new HoughTransformation(GetWidth(), GetHeight());
+            for (var i = 0; i < GetWidth(); i++)
             {
-                for (int j = 0; j < GetHeight(); j++)
+                for (var j = 0; j < GetHeight(); j++)
                 {
                     houghTransformation.AddLine(i, j, GetBrightness(i, j));
                 }
@@ -436,16 +436,16 @@ namespace dotNETANPR.ImageAnalysis
             {
                 // The color wheel consists of 6 sectors.
                 // Figure out which sector you're in.
-                double sectorPos = hue / 60.0;
-                int sectorNumber = (int)Math.Floor(sectorPos);
+                var sectorPos = hue / 60.0;
+                var sectorNumber = (int)Math.Floor(sectorPos);
 
                 // get the fractional part of the sector
-                double fractionalSector = sectorPos - sectorNumber;
+                var fractionalSector = sectorPos - sectorNumber;
 
                 // calculate values for the three axes of the color.
-                double p = brightness * (1.0 - saturation);
-                double q = brightness * (1.0 - saturation * fractionalSector);
-                double t = brightness * (1.0 - saturation * (1 - fractionalSector));
+                var p = brightness * (1.0 - saturation);
+                var q = brightness * (1.0 - saturation * fractionalSector);
+                var t = brightness * (1.0 - saturation * (1 - fractionalSector));
 
                 // assign the fractional colors to r, g, and b
                 // based on the sector the angle is in.

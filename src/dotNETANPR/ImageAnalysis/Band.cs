@@ -33,7 +33,7 @@ namespace dotNETANPR.ImageAnalysis
         private List<Graph.Peak> ComputeGraph()
         {
             if (_graphHandle != null) return _graphHandle.Peaks;
-            Bitmap imageCopy = DuplicateBitmap(Image);
+            var imageCopy = DuplicateBitmap(Image);
             FullEdgeDetector(imageCopy);
             _graphHandle = Histogram(imageCopy);
             _graphHandle.RankFilter(Image.Height);
@@ -44,12 +44,12 @@ namespace dotNETANPR.ImageAnalysis
 
         public List<Plate> GetPlates()
         {
-            List<Plate> output = new List<Plate>();
-            List<Graph.Peak> peaks = ComputeGraph();
-            for (int i = 0; i < peaks.Count; i++)
+            var output = new List<Plate>();
+            var peaks = ComputeGraph();
+            for (var i = 0; i < peaks.Count; i++)
             {
-                Graph.Peak p = peaks[i];
-                Rectangle rectangle = new Rectangle(
+                var p = peaks[i];
+                var rectangle = new Rectangle(
                     p.Left,
                     0,
                     p.GetDiff(),
@@ -67,11 +67,11 @@ namespace dotNETANPR.ImageAnalysis
 
         public BandGraph Histogram(Bitmap bitmap)
         {
-            BandGraph graph = new BandGraph(this);
-            for (int x = 0; x < bitmap.Width; x++)
+            var graph = new BandGraph(this);
+            for (var x = 0; x < bitmap.Width; x++)
             {
                 float counter = 0;
-                for (int y = 0; y < bitmap.Height; y++)
+                for (var y = 0; y < bitmap.Height; y++)
                     counter += GetBrightness(bitmap, x, y);
                 graph.AddPeak(counter);
             }
@@ -93,8 +93,8 @@ namespace dotNETANPR.ImageAnalysis
                 {1, 2, 1}
             };
 
-            Bitmap i1 = CreateBlankBitmap(source);
-            Bitmap i2 = CreateBlankBitmap(source);
+            var i1 = CreateBlankBitmap(source);
+            var i2 = CreateBlankBitmap(source);
 
             var convolveOp = new ConvolveOp();
             var kernel = new ConvolutionKernel
@@ -109,14 +109,14 @@ namespace dotNETANPR.ImageAnalysis
             kernel.Matrix = horizontalMatrix;
             i2 = convolveOp.Convolve(source, kernel);
 
-            int w = source.Width;
-            int h = source.Height;
+            var w = source.Width;
+            var h = source.Height;
 
-            for (int x = 0; x < w; x++)
+            for (var x = 0; x < w; x++)
             {
-                for (int y = 0; y < h; y++)
+                for (var y = 0; y < h; y++)
                 {
-                    float sum = 0.0f;
+                    var sum = 0.0f;
                     sum += GetBrightness(i1, x, y);
                     sum += GetBrightness(i2, x, y);
                     SetBrightness(source, x, y, Math.Min(1.0f, sum));

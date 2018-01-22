@@ -14,21 +14,21 @@ namespace dotNETANPR.ImageAnalysis
         {
             float sum = 0;
             float squaresSum = 0;
-            int w = photo.Width;
-            int h = photo.Height;
+            var w = photo.Width;
+            var h = photo.Height;
 
-            for (int x = 0; x < w; x++)
+            for (var x = 0; x < w; x++)
             {
-                for (int y = 0; y < h; y++)
+                for (var y = 0; y < h; y++)
                 {
-                    float pixelValue = photo.GetPixel(x, y).GetBrightness();
+                    var pixelValue = photo.GetPixel(x, y).GetBrightness();
                     Maximum = Math.Max(pixelValue, Maximum);
                     Minimum = Math.Min(pixelValue, Minimum);
                     sum += pixelValue;
                     squaresSum += pixelValue * pixelValue;
                 }
             }
-            int count = w * h;
+            var count = w * h;
             Average = sum / count;
             Dispersion = squaresSum / count - Average * Average;
         }

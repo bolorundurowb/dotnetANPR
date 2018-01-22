@@ -40,16 +40,16 @@ namespace dotNETANPR.ImageAnalysis
 
         public List<Peak> FindPeak(int count)
         {
-            for (int i = 0; i < this.YValues.Count; i++)
+            for (var i = 0; i < this.YValues.Count; i++)
             {
                 this.YValues.Insert(i, this.YValues[i] - this.GetMinValue());
             }
-            List<Peak> outPeaks = new List<Peak>();
-            for (int c = 0; c < count; c++)
+            var outPeaks = new List<Peak>();
+            for (var c = 0; c < count; c++)
             {
-                float maxValue = 0.0f;
-                int maxIndex = 0;
-                for (int i = 0; i < this.YValues.Count; i++)
+                var maxValue = 0.0f;
+                var maxIndex = 0;
+                for (var i = 0; i < this.YValues.Count; i++)
                 {
                     if (AllowedInterval(outPeaks, i))
                     {
@@ -65,8 +65,8 @@ namespace dotNETANPR.ImageAnalysis
                 {
                     break;
                 }
-                int leftIndex = IndexOfLeftPeakRel(maxIndex, peakFootConstant);
-                int rightIndex = IndexOfRightPeakRel(maxIndex, peakFootConstant);
+                var leftIndex = IndexOfLeftPeakRel(maxIndex, peakFootConstant);
+                var rightIndex = IndexOfRightPeakRel(maxIndex, peakFootConstant);
 
                 outPeaks.Add(new Peak(
                     Math.Max(0, leftIndex),

@@ -46,21 +46,21 @@ namespace dotNETANPR.ImageAnalysis
 
         public List<Peak> FindPeaks(int numberOfCandidates)
         {
-            List<Peak> outPeaks = new List<Peak>();
-            for (int c = 0; c < numberOfCandidates; c++)
+            var outPeaks = new List<Peak>();
+            for (var c = 0; c < numberOfCandidates; c++)
             {
-                float maxValue = 0.0f;
-                int maxIndex = 0;
-                for (int i = 0; i < this.YValues.Count; i++)
+                var maxValue = 0.0f;
+                var maxIndex = 0;
+                for (var i = 0; i < this.YValues.Count; i++)
                 {
                     if (!AllowedInterval(outPeaks, i)) continue;
                     if (!(this.YValues[i] >= maxValue)) continue;
                     maxValue = this.YValues[i];
                     maxIndex = i;
                 }
-                int leftIndex = IndexOfLeftPeakRel(maxIndex, peakFootConstant);
-                int rightIndex = IndexOfRightPeakRel(maxIndex, peakFootConstant);
-                int diff = rightIndex - leftIndex;
+                var leftIndex = IndexOfLeftPeakRel(maxIndex, peakFootConstant);
+                var rightIndex = IndexOfRightPeakRel(maxIndex, peakFootConstant);
+                var diff = rightIndex - leftIndex;
                 leftIndex -= (int) peakDiffMultiplicationConstant * diff;
                 rightIndex += (int) peakDiffMultiplicationConstant * diff;
 

@@ -47,7 +47,7 @@ namespace dotNETANPR.ImageAnalysis
             public void RemovePoint(Point point)
             {
                 Point toRemove = null;
-                foreach (Point px in this)
+                foreach (var px in this)
                 {
                     if (px.Equals(point))
                     {
@@ -84,10 +84,10 @@ namespace dotNETANPR.ImageAnalysis
                 {
                     return null;
                 }
-                Bitmap bitmap = new Bitmap(Width, Height);
-                for (int x = mostLeftPoint; x < mostRightPoint; x++)
+                var bitmap = new Bitmap(Width, Height);
+                for (var x = mostLeftPoint; x < mostRightPoint; x++)
                 {
-                    for (int y = mostTopPoint; y < mostBottomPoint; y++)
+                    for (var y = mostTopPoint; y < mostBottomPoint; y++)
                     {
                         if (matrix[x, y])
                         {
@@ -128,7 +128,7 @@ namespace dotNETANPR.ImageAnalysis
 
             public void BleachPiece()
             {
-                foreach (Point point in this)
+                foreach (var point in this)
                 {
                     matrix[point.X, point.Y] = false;
                 }
@@ -151,8 +151,8 @@ namespace dotNETANPR.ImageAnalysis
 
             private int MostRightPoint()
             {
-                int position = 0;
-                foreach (Point point in this)
+                var position = 0;
+                foreach (var point in this)
                 {
                     position = Math.Max(position, point.X);
                 }
@@ -161,8 +161,8 @@ namespace dotNETANPR.ImageAnalysis
 
             private int MostLeftPoint()
             {
-                int position = Int32.MaxValue;
-                foreach (Point point in this)
+                var position = Int32.MaxValue;
+                foreach (var point in this)
                 {
                     position = Math.Min(position, point.X);
                 }
@@ -171,8 +171,8 @@ namespace dotNETANPR.ImageAnalysis
 
             private int MostBottomPoint()
             {
-                int position = 0;
-                foreach (Point point in this)
+                var position = 0;
+                foreach (var point in this)
                 {
                     position = Math.Max(position, point.Y);
                 }
@@ -181,8 +181,8 @@ namespace dotNETANPR.ImageAnalysis
 
             private int MostTopPoint()
             {
-                int position = Int32.MaxValue;
-                foreach (Point point in this)
+                var position = Int32.MaxValue;
+                foreach (var point in this)
                 {
                     position = Math.Min(position, point.Y);
                 }
@@ -200,9 +200,9 @@ namespace dotNETANPR.ImageAnalysis
             width = photo.GetWidth();
             height = photo.GetHeight();
             matrix = new bool[width, height];
-            for (int x = 0; x < width; x++)
+            for (var x = 0; x < width; x++)
             {
-                for (int y = 0; y < height; y++)
+                for (var y = 0; y < height; y++)
                 {
                     matrix[x, y] = photo.GetBrightness(x, y) < 0.5;
                 }
@@ -211,10 +211,10 @@ namespace dotNETANPR.ImageAnalysis
 
         public Bitmap Render()
         {
-            Bitmap bitmap = new Bitmap(width, height, PixelFormat.Format8bppIndexed);
-            for (int x = 0; x < width; x++)
+            var bitmap = new Bitmap(width, height, PixelFormat.Format8bppIndexed);
+            for (var x = 0; x < width; x++)
             {
-                for (int y = 0; y < height; y++)
+                for (var y = 0; y < height; y++)
                 {
                     if (matrix[x, y])
                     {
@@ -271,7 +271,7 @@ namespace dotNETANPR.ImageAnalysis
 
         private int N(int x, int y)
         {
-            int n = 0;
+            var n = 0;
             if (GetPointValue(x - 1, y - 1)) n++;
             if (GetPointValue(x - 1, y + 1)) n++;
             if (GetPointValue(x + 1, y - 1)) n++;
@@ -285,8 +285,8 @@ namespace dotNETANPR.ImageAnalysis
 
         private int T(int x, int y)
         {
-            int n = 0;
-            for (int i = 2; i <= 8; i++)
+            var n = 0;
+            for (var i = 2; i <= 8; i++)
             {
                 if (!P(i, x, y) && P(i + 1, x, y)) n++;
             }
@@ -310,7 +310,7 @@ namespace dotNETANPR.ImageAnalysis
 
         private bool Step1Passed(int x, int y)
         {
-            int n = N(x, y);
+            var n = N(x, y);
             return 2 <= n && n <= 6 &&
                    T(x, y) == 1 &&
                    (!P(2, x, y) || !P(4, x, y) || !P(6, x, y)) &&
@@ -319,7 +319,7 @@ namespace dotNETANPR.ImageAnalysis
 
         private bool Step2Passed(int x, int y)
         {
-            int n = N(x, y);
+            var n = N(x, y);
             return 2 <= n && n <= 6 &&
                    T(x, y) == 1 &&
                    (!P(2, x, y) || !P(4, x, y) || !P(8, x, y)) &&
@@ -329,9 +329,9 @@ namespace dotNETANPR.ImageAnalysis
         private void FindBoundaryPoints(PointSet set)
         {
             if (set.Count != 0) set.Clear();
-            for (int x = 0; x < width; x++)
+            for (var x = 0; x < width; x++)
             {
-                for (int y = 0; y < height; y++)
+                for (var y = 0; y < height; y++)
                 {
                     if (IsBoundaryPoint(x, y)) set.Add(new Point(x, y));
                 }
@@ -340,8 +340,8 @@ namespace dotNETANPR.ImageAnalysis
 
         public PixelMap Skeletonize()
         {
-            PointSet flaggedPoints = new PointSet();
-            PointSet boundaryPoints = new PointSet();
+            var flaggedPoints = new PointSet();
+            var boundaryPoints = new PointSet();
             bool cont;
 
             do
@@ -349,7 +349,7 @@ namespace dotNETANPR.ImageAnalysis
                 cont = false;
                 FindBoundaryPoints(boundaryPoints);
 
-                foreach (Point p in boundaryPoints)
+                foreach (var p in boundaryPoints)
                 {
                     if (Step1Passed(p.X, p.Y))
                         flaggedPoints.Add(p);
@@ -357,21 +357,21 @@ namespace dotNETANPR.ImageAnalysis
 
                 if (flaggedPoints.Count != 0)
                     cont = true;
-                foreach (Point p in flaggedPoints)
+                foreach (var p in flaggedPoints)
                 {
                     matrix[p.X, p.Y] = false;
                     boundaryPoints.Remove(p);
                 }
                 flaggedPoints.Clear();
 
-                foreach (Point p in boundaryPoints)
+                foreach (var p in boundaryPoints)
                 {
                     if (Step2Passed(p.X, p.Y))
                         flaggedPoints.Add(p);
                 }
 
                 if (flaggedPoints.Count != 0) cont = true;
-                foreach (Point p in flaggedPoints)
+                foreach (var p in flaggedPoints)
                 {
                     matrix[p.X, p.Y] = false;
                 }
@@ -383,10 +383,10 @@ namespace dotNETANPR.ImageAnalysis
 
         public PixelMap ReduceNoise()
         {
-            PointSet pointsToReduce = new PointSet();
-            for (int x = 0; x < width; x++)
+            var pointsToReduce = new PointSet();
+            for (var x = 0; x < width; x++)
             {
-                for (int y = 0; y < height; y++)
+                for (var y = 0; y < height; y++)
                 {
                     if (N(x, y) < 4)
                     {
@@ -395,7 +395,7 @@ namespace dotNETANPR.ImageAnalysis
                 }
             }
 
-            foreach (Point point in pointsToReduce)
+            foreach (var point in pointsToReduce)
             {
                 matrix[point.X, point.Y] = false;
             }
@@ -404,9 +404,9 @@ namespace dotNETANPR.ImageAnalysis
 
         public bool IsInPieces(PieceSet pieces, int x, int y)
         {
-            foreach (Piece piece in pieces)
+            foreach (var piece in pieces)
             {
-                foreach (Point point in piece)
+                foreach (var point in piece)
                 {
                     if (point.Equals(x, y))
                     {
@@ -427,7 +427,7 @@ namespace dotNETANPR.ImageAnalysis
             {
                 return false;
             }
-            foreach (Point piecePoint in piece)
+            foreach (var piecePoint in piece)
             {
                 if (piecePoint.Equals(point))
                 {
@@ -439,14 +439,14 @@ namespace dotNETANPR.ImageAnalysis
 
         private Piece CreatePiece(PointSet unsorted)
         {
-            Piece piece = new Piece();
+            var piece = new Piece();
 
-            PointSet stack = new PointSet();
+            var stack = new PointSet();
             stack.Push(unsorted.FindLast(x => true));
 
             while (stack.Count != 0)
             {
-                Point p = stack.Pop();
+                var p = stack.Pop();
                 if (SeedShouldBeAdded(piece, p))
                 {
                     piece.Add(p);
@@ -463,11 +463,11 @@ namespace dotNETANPR.ImageAnalysis
 
         public PieceSet FindPieces()
         {
-            PieceSet pieces = new PieceSet();
-            PointSet unsorted = new PointSet();
-            for (int x = 0; x < width; x++)
+            var pieces = new PieceSet();
+            var unsorted = new PointSet();
+            for (var x = 0; x < width; x++)
             {
-                for (int y = 0; y < height; y++)
+                for (var y = 0; y < height; y++)
                 {
                     if (matrix[x, y])
                     {
@@ -489,10 +489,10 @@ namespace dotNETANPR.ImageAnalysis
             {
                 return this;
             }
-            PieceSet pieces = FindPieces();
-            int maxCost = 0;
-            int maxIndex = 0;
-            for (int i = 0; i < pieces.Count; i++)
+            var pieces = FindPieces();
+            var maxCost = 0;
+            var maxIndex = 0;
+            for (var i = 0; i < pieces.Count; i++)
             {
                 if (pieces[i].Cost() > maxCost)
                 {
@@ -501,7 +501,7 @@ namespace dotNETANPR.ImageAnalysis
                 }
             }
 
-            for (int i = 0; i < pieces.Count; i++)
+            for (var i = 0; i < pieces.Count; i++)
             {
                 if (i != maxIndex) pieces[i].BleachPiece();
             }

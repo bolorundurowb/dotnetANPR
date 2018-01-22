@@ -318,8 +318,8 @@ namespace dotnetANPR.ImageAnalysis
 
         public Bitmap RenderVertically(int width, int height)
         {
-            var content = new Bitmap(width, height, PixelFormat.Format8bppIndexed);
-            var axis = new Bitmap(width + 10, height + 40, PixelFormat.Format8bppIndexed);
+            var content = new Bitmap(width, height);
+            var axis = new Bitmap(width + 10, height + 40);
 
             var graphicsContent = Graphics.FromImage(content);
             var graphicsAxis = Graphics.FromImage(axis);

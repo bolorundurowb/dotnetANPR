@@ -280,7 +280,7 @@ namespace dotnetANPR.ImageAnalysis
             {
                 for (var y = 0; y < height; y++)
                 {
-                    array[x, y] = Photo.GetBrightness(Image, x, y);
+                    array[x, y] = GetBrightness(Image, x, y);
                 }
             }
             return array;
@@ -364,7 +364,7 @@ namespace dotnetANPR.ImageAnalysis
 
         public void AdaptiveThresholding()
         {
-            var statistics = new Statistics(this.Image);
+            var statistics = new Statistics(Image);
             var configurator = new Configurator.Configurator();
             var radius = configurator.GetIntProperty("photo_adaptivethresholdingradius");
             if (radius == 0)

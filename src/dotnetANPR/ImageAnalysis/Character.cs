@@ -47,11 +47,11 @@ namespace dotnetANPR.ImageAnalysis
         public Character(Bitmap clone, Bitmap bitmap, PositionInPlate positionInPlate) : base(clone)
         {
             ThresholdedImage = bitmap;
-            this.PositionInPlate = positionInPlate;
+            PositionInPlate = positionInPlate;
             Init();
         }
 
-        public new Character Clone()
+        public Character Clone()
         {
             return new Character((Bitmap)Image.Clone(), (Bitmap)ThresholdedImage.Clone(), PositionInPlate);
         }
@@ -79,7 +79,7 @@ namespace dotnetANPR.ImageAnalysis
             ComputeStatisticHue(colorImage);
             ComputeStatisticSaturation(colorImage);
 
-            Image = _bestPiece.Render() ?? new Bitmap(1, 1, PixelFormat.Format8bppIndexed);
+            Image = _bestPiece.Render() ?? new Bitmap(1, 1);
 
             PieceWidth = GetWidth();
             PieceHeight = GetHeight();

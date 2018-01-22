@@ -52,28 +52,28 @@ namespace dotnetANPR.ImageAnalysis
             var spacesTemp = new List<Peak>();
             var diffGVal = 2 * GetAverageValue() - GetMaxValue();
             var yValuesNew = new List<float>();
-            foreach (var yValue in this.YValues)
+            foreach (var yValue in YValues)
             {
                 yValuesNew.Add(yValue - diffGVal);
             }
-            this.YValues = yValuesNew;
-            this.DeActualizeFlags();
+            YValues = yValuesNew;
+            DeActualizeFlags();
             for (var c = 0; c < count; c++)
             {
                 var maxValue = 0.0f;
                 var maxIndex = 0;
-                for (var i = 0; i < this.YValues.Count; i++)
+                for (var i = 0; i < YValues.Count; i++)
                 {
                     if (AllowedInterval(spacesTemp, i))
                     {
-                        if (this.YValues[i] >= maxValue)
+                        if (YValues[i] >= maxValue)
                         {
-                            maxValue = this.YValues[i];
+                            maxValue = YValues[i];
                             maxIndex = i;
                         }
                     }
                 }
-                if (this.YValues[maxIndex] < plateGraphRelMinPeakSize * GetMaxValue())
+                if (YValues[maxIndex] < plateGraphRelMinPeakSize * GetMaxValue())
                 {
                     break;
                 }
@@ -93,7 +93,7 @@ namespace dotnetANPR.ImageAnalysis
                     spaces.Add(peak);
                 }
             }
-            spaces.Sort(new SpaceComparer(this.YValues));
+            spaces.Sort(new SpaceComparer(YValues));
             var chars = new List<Peak>();
             if (spaces.Count != 0)
             {
@@ -116,11 +116,11 @@ namespace dotnetANPR.ImageAnalysis
             {
                 var last = new Peak(
                     spaces[spaces.Count - 1].Center,
-                    this.YValues.Count -1
+                    YValues.Count -1
                 );
                 if (last.GetDiff() > 0) chars.Add(last);
             }
-            base.Peaks = chars;
+            Peaks = chars;
             return chars;
         }
     }

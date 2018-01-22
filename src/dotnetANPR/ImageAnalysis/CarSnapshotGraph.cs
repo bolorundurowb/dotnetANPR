@@ -13,7 +13,7 @@ namespace dotnetANPR.ImageAnalysis
 
         public CarSnapshotGraph(CarSnapshot carSnapshot)
         {
-            this.handle = carSnapshot;
+            handle = carSnapshot;
         }
 
         public class PeakComparer : IComparer<Peak>
@@ -51,11 +51,11 @@ namespace dotnetANPR.ImageAnalysis
             {
                 var maxValue = 0.0f;
                 var maxIndex = 0;
-                for (var i = 0; i < this.YValues.Count; i++)
+                for (var i = 0; i < YValues.Count; i++)
                 {
                     if (!AllowedInterval(outPeaks, i)) continue;
-                    if (!(this.YValues[i] >= maxValue)) continue;
-                    maxValue = this.YValues[i];
+                    if (!(YValues[i] >= maxValue)) continue;
+                    maxValue = YValues[i];
                     maxIndex = i;
                 }
                 var leftIndex = IndexOfLeftPeakRel(maxIndex, peakFootConstant);
@@ -67,11 +67,11 @@ namespace dotnetANPR.ImageAnalysis
                 outPeaks.Add(new Peak(
                     Math.Max(0, leftIndex),
                     maxIndex,
-                    Math.Min(this.YValues.Count - 1, rightIndex)
+                    Math.Min(YValues.Count - 1, rightIndex)
                 ));
             }
-            outPeaks.Sort(new PeakComparer(this.YValues));
-            base.Peaks = outPeaks;
+            outPeaks.Sort(new PeakComparer(YValues));
+            Peaks = outPeaks;
             return outPeaks;
         }
     }

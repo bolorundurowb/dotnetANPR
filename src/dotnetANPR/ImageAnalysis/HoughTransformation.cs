@@ -147,9 +147,9 @@ namespace dotnetANPR.ImageAnalysis
 
             var dx = width;
             var dy = y1 - y0;
-            this.Dx = dx;
-            this.Dy = dy;
-            Angle = (float)(180 * Math.Atan(this.Dy / this.Dx) / Math.PI);
+            Dx = dx;
+            Dy = dy;
+            Angle = (float)(180 * Math.Atan(Dy / Dx) / Math.PI);
 
             if (renderType == RenderAll)
             {

@@ -30,11 +30,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="PropertyConfig, Version=1.0.2.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\packages\PropertyConfig.dll.1.0.2\lib\net45\PropertyConfig.dll</HintPath>
-    </Reference>
     <Reference Include="PropertyConfig, Version=1.1.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\packages\PropertyConfig.dll.1.1.0\lib\net45\PropertyConfig.dll</HintPath>
+      <HintPath>..\..\packages\PropertyConfig.dll.1.1.0\lib\net45\PropertyConfig.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

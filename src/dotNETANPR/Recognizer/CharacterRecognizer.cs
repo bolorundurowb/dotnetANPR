@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
-using dotNETANPR.ImageAnalysis;
+using dotnetANPR.ImageAnalysis;
 
-namespace dotNETANPR.Recognizer
+namespace dotnetANPR.Recognizer
 {
     public class CharacterRecognizer : ICharacterRecognizer
     {

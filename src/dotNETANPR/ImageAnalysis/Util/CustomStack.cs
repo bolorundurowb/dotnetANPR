@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace dotNETANPR.ImageAnalysis.Util
+namespace dotnetANPR.ImageAnalysis.Util
 {
     public class CustomStack<T> : List<T>
     {

@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
-using dotNETANPR.Recognizer;
+using dotnetANPR.Recognizer;
 
-namespace dotNETANPR.ImageAnalysis
+namespace dotnetANPR.ImageAnalysis
 {
     public class Character : Photo
     {

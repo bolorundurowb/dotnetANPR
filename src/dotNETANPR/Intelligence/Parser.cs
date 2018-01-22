@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
-using dotNETANPR.Recognizer;
 
-namespace dotNETANPR.Intelligence
+namespace dotnetANPR.Intelligence
 {
     public class Parser
     {

@@ -3,7 +3,7 @@ using System.Drawing;
 using System.IO;
 using PropertyConfig;
 
-namespace dotNETANPR.Configurator
+namespace dotnetANPR.Configurator
 {
     public class Configurator
     {

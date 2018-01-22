@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace dotNETANPR.Gui
+namespace dotnetANPR.Gui
 {
     public class TimeMeter
     {

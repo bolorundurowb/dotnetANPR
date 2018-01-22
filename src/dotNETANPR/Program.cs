@@ -1,10 +1,10 @@
 ﻿using System;
 using System.IO;
-using dotNETANPR.Gui;
-using dotNETANPR.ImageAnalysis;
-using dotNETANPR.Recognizer;
+using dotnetANPR.Gui;
+using dotnetANPR.ImageAnalysis;
+using dotnetANPR.Recognizer;
 
-namespace dotNETANPR
+namespace dotnetANPR
 {
     public class Program
     {

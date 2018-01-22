@@ -2,7 +2,7 @@
 using System.Drawing;
 using System.Drawing.Imaging;
 
-namespace dotNETANPR.ImageAnalysis
+namespace dotnetANPR.ImageAnalysis
 {
     public class HoughTransformation
     {

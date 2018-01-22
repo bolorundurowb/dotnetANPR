@@ -1,6 +1,6 @@
-﻿using dotNETANPR.ImageAnalysis;
+﻿using dotnetANPR.ImageAnalysis;
 
-namespace dotNETANPR.Recognizer
+namespace dotnetANPR.Recognizer
 {
     public interface ICharacterRecognizer
     {

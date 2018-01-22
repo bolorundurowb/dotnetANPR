@@ -1,7 +1,7 @@
 ﻿﻿using System;
  using System.Collections.Generic;
 
-namespace dotNETANPR.ImageAnalysis
+namespace dotnetANPR.ImageAnalysis
 {
     public class CarSnapshotGraph : Graph
     {

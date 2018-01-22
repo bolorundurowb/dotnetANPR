@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
-using dotNETANPR.ImageAnalysis.Convolution;
+using dotnetANPR.ImageAnalysis.Convolution;
 
-namespace dotNETANPR.ImageAnalysis
+namespace dotnetANPR.ImageAnalysis
 {
     public class Plate : Photo
     {

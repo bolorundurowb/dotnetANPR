@@ -1,13 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
-using dotNETANPR.Gui;
-using dotNETANPR.ImageAnalysis;
-using dotNETANPR.Recognizer;
+using dotnetANPR.Gui;
+using dotnetANPR.ImageAnalysis;
+using dotnetANPR.Recognizer;
 
-namespace dotNETANPR.Intelligence
+namespace dotnetANPR.Intelligence
 {
     public class Intelligence
     {

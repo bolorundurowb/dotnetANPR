@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 
-namespace dotNETANPR.ImageAnalysis
+namespace dotnetANPR.ImageAnalysis
 {
     public class Graph
     {
@@ -337,15 +337,14 @@ namespace dotNETANPR.ImageAnalysis
             graphicsContent.DrawRectangle(contentPen, backRect);
 
 
-            int x, y, x0;
-            x = 0;
-            y = 0;
+            var x = 0;
+            var y = 0;
 
             var graphicsContentPen = new Pen(Color.Green);
 
             for (var i = 0; i < YValues.Count; i++)
             {
-                x0 = x;
+                var x0 = x;
                 var y0 = y;
                 x = (int) ((float) i / YValues.Count * height);
                 y = (int) ((1 - YValues[i] / GetMaxValue()) * width);

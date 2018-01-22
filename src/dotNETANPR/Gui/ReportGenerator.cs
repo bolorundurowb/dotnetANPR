@@ -2,7 +2,7 @@
 using System.Drawing;
 using System.IO;
 
-namespace dotNETANPR.Gui
+namespace dotnetANPR.Gui
 {
     public class ReportGenerator
     {

@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using dotNETANPR.ImageAnalysis;
+using dotnetANPR.ImageAnalysis;
 
-namespace dotNETANPR.Recognizer
+namespace dotnetANPR.Recognizer
 {
     public class NeuralPatternClassificator : CharacterRecognizer, ICharacterRecognizer
     {

@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
-using dotNETANPR.ImageAnalysis.Convolution;
+using dotnetANPR.ImageAnalysis.Convolution;
 
-namespace dotNETANPR.ImageAnalysis
+namespace dotnetANPR.ImageAnalysis
 {
     public class CarSnapshot : Photo
     {

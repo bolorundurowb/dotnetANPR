@@ -1,4 +1,4 @@
-﻿namespace dotNETANPR.ImageAnalysis
+﻿namespace dotnetANPR.ImageAnalysis
 {
     public class PositionInPlate
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Drawing;
 
-namespace dotNETANPR.ImageAnalysis
+namespace dotnetANPR.ImageAnalysis
 {
     public class Statistics
     {

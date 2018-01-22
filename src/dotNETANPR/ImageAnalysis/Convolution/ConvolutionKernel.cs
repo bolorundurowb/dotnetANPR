@@ -1,4 +1,4 @@
-﻿namespace dotNETANPR.ImageAnalysis.Convolution
+﻿namespace dotnetANPR.ImageAnalysis.Convolution
 {
     public class ConvolutionKernel
     {

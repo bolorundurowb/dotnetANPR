@@ -2,7 +2,7 @@
 using System.Collections.Generic;
  using System.Xml;
 
-namespace dotNETANPR.NeuralNetwork
+namespace dotnetANPR.NeuralNetwork
 {
     public class NeuralNetwork
     {

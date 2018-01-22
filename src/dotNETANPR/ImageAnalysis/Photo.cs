@@ -3,10 +3,10 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
-using dotNETANPR.ImageAnalysis.Convolution;
-using dotNETANPR.ImageAnalysis.LookUp;
+using dotnetANPR.ImageAnalysis.Convolution;
+using dotnetANPR.ImageAnalysis.LookUp;
 
-namespace dotNETANPR.ImageAnalysis
+namespace dotnetANPR.ImageAnalysis
 {
     public class Photo
     {

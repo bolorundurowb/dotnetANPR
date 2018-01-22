@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 
-namespace dotNETANPR.ImageAnalysis.LookUp
+namespace dotnetANPR.ImageAnalysis.LookUp
 {
     public class LookupOp
     {

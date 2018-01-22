@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
-using dotNETANPR.ImageAnalysis.Util;
+using dotnetANPR.ImageAnalysis.Util;
 
-namespace dotNETANPR.ImageAnalysis
+namespace dotnetANPR.ImageAnalysis
 {
     public class PixelMap
     {

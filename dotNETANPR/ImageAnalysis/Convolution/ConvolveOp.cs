@@ -28,9 +28,9 @@ namespace dotNETANPR.ImageAnalysis.Convolution
                         }
                     }
 
-                    r = Math.Min(Math.Max((r / kernel.Factor) + kernel.Offset, 0), 255);
-                    g = Math.Min(Math.Max((g / kernel.Factor) + kernel.Offset, 0), 255);
-                    b = Math.Min(Math.Max((b / kernel.Factor) + kernel.Offset, 0), 255);
+                    r = Math.Min(Math.Max(r / kernel.Factor + kernel.Offset, 0), 255);
+                    g = Math.Min(Math.Max(g / kernel.Factor + kernel.Offset, 0), 255);
+                    b = Math.Min(Math.Max(b / kernel.Factor + kernel.Offset, 0), 255);
 
                     output.SetPixel(x, y, Color.FromArgb(r, g, b));
                 }

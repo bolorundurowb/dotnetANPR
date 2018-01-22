@@ -188,7 +188,7 @@ namespace dotNETANPR.Intelligence
                             {
                                 if (!form.GetPosition(ii).IsAllowed(rc.GetPattern(x).Character)) continue;
                                 CharacterRecognizer.RecognizedChar.RecognizedPattern rp = rc.GetPattern(x);
-                                finalPlate.RequiredChanges += (rp.Cost / 100);
+                                finalPlate.RequiredChanges += rp.Cost / 100;
                                 finalPlate.AddChar(rp.Character);
                                 break;
                             }

@@ -437,15 +437,15 @@ namespace dotNETANPR.ImageAnalysis
                 // The color wheel consists of 6 sectors.
                 // Figure out which sector you're in.
                 double sectorPos = hue / 60.0;
-                int sectorNumber = (int)(Math.Floor(sectorPos));
+                int sectorNumber = (int)Math.Floor(sectorPos);
 
                 // get the fractional part of the sector
                 double fractionalSector = sectorPos - sectorNumber;
 
                 // calculate values for the three axes of the color.
                 double p = brightness * (1.0 - saturation);
-                double q = brightness * (1.0 - (saturation * fractionalSector));
-                double t = brightness * (1.0 - (saturation * (1 - fractionalSector)));
+                double q = brightness * (1.0 - saturation * fractionalSector);
+                double t = brightness * (1.0 - saturation * (1 - fractionalSector));
 
                 // assign the fractional colors to r, g, and b
                 // based on the sector the angle is in.

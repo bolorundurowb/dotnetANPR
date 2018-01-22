@@ -278,14 +278,14 @@ namespace dotNETANPR.ImageAnalysis
                         (int) (p.Center * multConst), 30);
                     graphicsContent.DrawLine(graphicsContentPen, (int) (p.Center * multConst), 30,
                         (int) (p.Right * multConst), 0);
-                    graphicsContent.DrawString((i++) + ".", graphicsContentFont, contentBrush,
+                    graphicsContent.DrawString(i++ + ".", graphicsContentFont, contentBrush,
                         (float) (p.Center * multConst) - 5, 42F);
                 }
             }
 
             graphicsAxis.DrawImage(content, 35, 5);
 
-            axisPen.Color = (Color.Black);
+            axisPen.Color = Color.Black;
             axisBrush.Color = Color.Black;
             Font graphicsAxisFont = new Font("Consolas", 20F);
             graphicsAxis.DrawRectangle(axisPen, 35, 5, content.Width, content.Height);
@@ -298,7 +298,7 @@ namespace dotNETANPR.ImageAnalysis
 
             for (int ay = 0; ay < content.Height; ay += 20)
             {
-                graphicsAxis.DrawString(Convert.ToInt32(((1 - (float) ay) / content.Height) * 100) + "%",
+                graphicsAxis.DrawString(Convert.ToInt32((1 - (float) ay) / content.Height * 100) + "%",
                     graphicsContentFont, contentBrush, 1, ay + 15);
                 graphicsAxis.DrawLine(axisPen, 25, ay + 5, 35, ay + 5);
             }
@@ -356,14 +356,14 @@ namespace dotNETANPR.ImageAnalysis
                         (int) (p.Center * multConst));
                     graphicsContent.DrawLine(graphicsContentPen, width - 30, (int) (p.Center * multConst), width,
                         (int) (p.Right * multConst));
-                    graphicsContent.DrawString((i++) + ".", graphicsContentFont, contentBrush, width - 38,
+                    graphicsContent.DrawString(i++ + ".", graphicsContentFont, contentBrush, width - 38,
                         (float) (p.Center * multConst) + 5);
                 }
             }
 
             graphicsAxis.DrawImage(content, 5, 5);
 
-            axisPen.Color = (Color.Black);
+            axisPen.Color = Color.Black;
             axisBrush.Color = Color.Black;
             graphicsAxis.DrawRectangle(axisPen, 5, 5, content.Width, content.Height);
 
@@ -383,7 +383,7 @@ namespace dotNETANPR.ImageAnalysis
                 {
                     sum += clone[ii];
                 }
-                YValues[i] = (sum / size);
+                YValues[i] = sum / size;
             }
         }
 

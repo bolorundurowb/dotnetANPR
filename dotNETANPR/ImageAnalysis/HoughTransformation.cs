@@ -125,7 +125,7 @@ namespace dotNETANPR.ImageAnalysis
                     }
                     else
                     {
-                        output.SetPixel(x, y, HSBtoRGB(0.67f - ((float)value / 255) * 2 / 3, 1.0f, 1.0f));
+                        output.SetPixel(x, y, HSBtoRGB(0.67f - (float)value / 255 * 2 / 3, 1.0f, 1.0f));
                     }
                 }
             }
@@ -134,8 +134,8 @@ namespace dotNETANPR.ImageAnalysis
             Pen gPen = new Pen(Color.Orange);
 
 
-            float a = 2 * ((float)maxPoint.X) / width - 1;
-            float b = 2 * ((float)maxPoint.Y) / height - 1;
+            float a = 2 * (float)maxPoint.X / width - 1;
+            float b = 2 * (float)maxPoint.Y / height - 1;
             float x0f = -1;
             float y0f = a * x0f + b;
             float x1f = 1;
@@ -176,13 +176,13 @@ namespace dotNETANPR.ImageAnalysis
             else
             {
                 double sectorPos = hue / 60.0;
-                int sectorNumber = (int)(Math.Floor(sectorPos));
+                int sectorNumber = (int)Math.Floor(sectorPos);
 
                 double fractionalSector = sectorPos - sectorNumber;
 
                 double p = brightness * (1.0 - saturation);
-                double q = brightness * (1.0 - (saturation * fractionalSector));
-                double t = brightness * (1.0 - (saturation * (1 - fractionalSector)));
+                double q = brightness * (1.0 - saturation * fractionalSector);
+                double t = brightness * (1.0 - saturation * (1 - fractionalSector));
 
                 switch (sectorNumber)
                 {

@@ -61,7 +61,7 @@ namespace dotNETANPR.Recognizer
         {
             List<double> vectorInput = imgChar.ExtractFeatures();
             List<double> vectorOutput = Alphabet.Select(t => chr == t ? 1.0 : 0.0).ToList();
-            return (new NeuralNetwork.NeuralNetwork.SetOfIOPairs.IOPair(vectorInput, vectorOutput));
+            return new NeuralNetwork.NeuralNetwork.SetOfIOPairs.IOPair(vectorInput, vectorOutput);
         }
 
         public void LearnAlphabet(string path)

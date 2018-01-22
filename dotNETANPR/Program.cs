@@ -81,7 +81,7 @@ namespace dotNETANPR
 
         public static void Main(string[] args)
         {
-            if (args.Length == 0 || (args.Length == 1 && args[0].Equals("-gui")))
+            if (args.Length == 0 || args.Length == 1 && args[0].Equals("-gui"))
             {
                 // TODO: run GUI
             }

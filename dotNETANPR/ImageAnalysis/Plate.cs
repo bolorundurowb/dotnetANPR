@@ -218,7 +218,7 @@ namespace dotNETANPR.ImageAnalysis
             float averageDispersion = 0;
             float averageWidth = GetAverageCharWidth(chars);
             foreach (Character chr in chars)
-                averageDispersion += (Math.Abs(averageWidth - chr.FullWidth));
+                averageDispersion += Math.Abs(averageWidth - chr.FullWidth);
             averageDispersion /= chars.Count;
             return averageDispersion / averageWidth;
         }
@@ -228,7 +228,7 @@ namespace dotNETANPR.ImageAnalysis
             float averageDispersion = 0;
             float averageWidth = GetAveragePieceWidth(chars);
             foreach (Character chr in chars)
-                averageDispersion += (Math.Abs(averageWidth - chr.PieceWidth));
+                averageDispersion += Math.Abs(averageWidth - chr.PieceWidth);
             averageDispersion /= chars.Count;
             return averageDispersion / averageWidth;
         }

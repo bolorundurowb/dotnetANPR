@@ -25,12 +25,12 @@ namespace dotNETANPR.ImageAnalysis
                     Maximum = Math.Max(pixelValue, Maximum);
                     Minimum = Math.Min(pixelValue, Minimum);
                     sum += pixelValue;
-                    squaresSum += (pixelValue * pixelValue);
+                    squaresSum += pixelValue * pixelValue;
                 }
             }
-            int count = (w * h);
+            int count = w * h;
             Average = sum / count;
-            Dispersion = (squaresSum / count) - (Average * Average);
+            Dispersion = squaresSum / count - Average * Average;
         }
 
         public float ThresholdBrightness(float value, float coef)

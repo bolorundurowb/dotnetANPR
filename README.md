@@ -1,6 +1,6 @@
 # dotNETANPR
 
-[![Build Status](https://travis-ci.org/bolorundurowb/dotNETANPR.svg?branch=master)](https://travis-ci.org/bolorundurowb/dotNETANPR)
+[![Build Status](https://travis-ci.org/bolorundurowb/dotnetANPR.svg?branch=develop)](https://travis-ci.org/bolorundurowb/dotnetANPR)
 
 
 ## About

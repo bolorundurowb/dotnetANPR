@@ -316,7 +316,7 @@ namespace dotnetANPR.ImageAnalysis
             {
                 for (var j = 0; j < height; j++)
                 {
-                    SetBrightness(bitmap, width, height, array[i, j]);
+                    SetBrightness(bitmap, i, j, array[i, j]);
                 }
             }
             return bitmap;

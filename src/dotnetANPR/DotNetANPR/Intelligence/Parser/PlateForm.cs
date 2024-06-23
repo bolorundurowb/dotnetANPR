@@ -12,8 +12,8 @@ namespace DotNetANPR.Intelligence.Parser
 
         public PlateForm(string name)
         {
-            this.Name = name;
-            this.Positions = new List<Position>();
+            Name = name;
+            Positions = new List<Position>();
         }
     }
 }

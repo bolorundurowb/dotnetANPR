@@ -1,18 +1,18 @@
 ﻿using System;
 using System.IO;
+using PropertyConfig;
 
 namespace DotNetANPR.Configuration
 {
     public sealed class Configurator
     {
-        private static Configurator _configurator;
-        private readonly PropertyConfig.Configuration _properties;
+        private readonly Properties _properties;
 
         public string FileName { get; set; } = "config.xml";
 
         private Configurator()
         {
-            _properties = new PropertyConfig.Configuration();
+            _properties = new Properties();
 
             // PHOTO
             Set("photo_adaptivethresholdingradius", 7); // 7 is recommended
@@ -91,12 +91,9 @@ namespace DotNetANPR.Configuration
             Set("help_file_help", "./Resources/Help/help.html");
             Set("help_file_about", "./Resources/Help/about.html");
             Set("reportgeneratorcss", "./Resources/ReportGenerator/style.css");
-
-            if (!File.Exists(FileName))
-                _properties.StoreToXml(FileName);
         }
 
-        public static Configurator Instance() => _configurator ?? (_configurator = new Configurator());
+        public Configurator(string filePath) : this() { LoadConfiguration(filePath); }
 
         public T Get<T>(string name)
         {
@@ -107,5 +104,13 @@ namespace DotNetANPR.Configuration
         public void Set<T>(string name, T value) => _properties[name] = value.ToString();
 
         public void Save() => _properties.StoreToXml(FileName);
+
+        public void LoadConfiguration(string filePath = null)
+        {
+            if (filePath == null)
+                _properties.LoadFromXml();
+            else
+                _properties.LoadFromXml(filePath);
+        }
     }
 }

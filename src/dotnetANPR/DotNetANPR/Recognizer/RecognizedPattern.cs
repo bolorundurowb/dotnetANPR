@@ -3,28 +3,11 @@ using System.Collections.Generic;
 
 namespace DotNetANPR.Recognizer;
 
-public class RecognizedPattern(char chr, float cost) : IComparable<RecognizedPattern>
+public class RecognizedPattern(char chr, float cost)
 {
     public char Char { get; private set; } = chr;
 
     public float Cost { get; private set; } = cost;
-
-    public int CompareTo(RecognizedPattern other)
-    {
-        if (ReferenceEquals(this, other))
-            return 0;
-
-        if (ReferenceEquals(null, other))
-            return 1;
-
-        if (Cost < other.Cost)
-            return -1;
-
-        if (Cost > other.Cost)
-            return 1;
-
-        return 0;
-    }
 }
 
 public class RecognizedPatternComparer : IComparer<RecognizedPattern>

@@ -1,7 +1,6 @@
-﻿namespace DotNetANPR.ImageAnalysis
+﻿namespace DotNetANPR.ImageAnalysis;
+
+public class Character
 {
-    public class Character
-    {
         
-    }
 }

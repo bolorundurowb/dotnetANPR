@@ -1,13 +1,10 @@
 ﻿using System.Linq;
 
-namespace DotNetANPR.Intelligence.Parser
+namespace DotNetANPR.Intelligence.Parser;
+
+public class Position(string data)
 {
-    public class Position
-    {
-        public char[] AllowedChars { get; private set; }
+    public char[] AllowedChars { get; private set; } = data.ToCharArray();
 
-        public Position(string data) => AllowedChars = data.ToCharArray();
-
-        public bool IsAllowed(char character) => AllowedChars.Contains(character);
-    }
+    public bool IsAllowed(char chr) => AllowedChars.Contains(chr);
 }

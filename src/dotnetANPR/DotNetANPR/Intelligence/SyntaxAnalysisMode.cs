@@ -1,9 +1,8 @@
-﻿namespace DotNetANPR.Intelligence
+﻿namespace DotNetANPR.Intelligence;
+
+public enum SyntaxAnalysisMode
 {
-    public enum SyntaxAnalysisMode
-    {
-        DoNotParse = 0,
-        OnlyEqualLength = 1,
-        EqualOrShorterLength = 2,
-    }
+    DoNotParse = 0,
+    OnlyEqualLength = 1,
+    EqualOrShorterLength = 2,
 }

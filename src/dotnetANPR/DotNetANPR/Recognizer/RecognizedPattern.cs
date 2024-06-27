@@ -1,15 +1,34 @@
-﻿namespace DotNetANPR.Recognizer
+﻿using System;
+
+namespace DotNetANPR.Recognizer
 {
-    public class RecognizedPattern
+    public class RecognizedPattern : IComparable<RecognizedPattern>
     {
         public char Char { get; private set; }
 
-        public double Cost { get; private set; }
+        public float Cost { get; private set; }
 
-        public RecognizedPattern(char c, double cost)
+        public RecognizedPattern(char chr, float cost)
         {
-            Char = c;
+            Char = chr;
             Cost = cost;
+        }
+
+        public int CompareTo(RecognizedPattern other)
+        {
+            if (ReferenceEquals(this, other))
+                return 0;
+
+            if (ReferenceEquals(null, other))
+                return 1;
+
+            if (Cost < other.Cost)
+                return -1;
+
+            if (Cost > other.Cost)
+                return 1;
+
+            return 0;
         }
     }
 }

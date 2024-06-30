@@ -101,7 +101,7 @@ public sealed class Configurator
         return (T)Convert.ChangeType(rawValue, typeof(T));
     }
 
-    public void Set<T>(string name, T value) => _properties[name] = value.ToString();
+    public void Set<T>(string name, T value) => _properties[name] = value?.ToString();
 
     public void Save() => _properties.StoreToXml(FileName);
 

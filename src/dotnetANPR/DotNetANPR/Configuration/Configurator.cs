@@ -6,6 +6,7 @@ namespace DotNetANPR.Configuration;
 
 public sealed class Configurator
 {
+    private static Configurator? _configurator;
     private readonly Properties _properties;
 
     public string FileName { get; set; } = "config.xml";
@@ -95,6 +96,8 @@ public sealed class Configurator
 
     public Configurator(string filePath) : this() { LoadConfiguration(filePath); }
 
+    public static Configurator Instance => _configurator ??= new Configurator();
+
     public T Get<T>(string name)
     {
         var rawValue = _properties[name];
@@ -105,7 +108,7 @@ public sealed class Configurator
 
     public void Save() => _properties.StoreToXml(FileName);
 
-    public void LoadConfiguration(string filePath = null)
+    public void LoadConfiguration(string? filePath = null)
     {
         if (filePath == null)
             _properties.LoadFromXml();

@@ -7,8 +7,8 @@ namespace DotNetANPR.ImageAnalysis;
 
 public class Graph
 {
-    private readonly List<Peak>? _peaks = null;
-    private List<float> _yValues = new();
+    protected  List<Peak>? Peaks = null;
+    protected List<float> YValues = new();
 
     private bool _actualAverageValue = false; // are values up-to-date?
     private bool _actualMaximumValue = false; // are values up-to-date?
@@ -36,7 +36,7 @@ public class Graph
 
     public void ApplyProbabilityDistributor(ProbabilityDistributor probabilityDistributor)
     {
-        _yValues = probabilityDistributor.Distribute(_yValues);
+        YValues = probabilityDistributor.Distribute(YValues);
         DeActualizeFlags();
     }
 
@@ -44,8 +44,8 @@ public class Graph
     {
         var max = MaxValue();
 
-        for (var i = 0; i < _yValues.Count; i++)
-            _yValues[i] = max - _yValues[i];
+        for (var i = 0; i < YValues.Count; i++)
+            YValues[i] = max - YValues[i];
 
         DeActualizeFlags();
     }
@@ -54,7 +54,7 @@ public class Graph
     {
         if (!_actualAverageValue)
         {
-            _averageValue = AverageValue(0, _yValues.Count);
+            _averageValue = AverageValue(0, YValues.Count);
             _actualAverageValue = true;
         }
 
@@ -66,16 +66,16 @@ public class Graph
         var sum = 0f;
 
         for (var i = a; i < b; i++)
-            sum += _yValues[i];
+            sum += YValues[i];
 
-        return sum / _yValues.Count;
+        return sum / YValues.Count;
     }
 
     public float MaxValue()
     {
         if (!_actualMaximumValue)
         {
-            _maximumValue = MaxValue(0, _yValues.Count);
+            _maximumValue = MaxValue(0, YValues.Count);
             _actualMaximumValue = true;
         }
 
@@ -87,15 +87,15 @@ public class Graph
         var maxValue = 0.0f;
 
         for (var i = a; i < b; i++)
-            maxValue = Math.Max(maxValue, _yValues[i]);
+            maxValue = Math.Max(maxValue, YValues[i]);
 
         return maxValue;
     }
 
     public float MaxValue(float a, float b)
     {
-        var ia = (int)(a * _yValues.Count);
-        var ib = (int)(b * _yValues.Count);
+        var ia = (int)(a * YValues.Count);
+        var ib = (int)(b * YValues.Count);
 
         return MaxValue(ia, ib);
     }
@@ -107,9 +107,9 @@ public class Graph
 
         for (var i = a; i < b; i++)
         {
-            if (_yValues[i] >= maxValue)
+            if (YValues[i] >= maxValue)
             {
-                maxValue = _yValues[i];
+                maxValue = YValues[i];
                 maxIndex = i;
             }
         }
@@ -121,7 +121,7 @@ public class Graph
     {
         if (!_actualMinimumValue)
         {
-            _minimumValue = MinValue(0, _yValues.Count);
+            _minimumValue = MinValue(0, YValues.Count);
             _actualMinimumValue = true;
         }
 
@@ -133,15 +133,15 @@ public class Graph
         var minValue = float.PositiveInfinity;
 
         for (var i = a; i < b; i++)
-            minValue = Math.Min(minValue, _yValues[i]);
+            minValue = Math.Min(minValue, YValues[i]);
 
         return minValue;
     }
 
     public float MinValue(float a, float b)
     {
-        var ia = (int)(a * _yValues.Count);
-        var ib = (int)(b * _yValues.Count);
+        var ia = (int)(a * YValues.Count);
+        var ib = (int)(b * YValues.Count);
 
         return MinValue(ia, ib);
     }
@@ -153,9 +153,9 @@ public class Graph
 
         for (var i = a; i < b; i++)
         {
-            if (_yValues[i] >= minValue)
+            if (YValues[i] >= minValue)
             {
-                minValue = _yValues[i];
+                minValue = YValues[i];
                 maxIndex = i;
             }
         }
@@ -184,24 +184,24 @@ public class Graph
         graphicContent.SmoothingMode = SmoothingMode.AntiAlias;
         var greenPen = new Pen(Color.Green);
         int x = 0, y = 0;
-        for (var i = 0; i < _yValues.Count; i++)
+        for (var i = 0; i < YValues.Count; i++)
         {
             var x0 = x;
             var y0 = y;
-            x = (int)((float)i / _yValues.Count * width);
-            y = (int)((1 - (_yValues[i] / MaxValue())) * height);
+            x = (int)((float)i / YValues.Count * width);
+            y = (int)((1 - (YValues[i] / MaxValue())) * height);
             graphicContent.DrawLine(greenPen, x0, y0, x, y);
         }
 
         // Draw peaks if they exist
-        if (_peaks != null)
+        if (Peaks != null)
         {
             var redPen = new Pen(Color.Red);
             var redBrush = Brushes.Red;
             var font = new Font("Arial", 12);
-            var multConst = (double)width / _yValues.Count;
+            var multConst = (double)width / YValues.Count;
             var i = 0;
-            foreach (var peak in _peaks)
+            foreach (var peak in Peaks)
             {
                 graphicContent.DrawLine(redPen, (int)(peak.Left * multConst), 0, (int)(peak.Center * multConst),
                     30);
@@ -258,24 +258,24 @@ public class Graph
         graphicContent.SmoothingMode = SmoothingMode.AntiAlias;
         var greenPen = new Pen(Color.Green);
         int x = width, y = 0;
-        for (var i = 0; i < _yValues.Count; i++)
+        for (var i = 0; i < YValues.Count; i++)
         {
             var x0 = x;
             var y0 = y;
-            y = (int)((float)i / _yValues.Count * height);
-            x = (int)(_yValues[i] / MaxValue() * width);
+            y = (int)((float)i / YValues.Count * height);
+            x = (int)(YValues[i] / MaxValue() * width);
             graphicContent.DrawLine(greenPen, x0, y0, x, y);
         }
 
         // Draw peaks if they exist
-        if (_peaks != null)
+        if (Peaks != null)
         {
             var redPen = new Pen(Color.Red);
             var redBrush = Brushes.Red;
             var font = new Font("Arial", 12);
-            var multConst = (double)height / _yValues.Count;
+            var multConst = (double)height / YValues.Count;
             var i = 0;
-            foreach (var p in _peaks)
+            foreach (var p in Peaks)
             {
                 graphicContent.DrawLine(redPen, width, (int)(p.Left * multConst), width - 30,
                     (int)(p.Center * multConst));
@@ -297,14 +297,14 @@ public class Graph
     public void RankFilter(int size)
     {
         var halfSize = size / 2;
-        var clone = new List<float>(_yValues);
+        var clone = new List<float>(YValues);
 
-        for (var i = halfSize; i < (_yValues.Count - halfSize); i++)
+        for (var i = halfSize; i < (YValues.Count - halfSize); i++)
         {
             float sum = 0;
             for (var ii = i - halfSize; ii < (i + halfSize); ii++)
                 sum += clone[ii];
-            _yValues[i] = sum / size;
+            YValues[i] = sum / size;
         }
     }
 
@@ -313,7 +313,7 @@ public class Graph
         var index = peak;
         while (index >= 0)
         {
-            if (_yValues[index] < (peakFootConstantRel * _yValues[peak]))
+            if (YValues[index] < (peakFootConstantRel * YValues[peak]))
                 break;
 
             index--;
@@ -325,15 +325,15 @@ public class Graph
     public int IndexOfRightPeakRel(int peak, double peakFootConstantRel)
     {
         var index = peak;
-        while (index < _yValues.Count)
+        while (index < YValues.Count)
         {
-            if (_yValues[index] < (peakFootConstantRel * _yValues[peak]))
+            if (YValues[index] < (peakFootConstantRel * YValues[peak]))
                 break;
 
             index++;
         }
 
-        return Math.Min(_yValues.Count, index);
+        return Math.Min(YValues.Count, index);
     }
 
     public float AveragePeakDiff(List<Peak> peaks)
@@ -359,7 +359,7 @@ public class Graph
 
     public void AddPeak(float value)
     {
-        _yValues.Add(value);
+        YValues.Add(value);
         DeActualizeFlags();
     }
 }

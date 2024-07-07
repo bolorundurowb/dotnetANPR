@@ -10,9 +10,9 @@ public class Graph
     protected  List<Peak>? Peaks = null;
     protected List<float> YValues = new();
 
-    private bool _actualAverageValue = false; // are values up-to-date?
-    private bool _actualMaximumValue = false; // are values up-to-date?
-    private bool _actualMinimumValue = false; // are values up-to-date?
+    private bool _actualAverageValue; // are values up-to-date?
+    private bool _actualMaximumValue; // are values up-to-date?
+    private bool _actualMinimumValue; // are values up-to-date?
     private float _averageValue;
     private float _maximumValue;
     private float _minimumValue;

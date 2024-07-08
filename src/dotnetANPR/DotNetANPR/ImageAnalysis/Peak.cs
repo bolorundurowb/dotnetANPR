@@ -1,4 +1,6 @@
-﻿namespace DotNetANPR.ImageAnalysis;
+﻿using System.Collections.Generic;
+
+namespace DotNetANPR.ImageAnalysis;
 
 public class Peak
 {
@@ -23,4 +25,9 @@ public class Peak
         Center = center;
         Right = right;
     }
+}
+
+public class PeakComparator(List<float> yValues) : IComparer<Peak>
+{
+    public int Compare(Peak x, Peak y) => yValues[y.Center].CompareTo(yValues[x.Center]);
 }

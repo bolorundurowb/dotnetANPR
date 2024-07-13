@@ -7,23 +7,19 @@ using DotNetANPR.Extensions;
 
 namespace DotNetANPR.ImageAnalysis;
 
-public class Photo : IDisposable
+public class Photo(Bitmap image) : IDisposable
 {
-    private Bitmap _image;
+    public int Width => image.Width;
 
-    public int Width => _image.Width;
+    public int Height => image.Height;
 
-    public int Height => _image.Height;
+    public float Brightness => GetBrightness(image, Width / 2, Height / 2);
 
-    public float Brightness => GetBrightness(_image, Width / 2, Height / 2);
+    public float Saturation => GetSaturation(image, Width / 2, Height / 2);
 
-    public float Saturation => GetSaturation(_image, Width / 2, Height / 2);
+    public float Hue => GetHue(image, Width / 2, Height / 2);
 
-    public float Hue => GetHue(_image, Width / 2, Height / 2);
-
-    public Bitmap Image => _image;
-
-    public Photo(Bitmap image) => _image = image;
+    public Bitmap Image => image;
 
     public static void SetBrightness(Bitmap image, int x, int y, float value)
     {
@@ -166,32 +162,32 @@ public class Photo : IDisposable
     public void SetBrightness(int x, int y, int value)
     {
         var color = Color.FromArgb(value, value, value);
-        _image.SetPixel(x, y, color);
+        image.SetPixel(x, y, color);
     }
 
-    public float GetBrightness(int x, int y) => GetBrightness(_image, x, y);
+    public float GetBrightness(int x, int y) => GetBrightness(image, x, y);
 
-    public float GetSaturation(int x, int y) => GetSaturation(_image, x, y);
+    public float GetSaturation(int x, int y) => GetSaturation(image, x, y);
 
-    public float GetHue(int x, int y) => GetHue(_image, x, y);
+    public float GetHue(int x, int y) => GetHue(image, x, y);
 
-    public void Save(string path) { _image.Save(path); }
+    public void Save(string path) { image.Save(path); }
 
     public void NormalizeBrightness(float coef)
     {
         var stats = new Statistics(this);
         for (var x = 0; x < Width; x++)
         for (var y = 0; y < Height; y++)
-            SetBrightness(_image, x, y, stats.ThresholdBrightness(GetBrightness(_image, x, y), coef));
+            SetBrightness(image, x, y, stats.ThresholdBrightness(GetBrightness(image, x, y), coef));
     }
 
-    public Photo Duplicate() => new(DuplicateBitmap(_image));
+    public Photo Duplicate() => new(DuplicateBitmap(image));
 
     #region Filters
 
-    public void LinearResize(int width, int height) { _image = LinearResizeImage(_image, width, height); }
+    public void LinearResize(int width, int height) { image = LinearResizeImage(image, width, height); }
 
-    public void AverageResize(int width, int height) { _image = AverageResizeImage(_image, width, height); }
+    public void AverageResize(int width, int height) { image = AverageResizeImage(image, width, height); }
 
     public Bitmap AverageResizeImage(Bitmap origin, int width, int height)
     {
@@ -259,7 +255,7 @@ public class Photo : IDisposable
     public float[][] BitmapToArrayWithBounds(Bitmap image, int width, int height)
     {
         var array = new float[width + 2][];
-        for (var i = 0; i < width + 2; i++) 
+        for (var i = 0; i < width + 2; i++)
             array[i] = new float[height + 2];
 
         for (var x = 0; x < width; x++)
@@ -300,17 +296,17 @@ public class Photo : IDisposable
 
     public void PlainThresholding(Statistics stat)
     {
-        var width = _image.Width;
-        var height = _image.Height;
+        var width = image.Width;
+        var height = image.Height;
         for (var x = 0; x < width; x++)
         for (var y = 0; y < height; y++)
         {
-            var brightness = GetBrightness(_image, x, y);
-            SetBrightness(_image, x, y, stat.ThresholdBrightness(brightness, 1.0f));
+            var brightness = GetBrightness(image, x, y);
+            SetBrightness(image, x, y, stat.ThresholdBrightness(brightness, 1.0f));
         }
     }
 
-    public int GetPixelColor(int x, int y) => _image.GetPixel(x, y).ToArgb();
+    public int GetPixelColor(int x, int y) => image.GetPixel(x, y).ToArgb();
 
     public void AdaptiveThresholding()
     {
@@ -322,10 +318,10 @@ public class Photo : IDisposable
             return;
         }
 
-        var width = _image.Width;
-        var height = _image.Height;
-        float[][] sourceArray = BitmapToArray(_image, width, height);
-        float[][] destinationArray = BitmapToArray(_image, width, height);
+        var width = image.Width;
+        var height = image.Height;
+        float[][] sourceArray = BitmapToArray(image, width, height);
+        float[][] destinationArray = BitmapToArray(image, width, height);
 
         for (var x = 0; x < width; x++)
         for (var y = 0; y < height; y++)
@@ -345,7 +341,7 @@ public class Photo : IDisposable
             destinationArray[x][y] = destinationArray[x][y] < neighborhood ? 0f : 1f;
         }
 
-        _image = ArrayToBitmap(destinationArray, width, height);
+        image = ArrayToBitmap(destinationArray, width, height);
     }
 
     public HoughTransformation GetHoughTransformation()
@@ -359,7 +355,7 @@ public class Photo : IDisposable
     }
 
 
-    public void Dispose() { _image.Dispose(); }
+    public void Dispose() { image.Dispose(); }
 
     #region Overrides
 

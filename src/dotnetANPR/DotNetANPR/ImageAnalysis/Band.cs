@@ -23,10 +23,8 @@ public class Band(Bitmap image) : Photo(image)
 
     private List<Peak> ComputeGraph()
     {
-        if (_graphHandle != null)
-        {
+        if (_graphHandle != null) 
             return _graphHandle.Peaks!;
-        }
 
         var image = DuplicateBitmap(Image);
         FullEdgeDetector(image);

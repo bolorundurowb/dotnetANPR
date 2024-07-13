@@ -5,17 +5,11 @@ namespace DotNetANPR.Recognizer;
 
 public class RecognizedCharacter
 {
-    private List<RecognizedPattern> _patterns;
+    private List<RecognizedPattern> _patterns = new();
 
-    public bool IsSorted { get; private set; }
+    public bool IsSorted { get; private set; } = false;
 
     public List<RecognizedPattern>? Patterns => !IsSorted ? null : _patterns;
-
-    public RecognizedCharacter()
-    {
-        IsSorted = false;
-        _patterns = new List<RecognizedPattern>();
-    }
 
     public RecognizedPattern? Pattern(int index) => Patterns?.ElementAtOrDefault(index);
 

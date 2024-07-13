@@ -2,17 +2,11 @@
 
 namespace DotNetANPR.Intelligence.Parser;
 
-public class PlateForm
+public class PlateForm(string name)
 {
-    public List<Position> Positions { get; private set; }
+    public List<Position> Positions { get; private set; } = new();
 
     public bool IsFlagged { get; set; }
 
-    public string Name { get; set; }
-
-    public PlateForm(string name)
-    {
-        Name = name;
-        Positions = new List<Position>();
-    }
+    public string Name { get; set; } = name;
 }

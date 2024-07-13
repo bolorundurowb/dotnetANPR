@@ -38,11 +38,11 @@ public class BandGraph(Band handle) : Graph
             }
 
             // we found the biggest peak, let's do the first cut
-            var leftIndex = IndexOfLeftPeakRel(maxIndex, BandGraph.PeakFootConstant);
-            var rightIndex = IndexOfRightPeakRel(maxIndex, BandGraph.PeakFootConstant);
+            var leftIndex = IndexOfLeftPeakRel(maxIndex, PeakFootConstant);
+            var rightIndex = IndexOfRightPeakRel(maxIndex, PeakFootConstant);
             var diff = rightIndex - leftIndex;
-            leftIndex -= (int)Math.Round(BandGraph.PeakDiffMultiplicationConstant * diff);
-            rightIndex += (int)Math.Round(BandGraph.PeakDiffMultiplicationConstant * diff);
+            leftIndex -= (int)Math.Round(PeakDiffMultiplicationConstant * diff);
+            rightIndex += (int)Math.Round(PeakDiffMultiplicationConstant * diff);
             outPeaks.Add(new Peak(Math.Max(0, leftIndex), maxIndex, Math.Min(YValues.Count - 1, rightIndex)));
         }
 

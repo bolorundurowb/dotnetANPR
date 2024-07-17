@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace DotNetANPR.ImageAnalysis;
 
@@ -18,4 +19,14 @@ public class Peak(int left, int center, int right)
 public class PeakComparator(List<float> yValues) : IComparer<Peak>
 {
     public int Compare(Peak x, Peak y) => yValues[y.Center].CompareTo(yValues[x.Center]);
+}
+
+public class SpaceComparator() : IComparer<Peak>
+{
+    public int Compare(Peak peak1, Peak peak2) => peak2.Center - peak1.Center switch
+    {
+        < 0 => 1,
+        > 0 => -1,
+        _ => 0
+    };
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Linq;
 using DotNetANPR.Configuration;
 using DotNetANPR.Extensions;
 using DotNetANPR.Recognizer;
@@ -11,19 +12,19 @@ namespace DotNetANPR.ImageAnalysis;
 
 public class Character : Photo
 {
-    public bool normalized = false;
-    public PositionInPlate? positionInPlate = null;
+    public bool Normalized = false;
+    public PositionInPlate? PositionInPlate = null;
 
-    public int fullWidth, fullHeight, pieceWidth, pieceHeight;
+    public int FullWidth, FullHeight, PieceWidth, PieceHeight;
 
-    public float statisticAverageBrightness;
-    public float statisticMinimumBrightness;
-    public float statisticMaximumBrightness;
-    public float statisticContrast;
-    public float statisticAverageHue;
-    public float statisticAverageSaturation;
+    public float StatisticAverageBrightness;
+    public float StatisticMinimumBrightness;
+    public float StatisticMaximumBrightness;
+    public float StatisticContrast;
+    public float StatisticAverageHue;
+    public float StatisticAverageSaturation;
 
-    public Bitmap thresholdedImage;
+    public readonly Bitmap ThresholdedImage;
 
     public PixelMap PixelMap => new PixelMap(this);
 
@@ -31,7 +32,7 @@ public class Character : Photo
     {
         var origin = DuplicateBitmap(Image);
         AdaptiveThresholding();
-        this.thresholdedImage = Image;
+        this.ThresholdedImage = Image;
         Image = origin;
 
         Init();
@@ -41,21 +42,21 @@ public class Character : Photo
 
     public Character(Bitmap image, Bitmap thresholdedImage, PositionInPlate? positionInPlate) : base(image)
     {
-        this.thresholdedImage = thresholdedImage;
-        this.positionInPlate = positionInPlate;
+        this.ThresholdedImage = thresholdedImage;
+        this.PositionInPlate = positionInPlate;
 
         Init();
     }
 
-    public static List<String> AlphabetList(String directory)
+    public static List<string> AlphabetList(string directory)
     {
-        const String alphaString = "0123456789abcdefghijklmnopqrstuvwxyz";
-        String suffix = Suffix(directory);
+        const string alphaString = "0123456789abcdefghijklmnopqrstuvwxyz";
+        var suffix = Suffix(directory);
         directory = directory.TrimEnd('/');
-        List<String> filenames = new();
-        for (int i = 0; i < alphaString.Length; i++)
+        List<string> filenames = new();
+        for (var i = 0; i < alphaString.Length; i++)
         {
-            String s = directory + Path.PathSeparator + alphaString[i] + suffix + ".jpg";
+            var s = directory + Path.PathSeparator + alphaString[i] + suffix + ".jpg";
             if (File.Exists(s))
             {
                 filenames.Add(s);
@@ -65,17 +66,15 @@ public class Character : Photo
         return filenames;
     }
 
-    public void normalize()
+    public void Normalize()
     {
-        if (normalized)
-        {
+        if (Normalized)
             return;
-        }
 
-        Bitmap colorImage = DuplicateBitmap(Image);
-        Image = (thresholdedImage);
-        PixelMap pixelMap = PixelMap;
-        PixelMap.Piece bestPiece = pixelMap.BestPiece();
+        var colorImage = DuplicateBitmap(Image);
+        Image = (ThresholdedImage);
+        var pixelMap = PixelMap;
+        var bestPiece = pixelMap.BestPiece();
         colorImage = BestPieceInFullColor(colorImage, bestPiece);
 
         // Compute statistics
@@ -90,93 +89,71 @@ public class Character : Photo
             Image = (new Bitmap(1, 1, PixelFormat.Format24bppRgb));
         }
 
-        pieceWidth = Width;
-        pieceHeight = Height;
+        PieceWidth = Width;
+        PieceHeight = Height;
         NormalizeResizeOnly();
-        normalized = true;
+        Normalized = true;
     }
 
-    public List<Double> ExtractEdgeFeatures()
+    public List<double> ExtractEdgeFeatures()
     {
-        int width = Image.Width;
-        int height = Image.Height;
-        double featureMatch;
-        float[][] array = BitmapToArrayWithBounds(Image, width, height);
+        var width = Image.Width;
+        var height = Image.Height;
+        var array = BitmapToArrayWithBounds(Image, width, height);
         width += 2; // add edges
         height += 2;
-        float[][] features = CharacterRecognizer.Features;
-        double[] output = new double[features.Length * 4];
+        var features = CharacterRecognizer.Features;
+        var output = new double[features.Length * 4];
 
-        for (int f = 0; f < features.Length; f++)
+        for (var f = 0; f < features.Length; f++)
         {
-            for (int my = 0; my < (height - 1); my++)
+            for (var my = 0; my < (height - 1); my++)
             {
-                for (int mx = 0; mx < (width - 1); mx++)
+                for (var mx = 0; mx < (width - 1); mx++)
                 {
-                    featureMatch = 0;
+                    double featureMatch = 0;
                     featureMatch += Math.Abs(array[mx][my] - features[f][0]);
                     featureMatch += Math.Abs(array[mx + 1][my] - features[f][1]);
                     featureMatch += Math.Abs(array[mx][my + 1] - features[f][2]);
                     featureMatch += Math.Abs(array[mx + 1][my + 1] - features[f][3]);
 
-                    int bias = 0;
+                    var bias = 0;
                     if (mx >= (width / 2))
-                    {
                         bias += features.Length; // if we are in the right quadrant, move the bias by one class
-                    }
 
                     if (my >= (height / 2))
-                    {
                         bias += features.Length * 2; // if we are in the left quadrant, move the bias by two classes
-                    }
 
                     output[bias + f] += featureMatch < 0.05 ? 1 : 0;
                 }
             }
         }
 
-        List<Double> outputList = new();
-        foreach (Double value in output)
-        {
-            outputList.Add(value);
-        }
-
-        return outputList;
+        return output.ToList();
     }
 
-    public List<Double> ExtractMapFeatures()
+    public List<double> ExtractMapFeatures()
     {
-        List<Double> vectorInput = new();
-        for (int y = 0; y < Height; y++)
-        {
-            for (int x = 0; x < Width; x++)
-            {
-                vectorInput.Add((double)GetBrightness(x, y));
-            }
-        }
+        List<double> vectorInput = new();
+        for (var y = 0; y < Height; y++)
+        for (var x = 0; x < Width; x++)
+            vectorInput.Add(GetBrightness(x, y));
 
         return vectorInput;
     }
 
-    public List<Double> ExtractFeatures()
+    public List<double> ExtractFeatures()
     {
-        int featureExtractionMethod = Configurator.Instance.Get<int>("char_featuresExtractionMethod");
-        if (featureExtractionMethod == 0)
-        {
-            return ExtractMapFeatures();
-        }
-        else
-        {
-            return ExtractEdgeFeatures();
-        }
+        var featureExtractionMethod = Configurator.Instance.Get<int>("char_featuresExtractionMethod");
+        return featureExtractionMethod == 0 ? ExtractMapFeatures() : ExtractEdgeFeatures();
     }
 
     #region Private Helpers
 
     private void Init()
     {
-        fullHeight = Height;
-        fullWidth = Width;
+        FullHeight = Height;
+        FullWidth = Width;
     }
 
     private static string Suffix(string directoryName)
@@ -198,21 +175,17 @@ public class Character : Photo
     private void NormalizeResizeOnly()
     {
         // returns the same Char object
-        int x = Configurator.Instance.Get<int>("char_normalizeddimensions_x");
-        int y = Configurator.Instance.Get<int>("char_normalizeddimensions_y");
+        var x = Configurator.Instance.Get<int>("char_normalizeddimensions_x");
+        var y = Configurator.Instance.Get<int>("char_normalizeddimensions_y");
         if ((x == 0) || (y == 0))
         {
             return;
         }
 
         if (Configurator.Instance.Get<int>("char_resizeMethod") == 0)
-        {
             LinearResize(x, y); // do a weighted average
-        }
         else
-        {
             AverageResize(x, y);
-        }
 
         NormalizeBrightness(0.5f);
     }
@@ -220,73 +193,59 @@ public class Character : Photo
     private void ComputeStatisticContrast(Bitmap bi)
     {
         float sum = 0;
-        int w = bi.Width;
-        int h = bi.Height;
-        for (int x = 0; x < w; x++)
-        {
-            for (int y = 0; y < h; y++)
-            {
-                sum += Math.Abs(statisticAverageBrightness - Photo.GetBrightness(bi, x, y));
-            }
-        }
+        var w = bi.Width;
+        var h = bi.Height;
+        for (var x = 0; x < w; x++)
+        for (var y = 0; y < h; y++)
+            sum += Math.Abs(StatisticAverageBrightness - Photo.GetBrightness(bi, x, y));
 
-        statisticContrast = sum / (w * h);
+        StatisticContrast = sum / (w * h);
     }
 
     private void ComputeStatisticBrightness(Bitmap bi)
     {
         float sum = 0;
-        float min = float.PositiveInfinity;
-        float max = float.NegativeInfinity;
+        var min = float.PositiveInfinity;
+        var max = float.NegativeInfinity;
 
-        int w = bi.Width;
-        int h = bi.Height;
-        for (int x = 0; x < w; x++)
+        var w = bi.Width;
+        var h = bi.Height;
+        for (var x = 0; x < w; x++)
+        for (var y = 0; y < h; y++)
         {
-            for (int y = 0; y < h; y++)
-            {
-                float value = Photo.GetBrightness(bi, x, y);
-                sum += value;
-                min = Math.Min(min, value);
-                max = Math.Max(max, value);
-            }
+            var value = Photo.GetBrightness(bi, x, y);
+            sum += value;
+            min = Math.Min(min, value);
+            max = Math.Max(max, value);
         }
 
-        statisticAverageBrightness = sum / (w * h);
-        statisticMinimumBrightness = min;
-        statisticMaximumBrightness = max;
+        StatisticAverageBrightness = sum / (w * h);
+        StatisticMinimumBrightness = min;
+        StatisticMaximumBrightness = max;
     }
 
     private void ComputeStatisticHue(Bitmap bi)
     {
         float sum = 0;
-        int w = bi.Width;
-        int h = bi.Height;
-        for (int x = 0; x < w; x++)
-        {
-            for (int y = 0; y < h; y++)
-            {
-                sum += Photo.GetHue(bi, x, y);
-            }
-        }
+        var w = bi.Width;
+        var h = bi.Height;
+        for (var x = 0; x < w; x++)
+        for (var y = 0; y < h; y++)
+            sum += Photo.GetHue(bi, x, y);
 
-        statisticAverageHue = sum / (w * h);
+        StatisticAverageHue = sum / (w * h);
     }
 
     private void ComputeStatisticSaturation(Bitmap bi)
     {
         float sum = 0;
-        int w = bi.Width;
-        int h = bi.Height;
-        for (int x = 0; x < w; x++)
-        {
-            for (int y = 0; y < h; y++)
-            {
-                sum += Photo.GetSaturation(bi, x, y);
-            }
-        }
+        var w = bi.Width;
+        var h = bi.Height;
+        for (var x = 0; x < w; x++)
+        for (var y = 0; y < h; y++)
+            sum += Photo.GetSaturation(bi, x, y);
 
-        statisticAverageSaturation = sum / (w * h);
+        StatisticAverageSaturation = sum / (w * h);
     }
 
     #endregion

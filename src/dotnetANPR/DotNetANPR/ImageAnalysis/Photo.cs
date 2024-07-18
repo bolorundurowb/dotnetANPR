@@ -19,7 +19,11 @@ public class Photo(Bitmap image) : IDisposable
 
     public float Hue => GetHue(image, Width / 2, Height / 2);
 
-    public Bitmap Image => image;
+    public Bitmap Image
+    {
+        get => image;
+        protected set => image = value;
+    }
 
     public static void SetBrightness(Bitmap image, int x, int y, float value)
     {

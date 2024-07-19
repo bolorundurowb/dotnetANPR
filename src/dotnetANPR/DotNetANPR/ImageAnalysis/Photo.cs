@@ -237,7 +237,7 @@ public class Photo(Bitmap image) : IDisposable
 
     #endregion
 
-    public void VerticalEdgeDetector(Bitmap source)
+    public virtual void VerticalEdgeDetector(Bitmap source)
     {
         var destination = DuplicateBitmap(source);
         float[] kernel = { -1, 0, 1, -2, 0, 2, -1, 0, 1 };

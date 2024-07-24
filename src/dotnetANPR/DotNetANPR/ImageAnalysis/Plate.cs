@@ -10,10 +10,10 @@ namespace DotNetANPR.ImageAnalysis;
 public class Plate : Photo, ICloneable
 {
     private static readonly ProbabilityDistributor Distributor = new(0, 0, 0, 0);
-
     private static readonly int NumberOfCandidates = Configurator.Instance.Get<int>("intelligence_numberOfCharacters");
 
-    private static readonly int HorizontalDetectionType = Configurator.Instance.Get<int>("platehorizontalgraph_detectionType");
+    private static readonly int HorizontalDetectionType =
+        Configurator.Instance.Get<int>("platehorizontalgraph_detectionType");
 
     private Plate? _plateCopy; // TODO refactor: remove this variable completely
     private PlateGraph? _graphHandle;

@@ -165,11 +165,9 @@ public class Character : Photo
     private Bitmap BestPieceInFullColor(Bitmap bi, PixelMap.Piece piece)
     {
         if ((piece.Width <= 0) || (piece.Height <= 0))
-        {
             return bi;
-        }
 
-        return bi.SubImage(piece.MostLeftPoint(), piece.MostTopPoint(), piece.Width, piece.Height);
+        return bi.SubImage(piece.MostLeftPoint, piece.MostTopPoint, piece.Width, piece.Height);
     }
 
     private void NormalizeResizeOnly()
@@ -177,10 +175,9 @@ public class Character : Photo
         // returns the same Char object
         var x = Configurator.Instance.Get<int>("char_normalizeddimensions_x");
         var y = Configurator.Instance.Get<int>("char_normalizeddimensions_y");
+
         if ((x == 0) || (y == 0))
-        {
             return;
-        }
 
         if (Configurator.Instance.Get<int>("char_resizeMethod") == 0)
             LinearResize(x, y); // do a weighted average

@@ -12,204 +12,287 @@ public class PixelMap(Photo photo)
     private Piece? bestPiece = null;
     private int width;
     private int height;
-    
-    private void MatrixInit(Photo bi) {
+
+    private void MatrixInit(Photo bi)
+    {
         width = bi.Width;
         height = bi.Height;
         matrix = new bool[width, height];
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                matrix[x,y] = bi.GetBrightness(x, y) < 0.5;
-            }
-        }
+        for (int x = 0; x < width; x++)
+        for (int y = 0; y < height; y++) 
+            matrix[x, y] = bi.GetBrightness(x, y) < 0.5;
     }
-    
-    public Bitmap Render() {
+
+    public Bitmap Render()
+    {
         var image = new Bitmap(width, height, PixelFormat.Format24bppRgb);
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                if (matrix[x,y]) {
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                if (matrix[x, y])
+                {
                     image.SetPixel(x, y, Color.Black);
-                } else {
+                }
+                else
+                {
                     image.SetPixel(x, y, Color.White);
                 }
             }
         }
+
         return image;
     }
 
-    public Piece GetBestPiece() {
+    public Piece GetBestPiece()
+    {
         ReduceOtherPieces();
-        if (bestPiece == null) {
+        if (bestPiece == null)
+        {
             return [];
         }
+
         return bestPiece;
     }
-    
-    public PixelMap skeletonize() {
+
+    public PixelMap Skeletonize()
+    {
         PointSet flaggedPoints = [];
         PointSet boundaryPoints = [];
-        boolean cont;
-        do {
+        bool cont;
+        do
+        {
             cont = false;
-            findBoundaryPoints(boundaryPoints);
+            FindBoundaryPoints(boundaryPoints);
             // apply step 1 to flag boundary points for deletion
-            for (Point p : boundaryPoints) {
-                if (step1passed(p.x, p.y)) {
-                    flaggedPoints.add(p);
+            foreach (var point in boundaryPoints)
+            {
+                if (Step1Passed(point.X, point.Y))
+                {
+                    flaggedPoints.Add(point);
                 }
             }
+
             // delete flagged points
-            if (!flaggedPoints.isEmpty()) {
+            if (!flaggedPoints.Any())
+            {
                 cont = true;
             }
-            for (Point p : flaggedPoints) {
-                matrix[p.x][p.y] = false;
-                boundaryPoints.remove(p);
+
+            foreach (var point in flaggedPoints)
+            {
+                matrix[point.X, point.Y] = false;
+                boundaryPoints.Remove(point);
             }
-            flaggedPoints.clear();
+
+            flaggedPoints.Clear();
             // apply step 2 to flag remaining points
-            for (Point p : boundaryPoints) {
-                if (step2passed(p.x, p.y)) {
-                    flaggedPoints.add(p);
+            foreach (var point in boundaryPoints)
+            {
+                if (Step2Passed(point.X, point.Y))
+                {
+                    flaggedPoints.Add(point);
                 }
             }
+
             // delete flagged points
-            if (!flaggedPoints.isEmpty()) {
+            if (!flaggedPoints.Any())
+            {
                 cont = true;
             }
-            for (Point p : flaggedPoints) {
-                matrix[p.x][p.y] = false;
+
+            foreach (var point in flaggedPoints)
+            {
+                matrix[point.X, point.Y] = false;
             }
-            boundaryPoints.clear();
-            flaggedPoints.clear();
+
+            boundaryPoints.Clear();
+            flaggedPoints.Clear();
         } while (cont);
+
         return (this);
     }
 
-    public PixelMap reduceNoise() {
+    public PixelMap ReduceNoise()
+    {
         PointSet pointsToReduce = [];
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                if (n(x, y) < 4) {
-                    pointsToReduce.add(new Point(x, y)); // recommended 4
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                if (N(x, y) < 4)
+                {
+                    pointsToReduce.Add(new Point(x, y)); // recommended 4
                 }
             }
         }
+
         // remove marked points
-        for (Point p : pointsToReduce) {
-            matrix[p.x][p.y] = false;
+        foreach (var point in pointsToReduce)
+        {
+            matrix[point.X, point.Y] = false;
         }
+
         return (this);
     }
 
     public Piece BestPiece() => throw new System.NotImplementedException();
-    
-    public PieceSet findPieces() {
+
+    public PieceSet FindPieces()
+    {
         PieceSet pieces = [];
         // put all black points into a set
         PointSet unsorted = [];
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                if (matrix[x][y]) {
-                    unsorted.add(new Point(x, y));
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                if (matrix[x, y])
+                {
+                    unsorted.Add(new Point(x, y));
                 }
             }
         }
-        while (!unsorted.isEmpty()) {
-            pieces.add(createPiece(unsorted));
+
+        while (!unsorted.Any())
+        {
+            pieces.Add(CreatePiece(unsorted));
         }
+
         return pieces;
     }
-    
-    public void reduceOtherPieces() {
-        if (bestPiece != null) {
+
+    public void ReduceOtherPieces()
+    {
+        if (bestPiece != null)
+        {
             return; // we've got a best piece already
         }
-        PieceSet pieces = findPieces();
+
+        PieceSet pieces = FindPieces();
         int maxCost = 0;
         int maxIndex = 0;
         // find the best cost
-        for (int i = 0; i < pieces.size(); i++) {
-            if (pieces.get(i).cost() > maxCost) {
-                maxCost = pieces.get(i).cost();
+        for (int i = 0; i < pieces.Count; i++)
+        {
+            if (pieces[i].Cost() > maxCost)
+            {
+                maxCost = pieces[i].Cost();
                 maxIndex = i;
             }
         }
+
         // delete the others
-        for (int i = 0; i < pieces.size(); i++) {
-            if (i != maxIndex) {
-                pieces.get(i).bleachPiece();
+        for (int i = 0; i < pieces.Count; i++)
+        {
+            if (i != maxIndex)
+            {
+                pieces[i].BleachPiece();
             }
         }
-        if (pieces.size() != 0) {
-            bestPiece = pieces.get(maxIndex);
+
+        if (pieces.Count != 0)
+        {
+            bestPiece = pieces[maxIndex];
         }
-    }
-    
-    #region Private Helpers
-    
-    private bool GetPointValue(int x, int y) {
-        if ((x < 0) || (y < 0) || (x >= width) || (y >= height)) {
-            return false;
-        }
-        return matrix[x,y];
     }
 
-    private bool IsBoundaryPoint(int x, int y) {
-        if (!GetPointValue(x, y)) { // if it's white (outside points are automatically white)
+    #region Private Helpers
+
+    private bool GetPointValue(int x, int y)
+    {
+        if ((x < 0) || (y < 0) || (x >= width) || (y >= height))
+        {
             return false;
         }
+
+        return matrix[x, y];
+    }
+
+    private bool IsBoundaryPoint(int x, int y)
+    {
+        if (!GetPointValue(x, y))
+        {
+            // if it's white (outside points are automatically white)
+            return false;
+        }
+
         // a boundary point must have at least one neighbor point that's white
         return !GetPointValue(x - 1, y - 1) || !GetPointValue(x - 1, y + 1) || !GetPointValue(x + 1, y - 1)
                || !GetPointValue(x + 1, y + 1) || !GetPointValue(x, y + 1) || !GetPointValue(x, y - 1)
                || !GetPointValue(x + 1, y) || !GetPointValue(x - 1, y);
     }
 
-    private int N(int x, int y) { // number of black points in the neighborhood
+    private int N(int x, int y)
+    {
+        // number of black points in the neighborhood
         int n = 0;
-        if (GetPointValue(x - 1, y - 1)) {
+        if (GetPointValue(x - 1, y - 1))
+        {
             n++;
         }
-        if (GetPointValue(x - 1, y + 1)) {
+
+        if (GetPointValue(x - 1, y + 1))
+        {
             n++;
         }
-        if (GetPointValue(x + 1, y - 1)) {
+
+        if (GetPointValue(x + 1, y - 1))
+        {
             n++;
         }
-        if (GetPointValue(x + 1, y + 1)) {
+
+        if (GetPointValue(x + 1, y + 1))
+        {
             n++;
         }
-        if (GetPointValue(x, y + 1)) {
+
+        if (GetPointValue(x, y + 1))
+        {
             n++;
         }
-        if (GetPointValue(x, y - 1)) {
+
+        if (GetPointValue(x, y - 1))
+        {
             n++;
         }
-        if (GetPointValue(x + 1, y)) {
+
+        if (GetPointValue(x + 1, y))
+        {
             n++;
         }
-        if (GetPointValue(x - 1, y)) {
+
+        if (GetPointValue(x - 1, y))
+        {
             n++;
         }
+
         return n;
     }
-    
-    private int T(int x, int y) {
+
+    private int T(int x, int y)
+    {
         int n = 0;
-        for (int i = 2; i <= 8; i++) {
-            if (!P(i, x, y) && P(i + 1, x, y)) {
+        for (int i = 2; i <= 8; i++)
+        {
+            if (!P(i, x, y) && P(i + 1, x, y))
+            {
                 n++;
             }
         }
-        if (!P(9, x, y) && P(2, x, y)) {
+
+        if (!P(9, x, y) && P(2, x, y))
+        {
             n++;
         }
+
         return n;
     }
-    
-    private bool P(int i, int x, int y) {
-        switch (i) {
+
+    private bool P(int i, int x, int y)
+    {
+        switch (i)
+        {
             case 1:
                 return GetPointValue(x, y);
             case 2:
@@ -232,70 +315,89 @@ public class PixelMap(Photo photo)
                 return false;
         }
     }
-    
-    private bool Step1Passed(int x, int y) {
-        int n = n(x, y);
-        return (((2 <= n) && (n <= 6)) && (t(x, y) == 1) && (!p(2, x, y) || !p(4, x, y) || !p(6, x, y))
-                && (!p(4, x, y) || !p(6, x, y) || !p(8, x, y)));
-    }
 
-    private bool Step2Passed(int x, int y) {
+    private bool Step1Passed(int x, int y)
+    {
         int n = N(x, y);
-        return (((2 <= n) && (n <= 6)) && (t(x, y) == 1) && (!p(2, x, y) || !p(4, x, y) || !p(8, x, y))
-                && (!p(2, x, y) || !p(6, x, y) || !p(8, x, y)));
+        return (((2 <= n) && (n <= 6)) && (T(x, y) == 1) && (!P(2, x, y) || !P(4, x, y) || !P(6, x, y))
+                && (!P(4, x, y) || !P(6, x, y) || !P(8, x, y)));
     }
 
-    private void FindBoundaryPoints(PointSet set) {
-        if (!set.Any()) {
+    private bool Step2Passed(int x, int y)
+    {
+        int n = N(x, y);
+        return (((2 <= n) && (n <= 6)) && (T(x, y) == 1) && (!P(2, x, y) || !P(4, x, y) || !P(8, x, y))
+                && (!P(2, x, y) || !P(6, x, y) || !P(8, x, y)));
+    }
+
+    private void FindBoundaryPoints(PointSet set)
+    {
+        if (!set.Any())
+        {
             set.Clear();
         }
-        
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                if (IsBoundaryPoint(x, y)) {
+
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                if (IsBoundaryPoint(x, y))
+                {
                     set.Add(new Point(x, y));
                 }
             }
         }
     }
-    
-    private boolean seedShouldBeAdded(Piece piece, Point p) {
+
+    private bool SeedShouldBeAdded(Piece piece, Point point)
+    {
         // if it's not out of bounds
-        if ((p.x < 0) || (p.y < 0) || (p.x >= width) || (p.y >= height)) {
+        if ((point.X < 0) || (point.Y < 0) || (point.X >= width) || (point.Y >= height))
+        {
             return false;
         }
+
         // if it's black
-        if (!matrix[p.x][p.y]) {
+        if (!matrix[point.X, point.Y])
+        {
             return false;
         }
+
         // if it's not part of the piece yet
-        for (Point piecePoint : piece) {
-            if (piecePoint.equals(p)) {
+        foreach (Point piecePoint in piece)
+        {
+            if (piecePoint == point)
+            {
                 return false;
             }
         }
+
         return true;
     }
-    
-    private Piece createPiece(PointSet unsorted) {
+
+    private Piece CreatePiece(PointSet unsorted)
+    {
         Piece piece = [];
         PointSet stack = [];
-        stack.push(unsorted.lastElement());
-        while (!stack.isEmpty()) {
-            Point p = stack.pop();
-            if (seedShouldBeAdded(piece, p)) {
-                piece.add(p);
-                unsorted.removePoint(p);
-                stack.push(new Point(p.x + 1, p.y));
-                stack.push(new Point(p.x - 1, p.y));
-                stack.push(new Point(p.x, p.y + 1));
-                stack.push(new Point(p.x, p.y - 1));
+        stack.Push(unsorted.Last());
+        while (!stack.Any())
+        {
+            Point point = stack.Pop();
+            if (SeedShouldBeAdded(piece, point))
+            {
+                piece.Add(point);
+                unsorted.RemovePoint(point);
+                stack.Push(new Point(point.X + 1, point.Y));
+                stack.Push(new Point(point.X - 1, point.Y));
+                stack.Push(new Point(point.X, point.Y + 1));
+                stack.Push(new Point(point.X, point.Y - 1));
             }
         }
-        piece.createStatistics();
+
+        piece.CreateStatistics();
         return piece;
     }
-    
+
     #endregion
 
     public sealed class Point(int x, int y) : IEquatable<Point>
@@ -376,7 +478,7 @@ public class PixelMap(Photo photo)
 
             for (var x = MostLeftPoint; x <= MostRightPoint; x++)
             for (var y = MostTopPoint; y <= MostBottomPoint; y++)
-                image.SetPixel(x - MostLeftPoint, y - MostTopPoint, matrix[x,y] ? Color.Black : Color.White);
+                image.SetPixel(x - MostLeftPoint, y - MostTopPoint, matrix[x, y] ? Color.Black : Color.White);
 
             return image;
         }
@@ -401,9 +503,7 @@ public class PixelMap(Photo photo)
         public void BleachPiece()
         {
             foreach (var point in this)
-            {
-                matrix[point.X][point.Y] = false;
-            }
+                matrix[point.X, point.Y] = false;
         }
 
         private int ComputeMostLeftPoint() => this.Select(point => point.X).Prepend(int.MaxValue).Min();

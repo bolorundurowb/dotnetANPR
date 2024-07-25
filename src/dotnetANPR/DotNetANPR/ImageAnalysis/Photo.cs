@@ -366,13 +366,16 @@ public class Photo(Bitmap image) : IDisposable
 
     public override bool Equals(object? obj)
     {
-        if (ReferenceEquals(this, obj)) return true;
+        if (ReferenceEquals(this, obj)) 
+            return true;
 
-        if (obj is null || obj is not Photo) return false;
+        if (obj is null || obj is not Photo) 
+            return false;
 
         var comparison = (Photo)obj;
 
-        if (comparison.Width != Width || comparison.Height != Height) return false;
+        if (comparison.Width != Width || comparison.Height != Height) 
+            return false;
 
         for (var i = 0; i < Width; i++)
         for (var j = 0; j < Height; j++)

@@ -26,7 +26,7 @@ public class Character : Photo
 
     public readonly Bitmap ThresholdedImage;
 
-    public PixelMap PixelMap => new PixelMap(this);
+    public PixelMap PixelMap => new(this);
 
     public Character(string fileName) : base(new Bitmap(fileName))
     {
@@ -83,11 +83,7 @@ public class Character : Photo
         ComputeStatisticHue(colorImage);
         ComputeStatisticSaturation(colorImage);
 
-        Image = (bestPiece.Render());
-        if (Image == null)
-        {
-            Image = (new Bitmap(1, 1, PixelFormat.Format24bppRgb));
-        }
+        Image = (bestPiece.Render()) ?? (new Bitmap(1, 1, PixelFormat.Format24bppRgb));
 
         PieceWidth = Width;
         PieceHeight = Height;
@@ -112,10 +108,10 @@ public class Character : Photo
                 for (var mx = 0; mx < (width - 1); mx++)
                 {
                     double featureMatch = 0;
-                    featureMatch += Math.Abs(array[mx][my] - features[f][0]);
-                    featureMatch += Math.Abs(array[mx + 1][my] - features[f][1]);
-                    featureMatch += Math.Abs(array[mx][my + 1] - features[f][2]);
-                    featureMatch += Math.Abs(array[mx + 1][my + 1] - features[f][3]);
+                    featureMatch += Math.Abs(array[mx, my] - features[f][0]);
+                    featureMatch += Math.Abs(array[mx + 1, my] - features[f][1]);
+                    featureMatch += Math.Abs(array[mx, my + 1] - features[f][2]);
+                    featureMatch += Math.Abs(array[mx + 1, my + 1] - features[f][3]);
 
                     var bias = 0;
                     if (mx >= (width / 2))

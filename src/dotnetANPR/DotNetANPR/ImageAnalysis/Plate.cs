@@ -52,7 +52,7 @@ public class Plate : Photo, ICloneable
                 continue;
 
             characters.Add(new Character(Image.SubImage(peak.Left, 0, peak.Diff, Image.Height),
-                _plateCopy.Image.SubImage(peak.Left, 0, peak.Diff, Image.Height),
+                _plateCopy!.Image.SubImage(peak.Left, 0, peak.Diff, Image.Height),
                 new PositionInPlate(peak.Left, peak.Right)));
         }
 
@@ -79,7 +79,7 @@ public class Plate : Photo, ICloneable
         clone1.VerticalEdgeDetector(clone1.Image);
         var vertical = clone1.HistogramYaxis(clone1.Image);
         Image = CutTopBottom(Image, vertical);
-        _plateCopy.Image = CutTopBottom(_plateCopy.Image, vertical);
+        _plateCopy!.Image = CutTopBottom(_plateCopy.Image, vertical);
         var clone2 = (Plate)Clone();
         if (HorizontalDetectionType == 1) clone2.HorizontalEdgeDetector(clone2.Image);
 
@@ -94,7 +94,8 @@ public class Plate : Photo, ICloneable
         for (var x = 0; x < bi.Width; x++)
         {
             float counter = 0;
-            for (var y = 0; y < bi.Height; y++) counter += GetBrightness(bi, x, y);
+            for (var y = 0; y < bi.Height; y++)
+                counter += GetBrightness(bi, x, y);
 
             graph.AddPeak(counter);
         }

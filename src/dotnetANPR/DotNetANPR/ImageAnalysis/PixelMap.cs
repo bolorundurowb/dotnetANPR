@@ -8,7 +8,7 @@ namespace DotNetANPR.ImageAnalysis;
 
 public class PixelMap
 {
-    static bool[,] _matrix;
+    private static bool[,] _matrix = null!;
     private Piece? _bestPiece;
     private int _width;
     private int _height;
@@ -28,12 +28,7 @@ public class PixelMap
     public Piece BestPiece()
     {
         ReduceOtherPieces();
-        if (_bestPiece == null)
-        {
-            return [];
-        }
-
-        return _bestPiece;
+        return _bestPiece ?? [];
     }
 
     public PixelMap Skeletonize()
@@ -46,9 +41,7 @@ public class PixelMap
             cont = false;
             FindBoundaryPoints(boundaryPoints);
             // apply step 1 to flag boundary points for deletion
-            foreach (var point in boundaryPoints)
-                if (Step1Passed(point.X, point.Y))
-                    flaggedPoints.Add(point);
+            flaggedPoints.AddRange(boundaryPoints.Where(point => Step1Passed(point.X, point.Y)));
 
             // delete flagged points
             if (!flaggedPoints.Any())
@@ -62,9 +55,7 @@ public class PixelMap
 
             flaggedPoints.Clear();
             // apply step 2 to flag remaining points
-            foreach (var point in boundaryPoints)
-                if (Step2Passed(point.X, point.Y))
-                    flaggedPoints.Add(point);
+            flaggedPoints.AddRange(boundaryPoints.Where(point => Step2Passed(point.X, point.Y)));
 
             // delete flagged points
             if (!flaggedPoints.Any())

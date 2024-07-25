@@ -29,18 +29,19 @@ public class CarSnapshot(Bitmap image) : Photo(image)
 
     private List<Peak> ComputeGraph()
     {
-        if (_graphHandle != null)
-            return _graphHandle.Peaks;
+        if (_graphHandle == null)
+        {
+            var imageCopy = DuplicateBitmap(Image);
+            VerticalEdge(imageCopy);
+            Thresholding(imageCopy);
 
-        var imageCopy = DuplicateBitmap(Image);
-        VerticalEdge(imageCopy);
-        Thresholding(imageCopy);
+            _graphHandle = Histogram(imageCopy);
+            _graphHandle.RankFilter(_carsnapshotGraphrankfilter);
+            _graphHandle.ApplyProbabilityDistributor(Distributor);
+            _graphHandle.FindPeaks(_numberOfCandidates); // sort by height
+        }
 
-        _graphHandle = Histogram(imageCopy);
-        _graphHandle.RankFilter(_carsnapshotGraphrankfilter);
-        _graphHandle.ApplyProbabilityDistributor(Distributor);
-        _graphHandle.FindPeaks(_numberOfCandidates); // sort by height
-        return _graphHandle.Peaks;
+        return _graphHandle.Peaks!;
     }
 
     /**

@@ -116,12 +116,12 @@ public class Photo(Bitmap image) : IDisposable
         graphics.DrawImage(resultImage, 0, 0);
     }
 
-    public static Bitmap ArrayToBitmap(float[][] array, int w, int h)
+    public static Bitmap ArrayToBitmap(float[,] array, int w, int h)
     {
         var bitmap = new Bitmap(w, h, PixelFormat.Format24bppRgb);
         for (var x = 0; x < w; x++)
         for (var y = 0; y < h; y++)
-            SetBrightness(bitmap, x, y, array[x][y]);
+            SetBrightness(bitmap, x, y, array[x, y]);
         return bitmap;
     }
 
@@ -244,40 +244,36 @@ public class Photo(Bitmap image) : IDisposable
         destination.ConvolutionFilter(source, kernel);
     }
 
-    public float[][] BitmapToArray(Bitmap image, int width, int height)
+    public float[,] BitmapToArray(Bitmap image, int width, int height)
     {
-        var array = new float[width][];
+        var array = new float[width, height];
+
         for (var x = 0; x < width; x++)
-        {
-            array[x] = new float[height];
-            for (var y = 0; y < height; y++) 
-                array[x][y] = GetBrightness(image, x, y);
-        }
+        for (var y = 0; y < height; y++)
+            array[x, y] = GetBrightness(image, x, y);
 
         return array;
     }
 
-    public float[][] BitmapToArrayWithBounds(Bitmap image, int width, int height)
+    public float[,] BitmapToArrayWithBounds(Bitmap image, int width, int height)
     {
-        var array = new float[width + 2][];
-        for (var i = 0; i < width + 2; i++)
-            array[i] = new float[height + 2];
+        var array = new float[width + 2, height + 2];
 
         for (var x = 0; x < width; x++)
         for (var y = 0; y < height; y++)
-            array[x + 1][y + 1] = GetBrightness(image, x, y);
+            array[x + 1, y + 1] = GetBrightness(image, x, y);
 
         // Clear the edges
         for (var x = 0; x < width + 2; x++)
         {
-            array[x][0] = 1;
-            array[x][height + 1] = 1;
+            array[x, 0] = 1;
+            array[x, height + 1] = 1;
         }
 
         for (var y = 0; y < height + 2; y++)
         {
-            array[0][y] = 1;
-            array[width + 1][y] = 1;
+            array[0, y] = 1;
+            array[width + 1, y] = 1;
         }
 
         return array;
@@ -325,8 +321,8 @@ public class Photo(Bitmap image) : IDisposable
 
         var width = image.Width;
         var height = image.Height;
-        float[][] sourceArray = BitmapToArray(image, width, height);
-        float[][] destinationArray = BitmapToArray(image, width, height);
+        float[,] sourceArray = BitmapToArray(image, width, height);
+        float[,] destinationArray = BitmapToArray(image, width, height);
 
         for (var x = 0; x < width; x++)
         for (var y = 0; y < height; y++)
@@ -338,12 +334,12 @@ public class Photo(Bitmap image) : IDisposable
             for (var iy = y - radius; iy <= (y + radius); iy++)
                 if (ix >= 0 && iy >= 0 && ix < width && iy < height)
                 {
-                    neighborhood += sourceArray[ix][iy];
+                    neighborhood += sourceArray[ix, iy];
                     count++;
                 }
 
             neighborhood /= count;
-            destinationArray[x][y] = destinationArray[x][y] < neighborhood ? 0f : 1f;
+            destinationArray[x, y] = destinationArray[x, y] < neighborhood ? 0f : 1f;
         }
 
         image = ArrayToBitmap(destinationArray, width, height);
@@ -366,15 +362,15 @@ public class Photo(Bitmap image) : IDisposable
 
     public override bool Equals(object? obj)
     {
-        if (ReferenceEquals(this, obj)) 
+        if (ReferenceEquals(this, obj))
             return true;
 
-        if (obj is null || obj is not Photo) 
+        if (obj is null || obj is not Photo)
             return false;
 
         var comparison = (Photo)obj;
 
-        if (comparison.Width != Width || comparison.Height != Height) 
+        if (comparison.Width != Width || comparison.Height != Height)
             return false;
 
         for (var i = 0; i < Width; i++)

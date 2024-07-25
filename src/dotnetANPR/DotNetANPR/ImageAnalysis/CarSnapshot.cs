@@ -16,7 +16,7 @@ public class CarSnapshot(Bitmap image) : Photo(image)
     private static int _numberOfCandidates =
         Configurator.Instance.Get<int>("intelligence_numberOfBands");
 
-    public static ProbabilityDistributor Distributor =
+    public static readonly ProbabilityDistributor Distributor =
         new(0, 0, _distributorMargins, _distributorMargins);
 
     private CarSnapshotGraph? _graphHandle = null;
@@ -50,7 +50,7 @@ public class CarSnapshot(Bitmap image) : Photo(image)
      */
     public List<Band> Bands()
     {
-        List<Band> response = new();
+        List<Band> response = [];
         var peaks = ComputeGraph();
         foreach (var p in peaks)
         {
@@ -66,7 +66,7 @@ public class CarSnapshot(Bitmap image) : Photo(image)
     public void VerticalEdge(Bitmap image)
     {
         var imageCopy = DuplicateBitmap(image);
-        float[] data = { -1, 0, 1, -1, 0, 1, -1, 0, 1, -1, 0, 1 };
+        float[] data = [-1, 0, 1, -1, 0, 1, -1, 0, 1, -1, 0, 1];
         imageCopy.ConvolutionFilter(image, data);
     }
 

@@ -12,7 +12,7 @@ public sealed class Configurator
 
     private Configurator()
     {
-        _properties = new Properties();
+        _properties = [];
 
         // PHOTO
         Set("photo_adaptivethresholdingradius", 7); // 7 is recommended

@@ -19,7 +19,7 @@ public class BandGraph(Band handle) : Graph
 
     public List<Peak> FindPeaks(int count)
     {
-        List<Peak> outPeaks = new();
+        List<Peak> outPeaks = [];
         for (var c = 0; c < count; c++)
         {
             var maxValue = 0.0f;
@@ -47,7 +47,7 @@ public class BandGraph(Band handle) : Graph
         }
 
         // filter the candidates that don't correspond with plate proportions
-        List<Peak> outPeaksFiltered = new();
+        List<Peak> outPeaksFiltered = [];
         foreach (var p in outPeaks)
             // plate too thin
             if ((p.Diff > (2 * _handle.Height)) && (p.Diff < (15 * _handle.Height)))

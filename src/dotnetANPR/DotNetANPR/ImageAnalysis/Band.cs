@@ -43,7 +43,7 @@ public class Band(Bitmap image) : Photo(image)
      */
     public List<Plate> Plates()
     {
-        List<Plate> response = new();
+        List<Plate> response = [];
         var peaks = ComputeGraph();
         foreach (var p in peaks)
             // Cut from the original image of the plate and save to a vector.
@@ -71,8 +71,8 @@ public class Band(Bitmap image) : Photo(image)
 
     public void FullEdgeDetector(Bitmap source)
     {
-        float[] verticalMatrix = { -1, 0, 1, -2, 0, 2, -1, 0, 1 };
-        float[] horizontalMatrix = { -1, -2, -1, 0, 0, 0, 1, 2, 1 };
+        float[] verticalMatrix = [-1, 0, 1, -2, 0, 2, -1, 0, 1];
+        float[] horizontalMatrix = [-1, -2, -1, 0, 0, 0, 1, 2, 1];
         var i1 = CreateBlankBitmap(source);
         var i2 = CreateBlankBitmap(source);
 

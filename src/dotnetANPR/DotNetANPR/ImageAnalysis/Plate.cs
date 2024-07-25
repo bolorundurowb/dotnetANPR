@@ -41,7 +41,7 @@ public class Plate : Photo, ICloneable
 
     public List<Character> Characters()
     {
-        List<Character> characters = new();
+        List<Character> characters = [];
         var peaks = ComputeGraph();
         foreach (var peak in peaks)
         {
@@ -62,7 +62,7 @@ public class Plate : Photo, ICloneable
     public void HorizontalEdgeBi(Bitmap image)
     {
         var imageCopy = DuplicateBitmap(image);
-        float[] data = { -1, 0, 1 };
+        float[] data = [-1, 0, 1];
         imageCopy.ConvolutionFilter(image, data);
     }
 
@@ -104,7 +104,7 @@ public class Plate : Photo, ICloneable
 
     public override void VerticalEdgeDetector(Bitmap source)
     {
-        float[] matrix = { -1, 0, 1 };
+        float[] matrix = [-1, 0, 1];
         var destination = DuplicateBitmap(source);
         destination.ConvolutionFilter(source, matrix);
     }
@@ -112,7 +112,7 @@ public class Plate : Photo, ICloneable
     public void HorizontalEdgeDetector(Bitmap source)
     {
         var destination = DuplicateBitmap(source);
-        float[] matrix = { -1, -2, -1, 0, 0, 0, 1, 2, 1 };
+        float[] matrix = [-1, -2, -1, 0, 0, 0, 1, 2, 1];
         destination.ConvolutionFilter(source, matrix);
     }
 

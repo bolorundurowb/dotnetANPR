@@ -240,7 +240,7 @@ public class Photo(Bitmap image) : IDisposable
     public virtual void VerticalEdgeDetector(Bitmap source)
     {
         var destination = DuplicateBitmap(source);
-        float[] kernel = { -1, 0, 1, -2, 0, 2, -1, 0, 1 };
+        float[] kernel = [-1, 0, 1, -2, 0, 2, -1, 0, 1];
         destination.ConvolutionFilter(source, kernel);
     }
 
@@ -250,7 +250,8 @@ public class Photo(Bitmap image) : IDisposable
         for (var x = 0; x < width; x++)
         {
             array[x] = new float[height];
-            for (var y = 0; y < height; y++) array[x][y] = GetBrightness(image, x, y);
+            for (var y = 0; y < height; y++) 
+                array[x][y] = GetBrightness(image, x, y);
         }
 
         return array;

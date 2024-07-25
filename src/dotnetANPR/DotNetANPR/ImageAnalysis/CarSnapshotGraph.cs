@@ -14,7 +14,7 @@ public class CarSnapshotGraph : Graph
 
     public List<Peak> FindPeaks(int count)
     {
-        List<Peak> outPeaks = new();
+        List<Peak> outPeaks = [];
         for (var c = 0; c < count; c++)
         {
             var maxValue = 0.0f;

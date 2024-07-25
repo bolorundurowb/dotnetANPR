@@ -53,7 +53,7 @@ public class Character : Photo
         const string alphaString = "0123456789abcdefghijklmnopqrstuvwxyz";
         var suffix = Suffix(directory);
         directory = directory.TrimEnd('/');
-        List<string> filenames = new();
+        List<string> filenames = [];
         for (var i = 0; i < alphaString.Length; i++)
         {
             var s = directory + Path.PathSeparator + alphaString[i] + suffix + ".jpg";
@@ -134,7 +134,7 @@ public class Character : Photo
 
     public List<double> ExtractMapFeatures()
     {
-        List<double> vectorInput = new();
+        List<double> vectorInput = [];
         for (var y = 0; y < Height; y++)
         for (var x = 0; x < Width; x++)
             vectorInput.Add(GetBrightness(x, y));

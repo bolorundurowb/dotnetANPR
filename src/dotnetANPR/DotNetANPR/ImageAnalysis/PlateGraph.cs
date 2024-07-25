@@ -30,7 +30,7 @@ public class PlateGraph : Graph
     // @return a List of Peaks
     public List<Peak> FindPeaks(int count)
     {
-        List<Peak> spacesTemp = new();
+        List<Peak> spacesTemp = [];
         var diffGVal = (2 * AverageValue()) - MaxValue();
         YValues = YValues.Select(f => f - diffGVal).ToList();
         
@@ -68,7 +68,7 @@ public class PlateGraph : Graph
 
         // List<Peak> spaces contains spaces, sort them left to right
         spaces.Sort(new SpaceComparator());
-        List<Peak> peaks = new();
+        List<Peak> peaks = [];
         // + + +++ +++ + + +++ + + + + + + + + + + + ++ + + + ++ +++ +++ | | 1 | 2 .... | +--> 1. local minimum
         // count the char to the left of the space
         if (spaces.Count != 0)

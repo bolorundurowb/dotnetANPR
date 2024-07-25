@@ -15,7 +15,7 @@ public class PlateVerticalGraph : Graph
         for (var i = 0; i < YValues.Count; i++)
             YValues[i] -= MinValue();
 
-        List<Peak> outPeaks = new();
+        List<Peak> outPeaks = [];
         for (var c = 0; c < count; c++)
         {
             var maxValue = 0.0f;

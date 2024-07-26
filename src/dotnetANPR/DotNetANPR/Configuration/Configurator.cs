@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using PropertyConfig;
 
 namespace DotNetANPR.Configuration;
@@ -96,6 +97,12 @@ public sealed class Configurator
     public Configurator(string filePath) : this() { LoadConfiguration(filePath); }
 
     public static Configurator Instance => _configurator ??= new Configurator();
+
+    public string GetPath(string name)
+    {
+        var rawValue = Get<string>(name);
+        return rawValue.Replace('/', Path.PathSeparator);
+    }
 
     public T Get<T>(string name)
     {

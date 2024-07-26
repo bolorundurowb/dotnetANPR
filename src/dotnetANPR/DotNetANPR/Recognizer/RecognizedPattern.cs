@@ -9,22 +9,27 @@ public class RecognizedPattern(char chr, float cost)
     public float Cost { get; private set; } = cost;
 }
 
-public class RecognizedPatternComparer : IComparer<RecognizedPattern>
+public class RecognizedPatternComparer(bool sortDesc) : IComparer<RecognizedPattern>
 {
     public int Compare(RecognizedPattern x, RecognizedPattern y)
     {
-        if (ReferenceEquals(x, y))
+        return sortDesc ? -1 * Compute() : Compute();
+
+        int Compute()
+        {
+            if (ReferenceEquals(x, y))
+                return 0;
+
+            if (ReferenceEquals(null, y))
+                return 1;
+
+            if (x.Cost < y.Cost)
+                return -1;
+
+            if (x.Cost > y.Cost)
+                return 1;
+
             return 0;
-
-        if (ReferenceEquals(null, y))
-            return 1;
-
-        if (x.Cost < y.Cost)
-            return -1;
-
-        if (x.Cost > y.Cost)
-            return 1;
-
-        return 0;
+        }
     }
 }

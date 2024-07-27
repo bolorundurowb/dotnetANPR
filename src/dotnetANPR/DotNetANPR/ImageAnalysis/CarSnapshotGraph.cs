@@ -20,17 +20,13 @@ public class CarSnapshotGraph : Graph
             var maxValue = 0.0f;
             var maxIndex = 0;
             for (var i = 0; i < YValues.Count; i++)
-            {
                 // left to right
                 if (AllowedInterval(outPeaks, i))
-                {
                     if (YValues[i] >= maxValue)
                     {
                         maxValue = YValues[i];
                         maxIndex = i;
                     }
-                }
-            }
 
             // we found the biggest peak
             var leftIndex = IndexOfLeftPeakRel(maxIndex, peakFootConstant);

@@ -57,10 +57,8 @@ public class Character : Photo
         for (var i = 0; i < alphaString.Length; i++)
         {
             var s = directory + Path.PathSeparator + alphaString[i] + suffix + ".jpg";
-            if (File.Exists(s))
-            {
+            if (File.Exists(s)) 
                 filenames.Add(s);
-            }
         }
 
         return filenames;
@@ -102,27 +100,23 @@ public class Character : Photo
         var output = new double[features.Length * 4];
 
         for (var f = 0; f < features.Length; f++)
+        for (var my = 0; my < (height - 1); my++)
+        for (var mx = 0; mx < (width - 1); mx++)
         {
-            for (var my = 0; my < (height - 1); my++)
-            {
-                for (var mx = 0; mx < (width - 1); mx++)
-                {
-                    double featureMatch = 0;
-                    featureMatch += Math.Abs(array[mx, my] - features[f][0]);
-                    featureMatch += Math.Abs(array[mx + 1, my] - features[f][1]);
-                    featureMatch += Math.Abs(array[mx, my + 1] - features[f][2]);
-                    featureMatch += Math.Abs(array[mx + 1, my + 1] - features[f][3]);
+            double featureMatch = 0;
+            featureMatch += Math.Abs(array[mx, my] - features[f][0]);
+            featureMatch += Math.Abs(array[mx + 1, my] - features[f][1]);
+            featureMatch += Math.Abs(array[mx, my + 1] - features[f][2]);
+            featureMatch += Math.Abs(array[mx + 1, my + 1] - features[f][3]);
 
-                    var bias = 0;
-                    if (mx >= (width / 2))
-                        bias += features.Length; // if we are in the right quadrant, move the bias by one class
+            var bias = 0;
+            if (mx >= (width / 2))
+                bias += features.Length; // if we are in the right quadrant, move the bias by one class
 
-                    if (my >= (height / 2))
-                        bias += features.Length * 2; // if we are in the left quadrant, move the bias by two classes
+            if (my >= (height / 2))
+                bias += features.Length * 2; // if we are in the left quadrant, move the bias by two classes
 
-                    output[bias + f] += featureMatch < 0.05 ? 1 : 0;
-                }
-            }
+            output[bias + f] += featureMatch < 0.05 ? 1 : 0;
         }
 
         return output.ToList();

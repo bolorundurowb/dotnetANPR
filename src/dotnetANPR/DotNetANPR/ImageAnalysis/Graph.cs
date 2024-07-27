@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Linq;
 
 namespace DotNetANPR.ImageAnalysis;
 
@@ -25,14 +26,7 @@ public class Graph
     }
 
     // TODO: change name
-    public bool AllowedInterval(List<Peak> peaks, int xPosition)
-    {
-        foreach (var peak in peaks)
-            if (peak.Left <= xPosition && xPosition <= peak.Right)
-                return false;
-
-        return true;
-    }
+    public bool AllowedInterval(List<Peak> peaks, int xPosition) => peaks.All(peak => peak.Left > xPosition || xPosition > peak.Right);
 
     public void ApplyProbabilityDistributor(ProbabilityDistributor probabilityDistributor)
     {

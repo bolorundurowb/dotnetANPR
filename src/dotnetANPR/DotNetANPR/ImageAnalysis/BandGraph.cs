@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using DotNetANPR.Configuration;
 
 namespace DotNetANPR.ImageAnalysis;
@@ -25,17 +26,13 @@ public class BandGraph(Band handle) : Graph
             var maxValue = 0.0f;
             var maxIndex = 0;
             for (var i = 0; i < YValues.Count; i++)
-            {
                 // left to right
                 if (AllowedInterval(outPeaks, i))
-                {
                     if (YValues[i] >= maxValue)
                     {
                         maxValue = YValues[i];
                         maxIndex = i;
                     }
-                }
-            }
 
             // we found the biggest peak, let's do the first cut
             var leftIndex = IndexOfLeftPeakRel(maxIndex, PeakFootConstant);
@@ -48,12 +45,7 @@ public class BandGraph(Band handle) : Graph
 
         // filter the candidates that don't correspond with plate proportions
         List<Peak> outPeaksFiltered = [];
-        foreach (var p in outPeaks)
-            // plate too thin
-            if ((p.Diff > (2 * _handle.Height)) && (p.Diff < (15 * _handle.Height)))
-                // plate too wide
-                outPeaksFiltered.Add(p);
-
+        outPeaksFiltered.AddRange(outPeaks.Where(p => (p.Diff > (2 * _handle.Height)) && (p.Diff < (15 * _handle.Height))));
         outPeaksFiltered.Sort(new PeakComparator(YValues));
         Peaks = outPeaksFiltered;
         return outPeaksFiltered;

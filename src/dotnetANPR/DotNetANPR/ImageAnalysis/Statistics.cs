@@ -15,14 +15,12 @@ public class Statistics
         var height = photo.Height;
 
         for (var x = 0; x < width; x++)
+        for (var y = 0; y < height; y++)
         {
-            for (var y = 0; y < height; y++)
-            {
-                var pixelValue = photo.GetBrightness(x, y);
-                _maximum = Math.Max(pixelValue, _maximum);
-                _minimum = Math.Min(pixelValue, _minimum);
-                sum += pixelValue;
-            }
+            var pixelValue = photo.GetBrightness(x, y);
+            _maximum = Math.Max(pixelValue, _maximum);
+            _minimum = Math.Min(pixelValue, _minimum);
+            sum += pixelValue;
         }
 
         _average = sum / (width * height);

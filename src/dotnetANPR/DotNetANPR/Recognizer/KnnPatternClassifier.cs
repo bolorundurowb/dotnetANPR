@@ -57,19 +57,8 @@ public class KnnPatternClassifier : CharacterRecognizer
     /// <remarks>
     /// This method is deprecated. Use <see cref="SimplifiedEuclideanDistance(List{double}, List{double})"/> instead, which works better.
     /// </remarks>
-    public double SimpleVectorDistance(List<double> vectorA, List<double> vectorB)
-    {
-        var distance = 0.0;
-        for (var i = 0; i < vectorA.Count; i++)
-        {
-            distance += Math.Abs(vectorA[i] - vectorB[i]);
-        }
-
-        return distance;
-    }
-
-    private double Difference(List<double> vectorA, List<double> vectorB) =>
-        vectorA.Select((t, x) => Math.Abs(t - vectorB[x])).Sum();
+    public double SimpleVectorDistance(List<double> vectorA, List<double> vectorB) =>
+        vectorA.Select((t, i) => Math.Abs(t - vectorB[i])).Sum();
 
     /// <summary>
     /// Calculates the Euclidean distance between two vectors.
@@ -85,6 +74,9 @@ public class KnnPatternClassifier : CharacterRecognizer
         var distance = vectorA.Select((t, i) => t - vectorB[i]).Sum(diff => diff * diff);
         return Math.Sqrt(distance);
     }
+
+    private double Difference(List<double> vectorA, List<double> vectorB) =>
+        vectorA.Select((t, x) => Math.Abs(t - vectorB[x])).Sum();
 
     private static double SimplifiedEuclideanDistance(List<double> vectorA, List<double> vectorB) => vectorA
         .Select((t, x) => Math.Abs(t - vectorB[x])).Sum(partialDiff => partialDiff * partialDiff);

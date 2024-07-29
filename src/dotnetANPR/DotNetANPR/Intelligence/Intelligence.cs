@@ -11,33 +11,29 @@ namespace DotNetANPR.Intelligence;
 
 public class Intelligence
 {
-    private static CharacterRecognizer _chrRecog;
-    private static PS.Parser _parser;
+    private readonly CharacterRecognizer _chrRecog;
+    private readonly PS.Parser _parser;
 
-    private static readonly Configurator _configurator = Configurator.Instance;
-    public static long LastProcessDuration { get; private set; } = 0L;
+    private static readonly Configurator Configurator = Configurator.Instance;
+    public static long LastProcessDuration { get; private set; }
 
     public Intelligence()
     {
-        var classificationMethod = _configurator.Get<int>("intelligence_classification_method");
-        if (classificationMethod == 0)
-            _chrRecog = new KnnPatternClassifier();
-        else
-            _chrRecog = new NeuralPatternClassifier();
-
+        var classificationMethod = Configurator.Get<int>("intelligence_classification_method");
+        _chrRecog = classificationMethod == 0 ? new KnnPatternClassifier() : new NeuralPatternClassifier();
         _parser = new PS.Parser();
     }
 
     public string? Recognize(CarSnapshot carSnapshot, ReportGenerator? reportGenerator = null)
     {
-        var generateReport = reportGenerator != null;
-        var time = new TimeMeter();
+        var generateReport = reportGenerator is not null;
+        var timeMeter = new TimeMeter();
         var syntaxAnalysisMode =
-            (SyntaxAnalysisMode)_configurator.Get<int>("intelligence_syntaxanalysis");
-        var skewDetectionMode = _configurator.Get<int>("intelligence_skewdetection");
+            (SyntaxAnalysisMode)Configurator.Get<int>("intelligence_syntaxanalysis");
+        var skewDetectionMode = Configurator.Get<int>("intelligence_skewdetection");
         if (generateReport)
         {
-            reportGenerator.InsertText("<h1>Automatic Number Plate Recognition Report</h1>");
+            reportGenerator!.InsertText("<h1>Automatic Number Plate Recognition Report</h1>");
             reportGenerator.InsertText("<span>Image width: " + carSnapshot.Width + " px</span>");
             reportGenerator.InsertText("<span>Image height: " + carSnapshot.Height + " px</span>");
             reportGenerator.InsertText("<h2>Vertical and Horizontal plate projection</h2>");
@@ -49,7 +45,7 @@ public class Intelligence
         {
             if (generateReport)
             {
-                reportGenerator.InsertText("<div class='bandtxt'><h4>Band<br></h4>");
+                reportGenerator!.InsertText("<div class='bandtxt'><h4>Band<br></h4>");
                 reportGenerator.InsertImage(b.Image, "bandsmall", 250, 30);
                 reportGenerator.InsertText("<span>Band width : " + b.Width + " px</span>");
                 reportGenerator.InsertText("<span>Band height : " + b.Height + " px</span>");
@@ -61,7 +57,7 @@ public class Intelligence
                 var localPlate = plate;
                 if (generateReport)
                 {
-                    reportGenerator.InsertText("<div class='platetxt'><h4>Plate<br></h4>");
+                    reportGenerator!.InsertText("<div class='platetxt'><h4>Plate<br></h4>");
                     reportGenerator.InsertImage(localPlate.Image, "platesmall", 120, 30);
                     reportGenerator.InsertText("<span>Plate width : " + localPlate.Width + " px</span>");
                     reportGenerator.InsertText("<span>Plate height : " + localPlate.Height + " px</span>");
@@ -69,9 +65,9 @@ public class Intelligence
                 }
 
                 // Skew-related
-                Plate notNormalizedCopy;
-                Bitmap renderedHoughTransform;
-                HoughTransformation hough;
+                Plate? notNormalizedCopy = null;
+                Bitmap? renderedHoughTransform = null;
+                HoughTransformation? hough = null;
                 // detection is done either: 1. because of the report generator 2. because of skew detection
                 if (generateReport || skewDetectionMode != 0)
                 {
@@ -80,54 +76,54 @@ public class Intelligence
                     hough = notNormalizedCopy.GetHoughTransformation();
                     renderedHoughTransform = hough.Render(HoughTransformation.RenderType.RenderAll,
                         HoughTransformation.ColorType.BlackAndWhite);
-                }
 
-                if (skewDetectionMode != 0)
-                {
-                    // skew detection on
-                    // Calculate the shear factor
-                    var shearFactor = -(double)hough.Dy / hough.Dx;
-
-                    // Create a shear transform
-                    var shearTransform = new Matrix();
-                    shearTransform.Shear(0, (float)shearFactor);
-
-                    // Create a blank image with the same dimensions as the plate image
-                    var core = new Bitmap(plate.Image.Width, plate.Image.Height);
-
-                    using (var g = Graphics.FromImage(core))
+                    if (skewDetectionMode != 0)
                     {
-                        // Apply the shear transform to the image
-                        g.Transform = shearTransform;
-                        g.DrawImage(plate.Image, new Point(0, 0));
-                    }
+                        // skew detection on
+                        // Calculate the shear factor
+                        var shearFactor = -(double)hough.Dy / hough.Dx;
 
-                    // Update the plate with the new image
-                    localPlate = new Plate(core);
+                        // Create a shear transform
+                        var shearTransform = new Matrix();
+                        shearTransform.Shear(0, (float)shearFactor);
+
+                        // Create a blank image with the same dimensions as the plate image
+                        var core = new Bitmap(plate.Image.Width, plate.Image.Height);
+
+                        using (var g = Graphics.FromImage(core))
+                        {
+                            // Apply the shear transform to the image
+                            g.Transform = shearTransform;
+                            g.DrawImage(plate.Image, new Point(0, 0));
+                        }
+
+                        // Update the plate with the new image
+                        localPlate = new Plate(core);
+                    }
                 }
 
                 localPlate.Normalize();
 
                 var plateWHratio = localPlate.Width / (float)localPlate.Height;
-                if ((plateWHratio < _configurator.Get<double>("intelligence_minPlateWidthHeightRatio")) || (
-                        plateWHratio > _configurator.Get<double>("intelligence_maxPlateWidthHeightRatio")))
+                if ((plateWHratio < Configurator.Get<double>("intelligence_minPlateWidthHeightRatio")) || (
+                        plateWHratio > Configurator.Get<double>("intelligence_maxPlateWidthHeightRatio")))
                     continue;
 
                 var chars = localPlate.Characters();
 
                 // heuristic analysis of the plate (uniformity and character count)
-                if ((chars.Count < _configurator.Get<int>("intelligence_minimumChars")) || (chars.Count
-                        > _configurator.Get<int>("intelligence_maximumChars")))
+                if ((chars.Count < Configurator.Get<int>("intelligence_minimumChars")) || (chars.Count
+                        > Configurator.Get<int>("intelligence_maximumChars")))
                     continue;
 
-                if (plate.CharactersWidthDispersion(chars) > _configurator
+                if (plate.CharactersWidthDispersion(chars) > Configurator
                         .Get<double>("intelligence_maxCharWidthDispersion"))
                     continue;
 
                 // Plate accepted; normalize and begin character heuristic
                 if (generateReport)
                 {
-                    reportGenerator.InsertText("<h2>Detected band</h2>");
+                    reportGenerator!.InsertText("<h2>Detected band</h2>");
                     reportGenerator.InsertImage(b.GetBitmapWithAxes(), "band", 0, 0);
                     reportGenerator.InsertImage(b.RenderGraph(), "bandgraph", 0, 0);
                     reportGenerator.InsertText("<h2>Detected plate</h2>");
@@ -140,18 +136,18 @@ public class Intelligence
                 // Skew-related
                 if (generateReport)
                 {
-                    reportGenerator.InsertText("<h2>Skew detection</h2>");
-                    reportGenerator.InsertImage(notNormalizedCopy.Image, "skewimage", 0, 0);
+                    reportGenerator!.InsertText("<h2>Skew detection</h2>");
+                    reportGenerator.InsertImage(notNormalizedCopy?.Image, "skewimage", 0, 0);
                     reportGenerator.InsertImage(renderedHoughTransform, "skewtransform", 0, 0);
-                    reportGenerator.InsertText("Detected skew angle : <b>" + hough.Angle + "</b>");
+                    reportGenerator.InsertText("Detected skew angle : <b>" + hough?.Angle + "</b>");
                 }
 
                 var recognizedPlate = new RecognizedPlate();
                 if (generateReport)
                 {
-                    reportGenerator.InsertText("<h2>Character segmentation</h2>");
+                    reportGenerator!.InsertText("<h2>Character segmentation</h2>");
                     reportGenerator.InsertText("<div class='charsegment'>");
-                    foreach (var chr in chars) 
+                    foreach (var chr in chars)
                         reportGenerator.InsertImage(Photo.LinearResizeImage(chr.Image, 70, 100), "", 0, 0);
 
                     reportGenerator.InsertText("</div>");
@@ -173,15 +169,18 @@ public class Intelligence
                     // when normalizing the chars, keep the width/height ratio in mind
                     float widthHeightRatio = (chr.PieceWidth);
                     widthHeightRatio /= (chr.PieceHeight);
-                    if ((widthHeightRatio < _configurator.Get<double>("intelligence_minCharWidthHeightRatio")) || (
-                            widthHeightRatio > _configurator
+                    if ((widthHeightRatio < Configurator.Get<double>("intelligence_minCharWidthHeightRatio")) || (
+                            widthHeightRatio > Configurator
                                 .Get<double>("intelligence_maxCharWidthHeightRatio")))
                     {
                         errorFlags += "WHR ";
                         ok = false;
-                        if (!generateReport) 
+                        if (!generateReport)
                             continue;
                     }
+
+                    if (chr.PositionInPlate is null) 
+                        throw new ArgumentNullException(nameof(chr.PositionInPlate), "Character position in plate is null");
 
                     if (((chr.PositionInPlate.LeftX < 2) || (chr.PositionInPlate.RightX > (plate.Width - 1))) && (
                             widthHeightRatio < 0.12))
@@ -197,7 +196,7 @@ public class Intelligence
                     var hueCost = Math.Abs(chr.StatisticAverageHue - averageHue);
                     var saturationCost = Math.Abs(chr.StatisticAverageSaturation - averageSaturation);
                     var heightCost = (chr.PieceHeight - averageHeight) / averageHeight;
-                    if (brightnessCost > _configurator.Get<double>("intelligence_maxBrightnessCostDispersion"))
+                    if (brightnessCost > Configurator.Get<double>("intelligence_maxBrightnessCostDispersion"))
                     {
                         errorFlags += "BRI ";
                         ok = false;
@@ -205,7 +204,7 @@ public class Intelligence
                             continue;
                     }
 
-                    if (contrastCost > _configurator.Get<double>("intelligence_maxContrastCostDispersion"))
+                    if (contrastCost > Configurator.Get<double>("intelligence_maxContrastCostDispersion"))
                     {
                         errorFlags += "CON ";
                         ok = false;
@@ -213,7 +212,7 @@ public class Intelligence
                             continue;
                     }
 
-                    if (hueCost > _configurator.Get<double>("intelligence_maxHueCostDispersion"))
+                    if (hueCost > Configurator.Get<double>("intelligence_maxHueCostDispersion"))
                     {
                         errorFlags += "HUE ";
                         ok = false;
@@ -221,7 +220,7 @@ public class Intelligence
                             continue;
                     }
 
-                    if (saturationCost > _configurator.Get<double>("intelligence_maxSaturationCostDispersion"))
+                    if (saturationCost > Configurator.Get<double>("intelligence_maxSaturationCostDispersion"))
                     {
                         errorFlags += "SAT ";
                         ok = false;
@@ -229,7 +228,7 @@ public class Intelligence
                             continue;
                     }
 
-                    if (heightCost < -_configurator.Get<double>("intelligence_maxHeightCostDispersion"))
+                    if (heightCost < -Configurator.Get<double>("intelligence_maxHeightCostDispersion"))
                     {
                         errorFlags += "HEI ";
                         ok = false;
@@ -238,16 +237,21 @@ public class Intelligence
                     }
 
                     double similarityCost = 0;
-                    RecognizedCharacter rc ;
+                    RecognizedCharacter rc;
                     if (ok)
                     {
                         rc = _chrRecog.Recognize(chr);
-                        similarityCost = rc.Patterns[0].Cost;
-                        if (similarityCost > _configurator.Get<double>("intelligence_maxSimilarityCostDispersion"))
+
+                        if (rc.Patterns is null || rc.Patterns.Count == 0) 
+                            throw new ArgumentNullException(nameof(rc), "Recognized character does not have any patterns");
+
+                        similarityCost = rc.Patterns![0].Cost;
+                        if (similarityCost > Configurator.Get<double>("intelligence_maxSimilarityCostDispersion"))
                         {
                             errorFlags += "NEU ";
                             ok = false;
-                            if (!generateReport) 
+
+                            if (!generateReport)
                                 continue;
                         }
 
@@ -257,7 +261,7 @@ public class Intelligence
 
                     if (generateReport)
                     {
-                        reportGenerator.InsertText("<div class='heuristictable'>");
+                        reportGenerator!.InsertText("<div class='heuristictable'>");
                         reportGenerator.InsertImage(
                             Photo.LinearResizeImage(chr.Image, chr.Width * 2, chr.Height * 2),
                             "skeleton", 0, 0);
@@ -276,8 +280,8 @@ public class Intelligence
                         reportGenerator.InsertText(
                             "<span class='name'>SAT</span><span class='value'>" + saturationCost + "</span>");
                         reportGenerator.InsertText("</table>");
-                        
-                        if (errorFlags.Length != 0) 
+
+                        if (errorFlags.Length != 0)
                             reportGenerator.InsertText("<span class='errflags'>" + errorFlags + "</span>");
 
                         reportGenerator.InsertText("</div>");
@@ -285,14 +289,14 @@ public class Intelligence
                 }
 
                 // if too few characters recognized, get next candidate
-                if (recognizedPlate.Characters.Count < _configurator.Get<int>("intelligence_minimumChars")) 
+                if (recognizedPlate.Characters.Count < Configurator.Get<int>("intelligence_minimumChars"))
                     continue;
 
-                LastProcessDuration = time.GetTime();
+                LastProcessDuration = timeMeter.GetTime();
                 var parsedOutput = _parser.Parse(recognizedPlate, syntaxAnalysisMode);
                 if (generateReport)
                 {
-                    reportGenerator.InsertText("<span class='recognized'>");
+                    reportGenerator!.InsertText("<span class='recognized'>");
                     reportGenerator.InsertText("Recognized plate : " + parsedOutput);
                     reportGenerator.InsertText("</span>");
                     reportGenerator.Finish();
@@ -303,9 +307,9 @@ public class Intelligence
         }
 
         // TODO failed!
-        LastProcessDuration = time.GetTime();
-        
-        if (generateReport) 
+        LastProcessDuration = timeMeter.GetTime();
+
+        if (generateReport)
             reportGenerator!.Finish();
 
         return null;

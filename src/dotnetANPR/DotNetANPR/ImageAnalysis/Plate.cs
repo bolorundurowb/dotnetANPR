@@ -169,6 +169,9 @@ public class Plate : Photo, ICloneable
     {
         if (_graphHandle == null)
         {
+            if (_plateCopy is null)
+                throw new ArgumentNullException(nameof(_plateCopy), "PlateCopy cannot be null");
+
             _graphHandle = Histogram(_plateCopy.Image);
             _graphHandle.ApplyProbabilityDistributor(Distributor);
             _graphHandle.FindPeaks(NumberOfCandidates);

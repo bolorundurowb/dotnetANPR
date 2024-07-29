@@ -12,8 +12,8 @@ namespace DotNetANPR.ImageAnalysis;
 
 public class Character : Photo
 {
-    public bool Normalized = false;
-    public PositionInPlate? PositionInPlate = null;
+    public bool Normalized;
+    public PositionInPlate? PositionInPlate;
 
     public int FullWidth, FullHeight, PieceWidth, PieceHeight;
 
@@ -32,7 +32,7 @@ public class Character : Photo
     {
         var origin = DuplicateBitmap(Image);
         AdaptiveThresholding();
-        this.ThresholdedImage = Image;
+        ThresholdedImage = Image;
         Image = origin;
 
         Init();
@@ -42,8 +42,8 @@ public class Character : Photo
 
     public Character(Bitmap image, Bitmap thresholdedImage, PositionInPlate? positionInPlate) : base(image)
     {
-        this.ThresholdedImage = thresholdedImage;
-        this.PositionInPlate = positionInPlate;
+        ThresholdedImage = thresholdedImage;
+        PositionInPlate = positionInPlate;
 
         Init();
     }
@@ -184,7 +184,7 @@ public class Character : Photo
         var h = bi.Height;
         for (var x = 0; x < w; x++)
         for (var y = 0; y < h; y++)
-            sum += Math.Abs(StatisticAverageBrightness - Photo.GetBrightness(bi, x, y));
+            sum += Math.Abs(StatisticAverageBrightness - GetBrightness(bi, x, y));
 
         StatisticContrast = sum / (w * h);
     }
@@ -200,7 +200,7 @@ public class Character : Photo
         for (var x = 0; x < w; x++)
         for (var y = 0; y < h; y++)
         {
-            var value = Photo.GetBrightness(bi, x, y);
+            var value = GetBrightness(bi, x, y);
             sum += value;
             min = Math.Min(min, value);
             max = Math.Max(max, value);
@@ -218,7 +218,7 @@ public class Character : Photo
         var h = bi.Height;
         for (var x = 0; x < w; x++)
         for (var y = 0; y < h; y++)
-            sum += Photo.GetHue(bi, x, y);
+            sum += GetHue(bi, x, y);
 
         StatisticAverageHue = sum / (w * h);
     }
@@ -230,7 +230,7 @@ public class Character : Photo
         var h = bi.Height;
         for (var x = 0; x < w; x++)
         for (var y = 0; y < h; y++)
-            sum += Photo.GetSaturation(bi, x, y);
+            sum += GetSaturation(bi, x, y);
 
         StatisticAverageSaturation = sum / (w * h);
     }

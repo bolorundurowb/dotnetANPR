@@ -302,9 +302,27 @@ public class PixelMap
 
     public sealed class Point(int x, int y) : IEquatable<Point>
     {
-        public int X { get; private set; } = x;
+        public int X { get; } = x;
 
-        public int Y { get; private set; } = y;
+        public int Y { get; } = y;
+
+        public override bool Equals(object? obj)
+        {
+            if (ReferenceEquals(null, obj))
+                return false;
+
+            var objAsPoint = obj as Point;
+
+            return !ReferenceEquals(null, objAsPoint) && Equals(objAsPoint);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return (X * 397) ^ Y;
+            }
+        }
 
         public bool Equals(Point? other)
         {

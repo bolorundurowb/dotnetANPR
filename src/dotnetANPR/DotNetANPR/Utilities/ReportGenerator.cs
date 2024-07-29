@@ -50,8 +50,11 @@ public class ReportGenerator
     /// <param name="cssClass">The CSS class to be applied to the image.</param>
     /// <param name="width">The width of the image.</param>
     /// <param name="height">The height of the image.</param>
-    public void InsertImage(Bitmap image, string cssClass, int width, int height)
+    public void InsertImage(Bitmap? image, string cssClass, int width, int height)
     {
+        if (image is null) 
+            return;
+
         var imageName = image.GetHashCode() + ".jpg";
         SaveImage(image, imageName);
         if ((width != 0) && (height != 0))

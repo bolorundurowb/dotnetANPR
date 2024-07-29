@@ -80,12 +80,12 @@ public class NeuralPatternClassifier : CharacterRecognizer
     /// <param name="chr">The character.</param>
     /// <param name="imgChar">The normalized image character.</param>
     /// <returns>An IOPair object.</returns>
-    public NN.NeuralNetwork.SetOfIOPairs.IOPair CreateNewPair(char chr, Character imgChar)
+    public NN.SetOfIOPairs.IOPair CreateNewPair(char chr, Character imgChar)
     {
         var vectorInput = imgChar.ExtractFeatures();
         var vectorOutput = Alphabet.Select(alphabet => chr == alphabet ? 1.0 : 0.0).ToList();
 
-        return new NN.NeuralNetwork.SetOfIOPairs.IOPair(vectorInput, vectorOutput);
+        return new NN.SetOfIOPairs.IOPair(vectorInput, vectorOutput);
     }
 
     /// <summary>
@@ -95,7 +95,7 @@ public class NeuralPatternClassifier : CharacterRecognizer
     /// <exception cref="IOException">If the alphabet failed to load.</exception>
     public void LearnAlphabet(string folder)
     {
-        var train = new NN.NeuralNetwork.SetOfIOPairs();
+        var train = new NN.SetOfIOPairs();
         var fileList = Character.AlphabetList(folder);
         foreach (var fileName in fileList)
         {

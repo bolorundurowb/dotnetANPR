@@ -323,8 +323,8 @@ public class Photo(Bitmap image) : IDisposable, ICloneable
 
         var width = image.Width;
         var height = image.Height;
-        float[,] sourceArray = BitmapToArray(image, width, height);
-        float[,] destinationArray = BitmapToArray(image, width, height);
+        var sourceArray = BitmapToArray(image, width, height);
+        var destinationArray = BitmapToArray(image, width, height);
 
         for (var x = 0; x < width; x++)
         for (var y = 0; y < height; y++)

@@ -5,7 +5,7 @@ namespace DotNetANPR.NeuralNetwork;
 public class NeuralNetwork
 {
     public List<NeuralLayer> Layers { get; } = new();
-    
+
     public NeuralNetwork(List<int> dimensions) { }
 
     public NeuralNetwork(string path) { }
@@ -16,17 +16,24 @@ public class NeuralNetwork
     {
         throw new System.NotImplementedException();
     }
+    
+    #region Private Helpers
+    
+    #endregion
 
     public class SetOfIOPairs
     {
-        public void AddIOPair(IOPair createNewPair) { throw new System.NotImplementedException(); }
+        public List<IOPair> Pairs { get; } = new();
 
-        public class IOPair
+        public void AddIOPair(List<double> inputs, List<double> outputs) => AddIOPair(new IOPair(inputs, outputs));
+
+        public void AddIOPair(IOPair pair) => Pairs.Add(pair);
+
+        public class IOPair(List<double> inputs, List<double> outputs)
         {
-            public IOPair(List<double> vectorInput, List<double> vectorOutput)
-            {
-                throw new System.NotImplementedException();
-            }
+            public List<double> Inputs { get; } = inputs;
+
+            public List<double> Outputs { get; } = outputs;
         }
     }
 }

@@ -22,7 +22,7 @@ public class NeuralLayer
 
     public NeuralLayer(int numOfNeurons, NeuralNetwork neuralNetwork) : this(neuralNetwork)
     {
-        for (int i = 0; i < numOfNeurons; i++)
+        for (var i = 0; i < numOfNeurons; i++)
             Neurons.Add(Index == 0
                 ? new Neuron(1, 0, this)
                 : new Neuron(NeuralNetwork.Layers[Index - 1].Neurons.Count, 0, this));

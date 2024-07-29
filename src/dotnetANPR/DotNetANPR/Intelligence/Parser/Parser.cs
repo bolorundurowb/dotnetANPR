@@ -4,34 +4,32 @@ using System.IO;
 using System.Linq;
 using System.Xml;
 using DotNetANPR.Configuration;
-using DotNetANPR.Recognizer;
 using Microsoft.Extensions.Logging;
 
 namespace DotNetANPR.Intelligence.Parser;
 
 public class Parser
 {
-    private static readonly ILogger<Parser> logger =
+    private static readonly ILogger<Parser> Logger =
         LoggerFactory.Create(_ => { }).CreateLogger<Parser>();
 
-    private List<PlateForm> plateForms;
+    private readonly List<PlateForm> _plateForms;
 
     public Parser()
     {
-        plateForms = new();
+        _plateForms = [];
         var fileName = Configurator.Instance.GetPath("intelligence_syntaxDescriptionFile");
+
         if (string.IsNullOrEmpty(fileName))
-        {
             throw new IOException("Failed to get syntax description file from Configurator");
-        }
 
         try
         {
-            plateForms = LoadFromXml(fileName);
+            _plateForms = LoadFromXml(fileName);
         }
         catch (Exception e)
         {
-            logger.LogError(e, "Failed to load from parser syntax description file");
+            Logger.LogError(e, "Failed to load from parser syntax description file");
             throw;
         }
     }
@@ -73,49 +71,46 @@ public class Parser
 
     public void UnFlagAll()
     {
-        foreach (var form in plateForms)
+        foreach (var form in _plateForms)
             form.IsFlagged = false;
     }
 
-    /**
-     * For given {@code length}, finds a {@link PlateForm} of the same length. If
-     * no such {@link PlateForm} is found, tries to find one with less characters.
-     *
-     * @param length the number of characters of the PlateForm
-     */
+    /// <summary>
+    /// For the given length, finds a <see cref="PlateForm"/> of the same length. 
+    /// If no such <see cref="PlateForm"/> is found, tries to find one with fewer characters.
+    /// </summary>
+    /// <param name="length">The number of characters of the PlateForm.</param>
+    /// <returns>A <see cref="PlateForm"/> of the specified length or shorter if available; otherwise, null.</returns>
     public void FlagEqualOrShorterLength(int length)
     {
         var found = false;
         for (var i = length; (i >= 1) && !found; i--)
-            foreach (var form in plateForms)
-                if (form.Length == i)
-                {
-                    form.IsFlagged = true;
-                    found = true;
-                }
+            foreach (var form in _plateForms.Where(form => form.Length == i))
+            {
+                form.IsFlagged = true;
+                found = true;
+            }
     }
 
     public void FlagEqualLength(int length)
     {
-        foreach (var form in plateForms)
+        foreach (var form in _plateForms)
             if (form.Length == length)
                 form.IsFlagged = true;
     }
 
     public void InvertFlags()
     {
-        foreach (var form in plateForms)
+        foreach (var form in _plateForms)
             form.IsFlagged = (!form.IsFlagged);
     }
 
-    /**
-     * Syntactically parses text from the given {@link RecognizedPlate} in the specified analysis mode.
-     * <p>
-     *
-     * @param recognizedPlate the plate to parse
-     * @param syntaxAnalysisMode the mode in which to parse
-     * @return the parsed recognized plate text
-     */
+    /// <summary>
+    /// Syntactically parses text from the given <see cref="RecognizedPlate"/> in the specified analysis mode.
+    /// </summary>
+    /// <param name="recognizedPlate">The plate to parse.</param>
+    /// <param name="syntaxAnalysisMode">The mode in which to parse.</param>
+    /// <returns>The parsed recognized plate text.</returns>
     public string Parse(RecognizedPlate recognizedPlate, SyntaxAnalysisMode syntaxAnalysisMode)
     {
         var length = recognizedPlate.Characters.Count;
@@ -139,9 +134,9 @@ public class Parser
                 throw new ArgumentException("Unknown syntax analysis mode: " + syntaxAnalysisMode);
         }
 
-        List<FinalPlate> finalPlates = new();
+        List<FinalPlate> finalPlates = [];
 
-        foreach (var form in plateForms)
+        foreach (var form in _plateForms)
         {
             if (!form.IsFlagged)
                 continue;
@@ -149,7 +144,7 @@ public class Parser
             for (var i = 0; i <= (length - form.Length); i++)
             {
                 // moving the form on the plate
-                logger.LogDebug("Comparing {} with form {} and offset {}.", recognizedPlate, form.Name, i);
+                Logger.LogDebug("Comparing {} with form {} and offset {}.", recognizedPlate, form.Name, i);
                 var finalPlate = new FinalPlate();
                 for (var j = 0; j < form.Length; j++)
                 {
@@ -172,7 +167,7 @@ public class Parser
                     }
                 }
 
-                logger.LogDebug("Adding {} with required changes {}.", finalPlate.Plate, finalPlate.RequiredChanges);
+                Logger.LogDebug("Adding {} with required changes {}.", finalPlate.Plate, finalPlate.RequiredChanges);
                 finalPlates.Add(finalPlate);
             }
         }
@@ -187,7 +182,7 @@ public class Parser
         var minimalIndex = 0;
         for (var i = 0; i < finalPlates.Count; i++)
         {
-            logger.LogDebug("Plate {} : {} with required changes {}.", i, finalPlates[i].Plate,
+            Logger.LogDebug("Plate {} : {} with required changes {}.", i, finalPlates[i].Plate,
                 finalPlates[i].RequiredChanges);
             if (finalPlates[i].RequiredChanges <= minimalChanges)
             {

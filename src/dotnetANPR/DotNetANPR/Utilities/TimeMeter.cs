@@ -4,7 +4,7 @@ namespace DotNetANPR.Utilities;
 
 public class TimeMeter
 {
-    private Stopwatch _stopwatch;
+    private readonly Stopwatch _stopwatch;
 
     public TimeMeter()
     {

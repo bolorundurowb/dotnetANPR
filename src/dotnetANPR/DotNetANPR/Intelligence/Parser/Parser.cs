@@ -206,7 +206,7 @@ public class Parser
     {
         public string Plate { get; private set; } = string.Empty;
 
-        public double RequiredChanges { get; internal set; } = 0;
+        public double RequiredChanges { get; internal set; }
 
         public void AddChar(char chr) { Plate += chr; }
     }

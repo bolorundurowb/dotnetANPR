@@ -7,19 +7,19 @@ namespace DotNetANPR.ImageAnalysis;
 
 public class CarSnapshot(Bitmap image) : Photo(image)
 {
-    private static int _distributorMargins =
+    private static readonly int _distributorMargins =
         Configurator.Instance.Get<int>("carsnapshot_distributormargins");
 
-    private static int _carsnapshotGraphrankfilter =
+    private static readonly int _carsnapshotGraphrankfilter =
         Configurator.Instance.Get<int>("carsnapshot_graphrankfilter");
 
-    private static int _numberOfCandidates =
+    private static readonly int _numberOfCandidates =
         Configurator.Instance.Get<int>("intelligence_numberOfBands");
 
     public static readonly ProbabilityDistributor Distributor =
         new(0, 0, _distributorMargins, _distributorMargins);
 
-    private CarSnapshotGraph? _graphHandle = null;
+    private CarSnapshotGraph? _graphHandle;
 
     public Bitmap RenderGraph()
     {

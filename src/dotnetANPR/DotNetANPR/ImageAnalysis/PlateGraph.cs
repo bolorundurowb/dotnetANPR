@@ -10,10 +10,10 @@ public class PlateGraph : Graph
     /**
     * 0.75: Smaller numbers have a tendency to cut characters, bigger have a tendency to incorrectly merge them.
     */
-    private static double _plategraphRelMinpeaksize =
+    private static readonly double _plategraphRelMinpeaksize =
         Configurator.Instance.Get<double>("plategraph_rel_minpeaksize");
 
-    private static double _peakFootConstant =
+    private static readonly double _peakFootConstant =
         Configurator.Instance.Get<double>("plategraph_peakfootconstant");
 
     private readonly Plate _handle;

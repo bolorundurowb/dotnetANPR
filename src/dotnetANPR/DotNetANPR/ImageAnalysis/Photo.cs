@@ -7,7 +7,7 @@ using DotNetANPR.Extensions;
 
 namespace DotNetANPR.ImageAnalysis;
 
-public class Photo(Bitmap image) : IDisposable
+public class Photo(Bitmap image) : IDisposable, ICloneable
 {
     public int Width => image.Width;
 
@@ -186,6 +186,8 @@ public class Photo(Bitmap image) : IDisposable
     }
 
     public Photo Duplicate() => new(DuplicateBitmap(image));
+
+    public object Clone() => Duplicate();
 
     #region Filters
 

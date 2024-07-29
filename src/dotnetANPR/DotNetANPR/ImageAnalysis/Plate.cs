@@ -31,7 +31,7 @@ public class Plate : Photo, ICloneable
         }
     }
 
-    public object Clone() => new Plate(DuplicateBitmap(Image));
+    object ICloneable.Clone() => new Plate(DuplicateBitmap(Image));
 
     public Bitmap RenderGraph()
     {

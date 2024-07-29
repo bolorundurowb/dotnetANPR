@@ -21,13 +21,9 @@ public class Intelligence
     {
         var classificationMethod = _configurator.Get<int>("intelligence_classification_method");
         if (classificationMethod == 0)
-        {
             _chrRecog = new KnnPatternClassifier();
-        }
         else
-        {
             _chrRecog = new NeuralPatternClassifier();
-        }
 
         _parser = new PS.Parser();
     }
@@ -115,24 +111,18 @@ public class Intelligence
                 var plateWHratio = localPlate.Width / (float)localPlate.Height;
                 if ((plateWHratio < _configurator.Get<double>("intelligence_minPlateWidthHeightRatio")) || (
                         plateWHratio > _configurator.Get<double>("intelligence_maxPlateWidthHeightRatio")))
-                {
                     continue;
-                }
 
                 var chars = localPlate.Characters();
 
                 // heuristic analysis of the plate (uniformity and character count)
                 if ((chars.Count < _configurator.Get<int>("intelligence_minimumChars")) || (chars.Count
                         > _configurator.Get<int>("intelligence_maximumChars")))
-                {
                     continue;
-                }
 
                 if (plate.CharactersWidthDispersion(chars) > _configurator
                         .Get<double>("intelligence_maxCharWidthDispersion"))
-                {
                     continue;
-                }
 
                 // Plate accepted; normalize and begin character heuristic
                 if (generateReport)
@@ -161,18 +151,14 @@ public class Intelligence
                 {
                     reportGenerator.InsertText("<h2>Character segmentation</h2>");
                     reportGenerator.InsertText("<div class='charsegment'>");
-                    foreach (var chr in chars)
-                    {
+                    foreach (var chr in chars) 
                         reportGenerator.InsertImage(Photo.LinearResizeImage(chr.Image, 70, 100), "", 0, 0);
-                    }
 
                     reportGenerator.InsertText("</div>");
                 }
 
                 foreach (var chr in chars)
-                {
                     chr.Normalize();
-                }
 
                 var averageHeight = plate.AveragePieceHeight(chars);
                 var averageContrast = plate.AveragePieceContrast(chars);
@@ -193,10 +179,8 @@ public class Intelligence
                     {
                         errorFlags += "WHR ";
                         ok = false;
-                        if (!generateReport)
-                        {
+                        if (!generateReport) 
                             continue;
-                        }
                     }
 
                     if (((chr.PositionInPlate.LeftX < 2) || (chr.PositionInPlate.RightX > (plate.Width - 1))) && (
@@ -205,9 +189,7 @@ public class Intelligence
                         errorFlags += "POS ";
                         ok = false;
                         if (!generateReport)
-                        {
                             continue;
-                        }
                     }
 
                     var contrastCost = Math.Abs(chr.StatisticContrast - averageContrast);
@@ -220,9 +202,7 @@ public class Intelligence
                         errorFlags += "BRI ";
                         ok = false;
                         if (!generateReport)
-                        {
                             continue;
-                        }
                     }
 
                     if (contrastCost > _configurator.Get<double>("intelligence_maxContrastCostDispersion"))
@@ -230,9 +210,7 @@ public class Intelligence
                         errorFlags += "CON ";
                         ok = false;
                         if (!generateReport)
-                        {
                             continue;
-                        }
                     }
 
                     if (hueCost > _configurator.Get<double>("intelligence_maxHueCostDispersion"))
@@ -240,9 +218,7 @@ public class Intelligence
                         errorFlags += "HUE ";
                         ok = false;
                         if (!generateReport)
-                        {
                             continue;
-                        }
                     }
 
                     if (saturationCost > _configurator.Get<double>("intelligence_maxSaturationCostDispersion"))
@@ -250,9 +226,7 @@ public class Intelligence
                         errorFlags += "SAT ";
                         ok = false;
                         if (!generateReport)
-                        {
                             continue;
-                        }
                     }
 
                     if (heightCost < -_configurator.Get<double>("intelligence_maxHeightCostDispersion"))
@@ -260,9 +234,7 @@ public class Intelligence
                         errorFlags += "HEI ";
                         ok = false;
                         if (!generateReport)
-                        {
                             continue;
-                        }
                     }
 
                     double similarityCost = 0;
@@ -280,9 +252,7 @@ public class Intelligence
                         }
 
                         if (ok)
-                        {
                             recognizedPlate.AddCharacter(rc);
-                        }
                     }
 
                     if (generateReport)
@@ -315,10 +285,8 @@ public class Intelligence
                 }
 
                 // if too few characters recognized, get next candidate
-                if (recognizedPlate.Characters.Count < _configurator.Get<int>("intelligence_minimumChars"))
-                {
+                if (recognizedPlate.Characters.Count < _configurator.Get<int>("intelligence_minimumChars")) 
                     continue;
-                }
 
                 LastProcessDuration = time.GetTime();
                 var parsedOutput = _parser.Parse(recognizedPlate, syntaxAnalysisMode);

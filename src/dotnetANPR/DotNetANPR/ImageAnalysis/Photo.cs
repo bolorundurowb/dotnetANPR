@@ -129,7 +129,7 @@ public class Photo(Bitmap image) : IDisposable
 
     public static Bitmap CreateBlankBitmap(int width, int height) => new(width, height, PixelFormat.Format24bppRgb);
 
-    public Bitmap GetBitmapWithAxes(Bitmap image)
+    public Bitmap GetBitmapWithAxes()
     {
         var widthWithAxes = image.Width + 40;
         var heightWithAxes = image.Height + 40;

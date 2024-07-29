@@ -63,7 +63,7 @@ public class NeuralPatternClassifier : CharacterRecognizer
     public override RecognizedCharacter Recognize(Character character)
     {
         character.Normalize();
-        var output = NN.NeuralNetwork.Test(character.ExtractFeatures());
+        var output = NeuralNetwork.Test(character.ExtractFeatures());
         RecognizedCharacter recognized = new();
 
         for (var i = 0; i < output.Count; i++)

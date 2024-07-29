@@ -2,7 +2,7 @@
 
 public class NeuralInput(double weight, Neuron neuron)
 {
-    public double Weight { get; } = weight;
+    public double Weight { get; set; } = weight;
 
     public Neuron Neuron { get; } = neuron;
 

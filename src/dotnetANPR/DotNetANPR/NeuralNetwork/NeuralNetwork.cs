@@ -4,6 +4,8 @@ namespace DotNetANPR.NeuralNetwork;
 
 public class NeuralNetwork
 {
+    public List<NeuralLayer> Layers { get; } = new();
+    
     public NeuralNetwork(List<int> dimensions) { }
 
     public NeuralNetwork(string path) { }

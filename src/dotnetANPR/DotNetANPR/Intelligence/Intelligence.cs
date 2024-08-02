@@ -11,7 +11,7 @@ namespace DotNetANPR.Intelligence;
 
 public class Intelligence
 {
-    private readonly CharacterRecognizer _chrRecog;
+    private readonly CharacterRecognizer _chrRecognizer;
     private readonly PS.Parser _parser;
 
     private static readonly Configurator Configurator = Configurator.Instance;
@@ -20,7 +20,7 @@ public class Intelligence
     public Intelligence()
     {
         var classificationMethod = Configurator.Get<int>("intelligence_classification_method");
-        _chrRecog = classificationMethod == 0 ? new KnnPatternClassifier() : new NeuralPatternClassifier();
+        _chrRecognizer = classificationMethod == 0 ? new KnnPatternClassifier() : new NeuralPatternClassifier();
         _parser = new PS.Parser();
     }
 
@@ -240,7 +240,7 @@ public class Intelligence
                     RecognizedCharacter rc;
                     if (ok)
                     {
-                        rc = _chrRecog.Recognize(chr);
+                        rc = _chrRecognizer.Recognize(chr);
 
                         if (rc.Patterns is null || rc.Patterns.Count == 0) 
                             throw new ArgumentNullException(nameof(rc), "Recognized character does not have any patterns");

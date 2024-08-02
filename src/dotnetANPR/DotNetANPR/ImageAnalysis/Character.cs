@@ -54,12 +54,9 @@ public class Character : Photo
         var suffix = Suffix(directory);
         directory = directory.TrimEnd('/');
         List<string> filenames = [];
-        for (var i = 0; i < alphaString.Length; i++)
-        {
-            var s = directory + Path.PathSeparator + alphaString[i] + suffix + ".jpg";
-            if (File.Exists(s)) 
-                filenames.Add(s);
-        }
+        filenames.AddRange(alphaString
+            .Select(t => directory + Path.PathSeparator + t + suffix + ".jpg")
+            .Where(File.Exists));
 
         return filenames;
     }

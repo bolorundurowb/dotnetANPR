@@ -112,7 +112,9 @@ public sealed class Configurator
 
     public void Set<T>(string name, T value) => _properties[name] = value?.ToString();
 
-    public void Save() => _properties.StoreToXml(FileName);
+    public void Save(string outputFilePath) => _properties.StoreToXml(outputFilePath);
+
+    public void Save() => Save(FileName);
 
     public void LoadConfiguration(string? filePath = null)
     {

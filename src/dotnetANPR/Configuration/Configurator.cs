@@ -79,7 +79,7 @@ public sealed class Configurator
 
         // RECOGNITION
         Set("intelligence_syntaxanalysis", 2);
-        Set("intelligence_syntaxDescriptionFile", "./Resources/Syntax/syntax.xml");
+        Set("intelligence_syntaxDescriptionFile", "./Resources/syntax.xml");
 
         // NEURAL NETWORK
         //int maxK, double eps, double lambda, double micro
@@ -89,8 +89,6 @@ public sealed class Configurator
         Set("neural_micro", 0.5);   // micro
         Set("neural_topology", 20);
 
-        Set("help_file_help", "./Resources/Help/help.html");
-        Set("help_file_about", "./Resources/Help/about.html");
         Set("reportgeneratorcss", "./Resources/ReportGenerator/style.css");
     }
 

@@ -85,7 +85,7 @@
 
     <!-- path to directory containing already normalized characters. Dimensions
         of these characters must match with normalized characters width and height -->
-    <entry key="char_learnAlphabetPath">/alphabets/alphabet_8x13</entry>
+    <entry key="char_learnAlphabetPath">Resources/alphabets/alphabet_8x13</entry>
 
     <!-- character downsampling methods 0 - linear resampling (good for preserving
         edges (edge detection)) 1 - weighted average (good for direct pixel mapping) -->
@@ -105,7 +105,7 @@
 
     <!-- NEURAL NETWORK LEARNING PARAMETERS -->
 
-    <entry key="char_neuralNetworkPath">neuralnetworks/network_avgres_813_map.xml</entry>
+    <entry key="char_neuralNetworkPath">Resources/neuralnetworks/network_avgres_813_map.xml</entry>
     <!-- neural network topology file (caution : dimensions must match with selected
            extraction method) -->
     <entry key="neural_maxk">8000</entry>
@@ -126,7 +126,7 @@
         characters) -->
     <entry key="intelligence_syntaxanalysis">2</entry>
     <!-- syntax analysis mode -->
-    <entry key="intelligence_syntaxDescriptionFile">syntax.xml</entry>
+    <entry key="intelligence_syntaxDescriptionFile">Resources/syntax.xml</entry>
 
     <!-- CAR SNAPSHOT, BAND, PLATE GRAPH ANALYSIS -->
 

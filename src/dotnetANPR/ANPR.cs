@@ -60,7 +60,7 @@ public class ANPR
 
     public static void TrainNetworkAndExport(string outputFilePath)
     {
-        // learn new neural network and save it into into args[2]
+        // learn new neural network and save it into args[2]
         if (File.Exists(outputFilePath))
             throw new IOException("Destination file already exists.");
 
@@ -68,7 +68,7 @@ public class ANPR
         npc.NeuralNetwork.SaveToXml(outputFilePath);
     }
 
-    public static void TransformAlphabets(string sourceDirectoryPath, string destinationDirectoryPath)
+    public static void NormalizeAlphabets(string sourceDirectoryPath, string destinationDirectoryPath)
     {
         if (!Directory.Exists(sourceDirectoryPath))
             throw new ArgumentException("Source directory does not exist.");

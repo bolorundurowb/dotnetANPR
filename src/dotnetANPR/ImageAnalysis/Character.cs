@@ -67,7 +67,7 @@ public class Character : Photo
             return;
 
         var colorImage = DuplicateBitmap(Image);
-        Image = (ThresholdedImage);
+        Image = ThresholdedImage;
         var pixelMap = PixelMap;
         var bestPiece = pixelMap.BestPiece();
         colorImage = BestPieceInFullColor(colorImage, bestPiece);
@@ -78,7 +78,7 @@ public class Character : Photo
         ComputeStatisticHue(colorImage);
         ComputeStatisticSaturation(colorImage);
 
-        Image = (bestPiece.Render()) ?? (new Bitmap(1, 1, PixelFormat.Format24bppRgb));
+        Image = bestPiece.Render() ?? new Bitmap(1, 1, PixelFormat.Format24bppRgb);
 
         PieceWidth = Width;
         PieceHeight = Height;
@@ -97,8 +97,8 @@ public class Character : Photo
         var output = new double[features.Length * 4];
 
         for (var f = 0; f < features.Length; f++)
-        for (var my = 0; my < (height - 1); my++)
-        for (var mx = 0; mx < (width - 1); mx++)
+        for (var my = 0; my < height - 1; my++)
+        for (var mx = 0; mx < width - 1; mx++)
         {
             double featureMatch = 0;
             featureMatch += Math.Abs(array[mx, my] - features[f][0]);
@@ -107,10 +107,10 @@ public class Character : Photo
             featureMatch += Math.Abs(array[mx + 1, my + 1] - features[f][3]);
 
             var bias = 0;
-            if (mx >= (width / 2))
+            if (mx >= width / 2)
                 bias += features.Length; // if we are in the right quadrant, move the bias by one class
 
-            if (my >= (height / 2))
+            if (my >= height / 2)
                 bias += features.Length * 2; // if we are in the left quadrant, move the bias by two classes
 
             output[bias + f] += featureMatch < 0.05 ? 1 : 0;
@@ -151,7 +151,7 @@ public class Character : Photo
 
     private Bitmap BestPieceInFullColor(Bitmap bi, PixelMap.Piece piece)
     {
-        if ((piece.Width <= 0) || (piece.Height <= 0))
+        if (piece.Width <= 0 || piece.Height <= 0)
             return bi;
 
         return bi.SubImage(piece.MostLeftPoint, piece.MostTopPoint, piece.Width, piece.Height);
@@ -163,7 +163,7 @@ public class Character : Photo
         var x = Configurator.Instance.Get<int>("char_normalizeddimensions_x");
         var y = Configurator.Instance.Get<int>("char_normalizeddimensions_y");
 
-        if ((x == 0) || (y == 0))
+        if (x == 0 || y == 0)
             return;
 
         if (Configurator.Instance.Get<int>("char_resizeMethod") == 0)

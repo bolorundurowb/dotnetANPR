@@ -31,7 +31,7 @@ public class PlateGraph : Graph
     public List<Peak> FindPeaks(int count)
     {
         List<Peak> spacesTemp = [];
-        var diffGVal = (2 * AverageValue()) - MaxValue();
+        var diffGVal = 2 * AverageValue() - MaxValue();
         YValues = YValues.Select(f => f - diffGVal).ToList();
         
         DeActualizeFlags();
@@ -54,7 +54,7 @@ public class PlateGraph : Graph
             }
 
             // we found the biggest peak
-            if (YValues[maxIndex] < (_plategraphRelMinpeaksize * MaxValue())) 
+            if (YValues[maxIndex] < _plategraphRelMinpeaksize * MaxValue()) 
                 break;
 
             // width of the detected space
@@ -80,7 +80,7 @@ public class PlateGraph : Graph
                 peaks.Add(first);
         }
 
-        for (var i = 0; i < (spaces.Count - 1); i++)
+        for (var i = 0; i < spaces.Count - 1; i++)
         {
             var left = spaces[i].Center;
             var right = spaces[i + 1].Center;

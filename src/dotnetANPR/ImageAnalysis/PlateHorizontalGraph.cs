@@ -20,10 +20,10 @@ public class PlateHorizontalGraph : Graph
         var a = 2;
         var b = YValues.Count - 1 - 2;
         var maxVal = MaxValue();
-        while ((-Derivation(a, a + 4) < (maxVal * 0.2)) && (a < (YValues.Count - 2 - 2 - 4)))
+        while (-Derivation(a, a + 4) < maxVal * 0.2 && a < YValues.Count - 2 - 2 - 4)
             a++;
 
-        while ((Derivation(b - 4, b) < (maxVal * 0.2)) && (b > (a + 2)))
+        while (Derivation(b - 4, b) < maxVal * 0.2 && b > a + 2)
             b--;
 
         var outPeaks = new List<Peak> { new(a, b) };

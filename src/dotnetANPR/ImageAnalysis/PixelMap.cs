@@ -68,7 +68,7 @@ public class PixelMap
             flaggedPoints.Clear();
         } while (cont);
 
-        return (this);
+        return this;
     }
 
     public PixelMap ReduceNoise()
@@ -83,7 +83,7 @@ public class PixelMap
         foreach (var point in pointsToReduce)
             _matrix[point.X, point.Y] = false;
 
-        return (this);
+        return this;
     }
 
     public PieceSet FindPieces()
@@ -143,7 +143,7 @@ public class PixelMap
 
     private bool GetPointValue(int x, int y)
     {
-        if ((x < 0) || (y < 0) || (x >= _width) || (y >= _height))
+        if (x < 0 || y < 0 || x >= _width || y >= _height)
             return false;
 
         return _matrix[x, y];
@@ -235,15 +235,15 @@ public class PixelMap
     private bool Step1Passed(int x, int y)
     {
         var n = N(x, y);
-        return (((2 <= n) && (n <= 6)) && (T(x, y) == 1) && (!P(2, x, y) || !P(4, x, y) || !P(6, x, y))
-                && (!P(4, x, y) || !P(6, x, y) || !P(8, x, y)));
+        return 2 <= n && n <= 6 && T(x, y) == 1 && (!P(2, x, y) || !P(4, x, y) || !P(6, x, y))
+               && (!P(4, x, y) || !P(6, x, y) || !P(8, x, y));
     }
 
     private bool Step2Passed(int x, int y)
     {
         var n = N(x, y);
-        return (((2 <= n) && (n <= 6)) && (T(x, y) == 1) && (!P(2, x, y) || !P(4, x, y) || !P(8, x, y))
-                && (!P(2, x, y) || !P(6, x, y) || !P(8, x, y)));
+        return 2 <= n && n <= 6 && T(x, y) == 1 && (!P(2, x, y) || !P(4, x, y) || !P(8, x, y))
+               && (!P(2, x, y) || !P(6, x, y) || !P(8, x, y));
     }
 
     private void FindBoundaryPoints(PointSet set)
@@ -260,7 +260,7 @@ public class PixelMap
     private bool SeedShouldBeAdded(Piece piece, Point point)
     {
         // if it's not out of bounds
-        if ((point.X < 0) || (point.Y < 0) || (point.X >= _width) || (point.Y >= _height))
+        if (point.X < 0 || point.Y < 0 || point.X >= _width || point.Y >= _height)
             return false;
 
         // if it's black
@@ -405,8 +405,8 @@ public class PixelMap
             MostRightPoint = ComputeMostRightPoint();
             MostTopPoint = ComputeMostTopPoint();
             MostBottomPoint = ComputeMostBottomPoint();
-            Width = (MostRightPoint - MostLeftPoint) + 1;
-            Height = (MostBottomPoint - MostTopPoint) + 1;
+            Width = MostRightPoint - MostLeftPoint + 1;
+            Height = MostBottomPoint - MostTopPoint + 1;
             CenterX = (MostLeftPoint + MostRightPoint) / 2;
             CenterY = (MostTopPoint + MostBottomPoint) / 2;
             NumberOfBlackPoints = Count;

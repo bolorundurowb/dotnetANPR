@@ -332,8 +332,8 @@ public class Photo(Bitmap image) : IDisposable, ICloneable
             // Compute neighborhood
             var count = 0;
             var neighborhood = 0.0f;
-            for (var ix = x - radius; ix <= (x + radius); ix++)
-            for (var iy = y - radius; iy <= (y + radius); iy++)
+            for (var ix = x - radius; ix <= x + radius; ix++)
+            for (var iy = y - radius; iy <= y + radius; iy++)
                 if (ix >= 0 && iy >= 0 && ix < width && iy < height)
                 {
                     neighborhood += sourceArray[ix, iy];

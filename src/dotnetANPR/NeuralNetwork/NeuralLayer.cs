@@ -10,7 +10,7 @@ public class NeuralLayer
 
     public List<Neuron> Neurons { get; } = new();
 
-    public bool IsTopLayer => Index == (NeuralNetwork.Layers.Count - 1);
+    public bool IsTopLayer => Index == NeuralNetwork.Layers.Count - 1;
 
     public bool IsBottomLayer => Index == 0;
 

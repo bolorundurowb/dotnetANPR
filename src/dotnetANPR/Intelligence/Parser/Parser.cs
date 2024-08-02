@@ -84,7 +84,7 @@ public class Parser
     public void FlagEqualOrShorterLength(int length)
     {
         var found = false;
-        for (var i = length; (i >= 1) && !found; i--)
+        for (var i = length; i >= 1 && !found; i--)
             foreach (var form in _plateForms.Where(form => form.Length == i))
             {
                 form.IsFlagged = true;
@@ -102,7 +102,7 @@ public class Parser
     public void InvertFlags()
     {
         foreach (var form in _plateForms)
-            form.IsFlagged = (!form.IsFlagged);
+            form.IsFlagged = !form.IsFlagged;
     }
 
     /// <summary>
@@ -141,7 +141,7 @@ public class Parser
             if (!form.IsFlagged)
                 continue;
 
-            for (var i = 0; i <= (length - form.Length); i++)
+            for (var i = 0; i <= length - form.Length; i++)
             {
                 // moving the form on the plate
                 Logger.LogDebug("Comparing {} with form {} and offset {}.", recognizedPlate, form.Name, i);
@@ -160,7 +160,7 @@ public class Parser
                         finalPlate.RequiredChanges++; // +1 for every char
                         foreach (var rp in rc.Patterns.Where(t => form.Positions[j].IsAllowed(t.Char)))
                         {
-                            finalPlate.RequiredChanges += (rp.Cost / 100.0); // +x for its cost
+                            finalPlate.RequiredChanges += rp.Cost / 100.0; // +x for its cost
                             finalPlate.AddChar(rp.Char);
                             break;
                         }

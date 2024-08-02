@@ -52,12 +52,13 @@ public class ReportGenerator
     /// <param name="height">The height of the image.</param>
     public void InsertImage(Bitmap? image, string cssClass, int width, int height)
     {
-        if (image is null) 
+        if (image is null)
             return;
 
         var imageName = image.GetHashCode() + ".jpg";
         SaveImage(image, imageName);
-        if ((width != 0) && (height != 0))
+
+        if (width != 0 && height != 0)
             _reportContent.Append("<img src='").Append(imageName).Append("' alt='' width='").Append(width)
                 .Append("' height='")
                 .Append(height).Append("' class='").Append(cssClass).AppendLine("'>");

@@ -183,7 +183,7 @@ public class Graph
             var x0 = x;
             var y0 = y;
             x = (int)((float)i / YValues.Count * width);
-            y = (int)((1 - (YValues[i] / MaxValue())) * height);
+            y = (int)((1 - YValues[i] / MaxValue()) * height);
             graphicContent.DrawLine(greenPen, x0, y0, x, y);
         }
 
@@ -223,7 +223,7 @@ public class Graph
 
         for (var ay = 0; ay < content.Height; ay += 20)
         {
-            graphicAxis.DrawString(((1 - ((float)ay / content.Height)) * 100).ToString("F0") + "%", labelFont,
+            graphicAxis.DrawString(((1 - (float)ay / content.Height) * 100).ToString("F0") + "%", labelFont,
                 blackBrush, new PointF(1, ay + 15));
             graphicAxis.DrawLine(Pens.Black, 25, ay + 5, 35, ay + 5);
         }
@@ -293,10 +293,10 @@ public class Graph
         var halfSize = size / 2;
         var clone = new List<float>(YValues);
 
-        for (var i = halfSize; i < (YValues.Count - halfSize); i++)
+        for (var i = halfSize; i < YValues.Count - halfSize; i++)
         {
             float sum = 0;
-            for (var ii = i - halfSize; ii < (i + halfSize); ii++)
+            for (var ii = i - halfSize; ii < i + halfSize; ii++)
                 sum += clone[ii];
             YValues[i] = sum / size;
         }
@@ -307,7 +307,7 @@ public class Graph
         var index = peak;
         while (index >= 0)
         {
-            if (YValues[index] < (peakFootConstantRel * YValues[peak]))
+            if (YValues[index] < peakFootConstantRel * YValues[peak])
                 break;
 
             index--;
@@ -321,7 +321,7 @@ public class Graph
         var index = peak;
         while (index < YValues.Count)
         {
-            if (YValues[index] < (peakFootConstantRel * YValues[peak]))
+            if (YValues[index] < peakFootConstantRel * YValues[peak])
                 break;
 
             index++;

@@ -29,8 +29,8 @@ public class Statistics
     public float ThresholdBrightness(float value, float coefficient)
     {
         if (value > _average)
-            return coefficient + (((1 - coefficient) * (value - _average)) / (_maximum - _average));
+            return coefficient + (1 - coefficient) * (value - _average) / (_maximum - _average);
 
-        return ((1 - coefficient) * (value - _minimum)) / (_average - _minimum);
+        return (1 - coefficient) * (value - _minimum) / (_average - _minimum);
     }
 }

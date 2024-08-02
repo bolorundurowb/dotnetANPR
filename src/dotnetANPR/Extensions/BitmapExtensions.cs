@@ -29,13 +29,13 @@ internal static class BitmapExtensions
                 {
                     var pixelX = x + kx;
                     var pixelY = y + ky;
-                    var pixelPtr = srcPtr + (pixelY * srcData.Stride) + (pixelX * 3);
+                    var pixelPtr = srcPtr + pixelY * srcData.Stride + pixelX * 3;
                     var pixelBrightness = (pixelPtr[0] + pixelPtr[1] + pixelPtr[2]) / 3.0f / 255.0f;
-                    sum += pixelBrightness * kernel[(ky + kernelRadius) * kernelSize + (kx + kernelRadius)];
+                    sum += pixelBrightness * kernel[(ky + kernelRadius) * kernelSize + kx + kernelRadius];
                 }
 
                 var brightnessByte = (byte)(sum * 255);
-                var dstPixelPtr = dstPtr + (y * dstData.Stride) + (x * 3);
+                var dstPixelPtr = dstPtr + y * dstData.Stride + x * 3;
                 dstPixelPtr[0] = dstPixelPtr[1] = dstPixelPtr[2] = brightnessByte;
             }
         }

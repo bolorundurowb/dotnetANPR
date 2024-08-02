@@ -58,7 +58,7 @@ public class CarSnapshot(Bitmap image) : Photo(image)
             // Cut from the original image of the plate and save to a vector.
             // ATTENTION: Cutting from original,
             // we have to apply an inverse transformation to the coordinates calculated from imageCopy
-            response.Add(new Band(Image.SubImage(0, (p.Left), Image.Width, (p.Diff))));
+            response.Add(new Band(Image.SubImage(0, p.Left, Image.Width, p.Diff)));
         }
 
         return response;

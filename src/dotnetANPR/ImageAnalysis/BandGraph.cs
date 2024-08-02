@@ -45,7 +45,7 @@ public class BandGraph(Band handle) : Graph
 
         // filter the candidates that don't correspond with plate proportions
         List<Peak> outPeaksFiltered = [];
-        outPeaksFiltered.AddRange(outPeaks.Where(p => (p.Diff > (2 * _handle.Height)) && (p.Diff < (15 * _handle.Height))));
+        outPeaksFiltered.AddRange(outPeaks.Where(p => p.Diff > 2 * _handle.Height && p.Diff < 15 * _handle.Height));
         outPeaksFiltered.Sort(new PeakComparator(YValues));
         Peaks = outPeaksFiltered;
         return outPeaksFiltered;

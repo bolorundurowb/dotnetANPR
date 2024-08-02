@@ -14,15 +14,15 @@ public class ProbabilityDistributor(float center, float power, int leftMargin, i
 
         for (var i = 0; i < peaks.Count; i++)
         {
-            if ((i < _leftMargin) || (i > (peaks.Count - _rightMargin)))
+            if (i < _leftMargin || i > peaks.Count - _rightMargin)
                 distributedPeaks.Add(0f);
             else
-                distributedPeaks.Add(DistributionFunction(peaks[i], ((float)i / peaks.Count)));
+                distributedPeaks.Add(DistributionFunction(peaks[i], (float)i / peaks.Count));
         }
 
         return distributedPeaks;
     }
 
     private float DistributionFunction(float value, float positionPercentage) =>
-        value * (1 - (power * Math.Abs(positionPercentage - center)));
+        value * (1 - power * Math.Abs(positionPercentage - center));
 }

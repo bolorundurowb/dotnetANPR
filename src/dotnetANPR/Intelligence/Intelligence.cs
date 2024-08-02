@@ -105,15 +105,14 @@ public class Intelligence
                 localPlate.Normalize();
 
                 var plateWHratio = localPlate.Width / (float)localPlate.Height;
-                if ((plateWHratio < Configurator.Get<double>("intelligence_minPlateWidthHeightRatio")) || (
-                        plateWHratio > Configurator.Get<double>("intelligence_maxPlateWidthHeightRatio")))
+                if (plateWHratio < Configurator.Get<double>("intelligence_minPlateWidthHeightRatio") || plateWHratio > Configurator.Get<double>("intelligence_maxPlateWidthHeightRatio"))
                     continue;
 
                 var chars = localPlate.Characters();
 
                 // heuristic analysis of the plate (uniformity and character count)
-                if ((chars.Count < Configurator.Get<int>("intelligence_minimumChars")) || (chars.Count
-                        > Configurator.Get<int>("intelligence_maximumChars")))
+                if (chars.Count < Configurator.Get<int>("intelligence_minimumChars") || chars.Count
+                    > Configurator.Get<int>("intelligence_maximumChars"))
                     continue;
 
                 if (plate.CharactersWidthDispersion(chars) > Configurator
@@ -167,11 +166,10 @@ public class Intelligence
                     var ok = true;
                     var errorFlags = "";
                     // when normalizing the chars, keep the width/height ratio in mind
-                    float widthHeightRatio = (chr.PieceWidth);
-                    widthHeightRatio /= (chr.PieceHeight);
-                    if ((widthHeightRatio < Configurator.Get<double>("intelligence_minCharWidthHeightRatio")) || (
-                            widthHeightRatio > Configurator
-                                .Get<double>("intelligence_maxCharWidthHeightRatio")))
+                    float widthHeightRatio = chr.PieceWidth;
+                    widthHeightRatio /= chr.PieceHeight;
+                    if (widthHeightRatio < Configurator.Get<double>("intelligence_minCharWidthHeightRatio") || widthHeightRatio > Configurator
+                            .Get<double>("intelligence_maxCharWidthHeightRatio"))
                     {
                         errorFlags += "WHR ";
                         ok = false;
@@ -182,8 +180,7 @@ public class Intelligence
                     if (chr.PositionInPlate is null) 
                         throw new ArgumentNullException(nameof(chr.PositionInPlate), "Character position in plate is null");
 
-                    if (((chr.PositionInPlate.LeftX < 2) || (chr.PositionInPlate.RightX > (plate.Width - 1))) && (
-                            widthHeightRatio < 0.12))
+                    if ((chr.PositionInPlate.LeftX < 2 || chr.PositionInPlate.RightX > plate.Width - 1) && widthHeightRatio < 0.12)
                     {
                         errorFlags += "POS ";
                         ok = false;

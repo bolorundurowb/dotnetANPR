@@ -24,7 +24,7 @@ internal static class ColorExtensions
             var f = h - (float)Math.Floor(h);
             var p = brightness * (1.0f - saturation);
             var q = brightness * (1.0f - saturation * f);
-            var t = brightness * (1.0f - (saturation * (1.0f - f)));
+            var t = brightness * (1.0f - saturation * (1.0f - f));
 
             switch ((int)h)
             {

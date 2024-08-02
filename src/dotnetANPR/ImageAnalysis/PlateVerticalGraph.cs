@@ -31,7 +31,7 @@ public class PlateVerticalGraph : Graph
                     }
 
             // we found the biggest peak
-            if (YValues[maxIndex] < (0.05 * MaxValue()))
+            if (YValues[maxIndex] < 0.05 * MaxValue())
                 break; // 0.4
 
             var leftIndex = IndexOfLeftPeakRel(maxIndex, PeakFootConstant);

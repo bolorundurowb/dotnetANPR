@@ -2,10 +2,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetANPR", "DotNetANPR\DotNetANPR.csproj", "{303E73C3-20A9-437D-8868-33FAFF3DB67A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetANPR.GUI", "DotNetANPR.GUI\DotNetANPR.GUI\DotNetANPR.GUI.csproj", "{45B3AC7E-E1F7-4295-8377-2AD72ADC7C28}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetANPR.GUI.Desktop", "DotNetANPR.GUI\DotNetANPR.GUI.Desktop\DotNetANPR.GUI.Desktop.csproj", "{40967E6E-199F-47C4-AC37-74B14061BDF7}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -16,13 +12,5 @@ Global
 		{303E73C3-20A9-437D-8868-33FAFF3DB67A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{303E73C3-20A9-437D-8868-33FAFF3DB67A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{303E73C3-20A9-437D-8868-33FAFF3DB67A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{45B3AC7E-E1F7-4295-8377-2AD72ADC7C28}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{45B3AC7E-E1F7-4295-8377-2AD72ADC7C28}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{45B3AC7E-E1F7-4295-8377-2AD72ADC7C28}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{45B3AC7E-E1F7-4295-8377-2AD72ADC7C28}.Release|Any CPU.Build.0 = Release|Any CPU
-		{40967E6E-199F-47C4-AC37-74B14061BDF7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{40967E6E-199F-47C4-AC37-74B14061BDF7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{40967E6E-199F-47C4-AC37-74B14061BDF7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{40967E6E-199F-47C4-AC37-74B14061BDF7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

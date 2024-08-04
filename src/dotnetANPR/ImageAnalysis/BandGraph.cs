@@ -18,7 +18,7 @@ public class BandGraph(Band handle) : Graph
      */
     private readonly Band _handle = handle;
 
-    public List<Peak> FindPeaks(int count)
+    public void FindPeaks(int count)
     {
         List<Peak> outPeaks = [];
         for (var c = 0; c < count; c++)
@@ -48,7 +48,6 @@ public class BandGraph(Band handle) : Graph
         outPeaksFiltered.AddRange(outPeaks.Where(p => p.Diff > 2 * _handle.Height && p.Diff < 15 * _handle.Height));
         outPeaksFiltered.Sort(new PeakComparator(YValues));
         Peaks = outPeaksFiltered;
-        return outPeaksFiltered;
     }
 
     public int IndexOfLeftPeakAbs(int peak, double peakFootConstantAbs)

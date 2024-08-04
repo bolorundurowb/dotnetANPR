@@ -10,7 +10,7 @@ namespace DotNetANPR.ImageAnalysis;
 public class Plate : Photo, ICloneable
 {
     private static readonly ProbabilityDistributor Distributor = new(0, 0, 0, 0);
-    private static readonly int NumberOfCandidates = Configurator.Instance.Get<int>("intelligence_numberOfCharacters");
+    private static readonly int NumberOfCandidates = Configurator.Instance.Get<int>("intelligence_numberOfChars");
 
     private static readonly int HorizontalDetectionType =
         Configurator.Instance.Get<int>("platehorizontalgraph_detectionType");
@@ -31,7 +31,7 @@ public class Plate : Photo, ICloneable
         }
     }
 
-    object ICloneable.Clone() => new Plate(DuplicateBitmap(Image));
+   public new object Clone() => new Plate(DuplicateBitmap(Image));
 
     public Bitmap RenderGraph()
     {
@@ -66,13 +66,6 @@ public class Plate : Photo, ICloneable
         imageCopy.ConvolutionFilter(image, data);
     }
 
-    /**
-     * Create a clone, normalize it, threshold it with coefficient 0.999.
-     *
-     * Function {@link Plate#cutTopBottom(Bitmap, PlateVerticalGraph)} and
-     * {@link Plate#cutLeftRight(Bitmap, PlateHorizontalGraph)} crop the original image using horizontal and
-     * vertical projections of the cloned image (which is thresholded).
-     */
     public void Normalize()
     {
         var clone1 = (Plate)Clone();
@@ -81,7 +74,9 @@ public class Plate : Photo, ICloneable
         Image = CutTopBottom(Image, vertical);
         _plateCopy!.Image = CutTopBottom(_plateCopy.Image, vertical);
         var clone2 = (Plate)Clone();
-        if (HorizontalDetectionType == 1) clone2.HorizontalEdgeDetector(clone2.Image);
+
+        if (HorizontalDetectionType == 1)
+            clone2.HorizontalEdgeDetector(clone2.Image);
 
         var horizontal = clone1.HistogramXaxis(clone2.Image);
         Image = CutLeftRight(Image, horizontal);

@@ -75,9 +75,11 @@ public class Photo(Bitmap image) : IDisposable, ICloneable
     public static void Thresholding(Bitmap bitmap)
     {
         // Define the threshold array
-        var threshold = Enumerable.Repeat((byte)0, 36)
-            .Concat(Enumerable.Range(36, 220).Select(x => (byte)x))
-            .ToArray();
+        var threshold = new byte[256];
+        for (var i = 0; i < 36; i++)
+            threshold[i] = 0;
+        for (var i = 36; i < 256; i++) 
+            threshold[i] = (byte)i;
 
         // Lock the bitmap's bits
         var rect = new Rectangle(0, 0, bitmap.Width, bitmap.Height);

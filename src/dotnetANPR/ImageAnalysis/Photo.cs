@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
+using System.Linq;
 using DotNetANPR.Configuration;
 using DotNetANPR.Extensions;
 
@@ -73,47 +74,34 @@ public class Photo(Bitmap image) : IDisposable, ICloneable
 
     public static void Thresholding(Bitmap bitmap)
     {
-        // Define threshold value (modify 128 as needed)
-        var threshold = 128;
+        // Define the threshold array
+        var threshold = Enumerable.Repeat((byte)0, 36)
+            .Concat(Enumerable.Range(36, 220).Select(x => (byte)x))
+            .ToArray();
 
-        // Create a new empty bitmap for the result
-        var resultImage = new Bitmap(bitmap.Width, bitmap.Height);
-
-        // Lock the source and destination image data for manipulation
+        // Lock the bitmap's bits
         var rect = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
-        var sourceData = bitmap.LockBits(rect, ImageLockMode.ReadOnly, bitmap.PixelFormat);
-        var resultData = resultImage.LockBits(rect, ImageLockMode.WriteOnly, bitmap.PixelFormat);
+        var bmpData = bitmap.LockBits(rect, ImageLockMode.ReadWrite, bitmap.PixelFormat);
 
-        // Get the image data pointers
-        var sourcePtr = sourceData.Scan0;
-        var resultPtr = resultData.Scan0;
+        // Get the address of the first line
+        var ptr = bmpData.Scan0;
 
-        // Define the stride (number of bytes per scanline)
-        var stride = sourceData.Stride;
+        // Declare an array to hold the bytes of the bitmap
+        var bytes = Math.Abs(bmpData.Stride) * bitmap.Height;
+        var rgbValues = new byte[bytes];
 
-        // Loop through each pixel and apply thresholding
-        unsafe
-        {
-            for (var y = 0; y < bitmap.Height; y++)
-            {
-                var sourceRow = (byte*)sourcePtr + y * stride;
-                var resultRow = (byte*)resultPtr + y * stride;
+        // Copy the RGB values into the array
+        System.Runtime.InteropServices.Marshal.Copy(ptr, rgbValues, 0, bytes);
 
-                for (var x = 0; x < bitmap.Width; x++)
-                {
-                    int value = sourceRow[x * 4]; // Assuming BGRA format (modify based on actual format)
-                    resultRow[x * 4] = value > threshold ? (byte)255 : (byte)0;
-                }
-            }
-        }
+        // Apply the thresholding
+        for (var i = 0; i < rgbValues.Length; i++) 
+            rgbValues[i] = threshold[rgbValues[i]];
 
-        // Unlock the image data
-        bitmap.UnlockBits(sourceData);
-        resultImage.UnlockBits(resultData);
+        // Copy the RGB values back to the bitmap
+        System.Runtime.InteropServices.Marshal.Copy(rgbValues, 0, ptr, bytes);
 
-        // Replace the original image with the thresholded result
-        using var graphics = Graphics.FromImage(bitmap);
-        graphics.DrawImage(resultImage, 0, 0);
+        // Unlock the bits
+        bitmap.UnlockBits(bmpData);
     }
 
     public static Bitmap ArrayToBitmap(float[,] array, int w, int h)

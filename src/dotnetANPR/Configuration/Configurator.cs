@@ -9,7 +9,7 @@ public sealed class Configurator
     private static Configurator? _configurator;
     private readonly Properties _properties;
 
-    public string FileName { get; set; } = "config.xml";
+    private static readonly string FileName = "Resources/config.xml";
 
     private Configurator()
     {
@@ -94,7 +94,7 @@ public sealed class Configurator
 
     public Configurator(string filePath) : this() { LoadConfiguration(filePath); }
 
-    public static Configurator Instance => _configurator ??= new Configurator();
+    public static Configurator Instance => _configurator ??= new Configurator(FileName);
 
     public string GetPath(string name)
     {
@@ -114,7 +114,7 @@ public sealed class Configurator
 
     public void Save() => Save(FileName);
 
-    public void LoadConfiguration(string? filePath = null)
+    private void LoadConfiguration(string? filePath = null)
     {
         if (filePath == null)
             _properties.LoadFromXml();

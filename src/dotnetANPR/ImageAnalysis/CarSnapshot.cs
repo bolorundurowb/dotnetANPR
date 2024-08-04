@@ -7,17 +7,17 @@ namespace DotNetANPR.ImageAnalysis;
 
 public class CarSnapshot(Bitmap image) : Photo(image)
 {
-    private static readonly int _distributorMargins =
+    private static readonly int DistributorMargins =
         Configurator.Instance.Get<int>("carsnapshot_distributormargins");
 
-    private static readonly int _carsnapshotGraphrankfilter =
+    private static readonly int CarSnapshotGraphRankFilter =
         Configurator.Instance.Get<int>("carsnapshot_graphrankfilter");
 
-    private static readonly int _numberOfCandidates =
+    private static readonly int NumberOfCandidates =
         Configurator.Instance.Get<int>("intelligence_numberOfBands");
 
-    public static readonly ProbabilityDistributor Distributor =
-        new(0, 0, _distributorMargins, _distributorMargins);
+    private static readonly ProbabilityDistributor Distributor =
+        new(0, 0, DistributorMargins, DistributorMargins);
 
     private CarSnapshotGraph? _graphHandle;
 
@@ -27,38 +27,16 @@ public class CarSnapshot(Bitmap image) : Photo(image)
         return _graphHandle!.RenderVertically(100, Height);
     }
 
-    private List<Peak> ComputeGraph()
-    {
-        if (_graphHandle == null)
-        {
-            var imageCopy = DuplicateBitmap(Image);
-            VerticalEdge(imageCopy);
-            Thresholding(imageCopy);
-
-            _graphHandle = Histogram(imageCopy);
-            _graphHandle.RankFilter(_carsnapshotGraphrankfilter);
-            _graphHandle.ApplyProbabilityDistributor(Distributor);
-            _graphHandle.FindPeaks(_numberOfCandidates); // sort by height
-        }
-
-        return _graphHandle.Peaks!;
-    }
-
-    /**
-     * Recommended: 3 bands.
-     *
-     * @return bands
-     */
     public List<Band> Bands()
     {
         List<Band> response = [];
         var peaks = ComputeGraph();
-        foreach (var p in peaks)
+        foreach (var peak in peaks)
         {
             // Cut from the original image of the plate and save to a vector.
             // ATTENTION: Cutting from original,
             // we have to apply an inverse transformation to the coordinates calculated from imageCopy
-            response.Add(new Band(Image.SubImage(0, p.Left, Image.Width, p.Diff)));
+            response.Add(new Band(Image.SubImage(0, peak.Left, Image.Width, peak.Diff)));
         }
 
         return response;
@@ -71,18 +49,35 @@ public class CarSnapshot(Bitmap image) : Photo(image)
         imageCopy.ConvolutionFilter(image, data);
     }
 
-    public CarSnapshotGraph Histogram(Bitmap bi)
+    public CarSnapshotGraph Histogram(Bitmap bitmap)
     {
         var graph = new CarSnapshotGraph();
-        for (var y = 0; y < bi.Height; y++)
+        for (var y = 0; y < bitmap.Height; y++)
         {
             float counter = 0;
-            for (var x = 0; x < bi.Width; x++)
-                counter += GetBrightness(bi, x, y);
+            for (var x = 0; x < bitmap.Width; x++)
+                counter += GetBrightness(bitmap, x, y);
 
             graph.AddPeak(counter);
         }
 
         return graph;
+    }
+
+    private List<Peak> ComputeGraph()
+    {
+        if (_graphHandle == null)
+        {
+            var imageCopy = DuplicateBitmap(Image);
+            VerticalEdge(imageCopy);
+            Thresholding(imageCopy);
+
+            _graphHandle = Histogram(imageCopy);
+            _graphHandle.RankFilter(CarSnapshotGraphRankFilter);
+            _graphHandle.ApplyProbabilityDistributor(Distributor);
+            _graphHandle.FindPeaks(NumberOfCandidates); // sort by height
+        }
+
+        return _graphHandle.Peaks;
     }
 }

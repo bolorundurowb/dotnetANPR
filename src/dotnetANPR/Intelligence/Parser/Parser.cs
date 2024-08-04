@@ -4,14 +4,14 @@ using System.IO;
 using System.Linq;
 using System.Xml;
 using DotNetANPR.Configuration;
+using DotNetANPR.Utilities;
 using Microsoft.Extensions.Logging;
 
 namespace DotNetANPR.Intelligence.Parser;
 
 public class Parser
 {
-    private static readonly ILogger<Parser> Logger =
-        LoggerFactory.Create(_ => { }).CreateLogger<Parser>();
+    private static readonly ILogger<Parser> Logger = Logging.GetLogger<Parser>();
 
     private readonly List<PlateForm> _plateForms;
 

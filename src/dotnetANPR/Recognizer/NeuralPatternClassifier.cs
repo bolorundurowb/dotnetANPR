@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using DotNetANPR.Configuration;
 using DotNetANPR.ImageAnalysis;
+using DotNetANPR.Utilities;
 using Microsoft.Extensions.Logging;
 using NN = DotNetANPR.NeuralNetwork;
 
@@ -10,8 +11,7 @@ namespace DotNetANPR.Recognizer;
 
 public class NeuralPatternClassifier : CharacterRecognizer
 {
-    private static readonly ILogger<NeuralPatternClassifier> Logger =
-        LoggerFactory.Create(_ => { }).CreateLogger<NeuralPatternClassifier>();
+    private static readonly ILogger<NeuralPatternClassifier> Logger = Logging.GetLogger<NeuralPatternClassifier>();
 
     private static readonly int NormalizeX = Configurator.Instance.Get<int>("char_normalizeddimensions_x");
     private static readonly int NormalizeY = Configurator.Instance.Get<int>("char_normalizeddimensions_y");

@@ -11,10 +11,10 @@ public class ReportGenerator
 {
     private static readonly HashSet<string> SupportedImageFormats =
     [
-        "bmp",
-        "jpg",
-        "jpeg",
-        "png"
+        ".bmp",
+        ".jpg",
+        ".jpeg",
+        ".png"
     ];
 
     private readonly string _reportDirectory;
@@ -88,7 +88,7 @@ public class ReportGenerator
     /// <param name="fileName">The name of the file where the image will be saved.</param>
     public void SaveImage(Bitmap image, string fileName)
     {
-        var fileExtension = Path.GetExtension(fileName);
+        var fileExtension = Path.GetExtension(fileName).ToLowerInvariant();
 
         if (!SupportedImageFormats.Contains(fileExtension))
             throw new InvalidOperationException("Unsupported file extension: " + fileExtension);

@@ -41,18 +41,18 @@ public class Intelligence
             reportGenerator.InsertImage(carSnapshot.GetBitmapWithAxes(), "snapshot", 0, 0);
         }
 
-        foreach (var b in carSnapshot.Bands())
+        foreach (var band in carSnapshot.Bands())
         {
             if (generateReport)
             {
                 reportGenerator!.InsertText("<div class='bandtxt'><h4>Band<br></h4>");
-                reportGenerator.InsertImage(b.Image, "bandsmall", 250, 30);
-                reportGenerator.InsertText("<span>Band width : " + b.Width + " px</span>");
-                reportGenerator.InsertText("<span>Band height : " + b.Height + " px</span>");
+                reportGenerator.InsertImage(band.Image, "bandsmall", 250, 30);
+                reportGenerator.InsertText("<span>Band width : " + band.Width + " px</span>");
+                reportGenerator.InsertText("<span>Band height : " + band.Height + " px</span>");
                 reportGenerator.InsertText("</div>");
             }
 
-            foreach (var plate in b.Plates())
+            foreach (var plate in band.Plates())
             {
                 var localPlate = plate;
                 if (generateReport)
@@ -123,8 +123,8 @@ public class Intelligence
                 if (generateReport)
                 {
                     reportGenerator!.InsertText("<h2>Detected band</h2>");
-                    reportGenerator.InsertImage(b.GetBitmapWithAxes(), "band", 0, 0);
-                    reportGenerator.InsertImage(b.RenderGraph(), "bandgraph", 0, 0);
+                    reportGenerator.InsertImage(band.GetBitmapWithAxes(), "band", 0, 0);
+                    reportGenerator.InsertImage(band.RenderGraph(), "bandgraph", 0, 0);
                     reportGenerator.InsertText("<h2>Detected plate</h2>");
                     var plateCopy = (Plate)plate.Clone();
                     plateCopy.LinearResize(450, 90);

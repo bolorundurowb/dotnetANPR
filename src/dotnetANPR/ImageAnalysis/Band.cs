@@ -23,45 +23,41 @@ public class Band(Bitmap image) : Photo(image)
 
     private List<Peak> ComputeGraph()
     {
-        if (_graphHandle != null) 
-            return _graphHandle.Peaks!;
+        if (_graphHandle == null)
+        {
+            var image = DuplicateBitmap(Image);
+            FullEdgeDetector(image);
 
-        var image = DuplicateBitmap(Image);
-        FullEdgeDetector(image);
+            _graphHandle = Histogram(image);
+            _graphHandle.RankFilter(Image.Height);
+            _graphHandle.ApplyProbabilityDistributor(Distributor);
+            _graphHandle.FindPeaks(NumberOfCandidates);
+        }
 
-        _graphHandle = Histogram(image);
-        _graphHandle.RankFilter(Image.Height);
-        _graphHandle.ApplyProbabilityDistributor(Distributor);
-        _graphHandle.FindPeaks(NumberOfCandidates);
-        return _graphHandle.Peaks!;
+        return _graphHandle.Peaks;
     }
 
-    /**
-     * Recommended: 3 plates.
-     *
-     * @return plates
-     */
     public List<Plate> Plates()
     {
         List<Plate> response = [];
         var peaks = ComputeGraph();
-        foreach (var p in peaks)
+        foreach (var peak in peaks)
             // Cut from the original image of the plate and save to a vector.
             // ATTENTION: Cutting from original,
             // we have to apply an inverse transformation to the coordinates calculated from imageCopy
-            response.Add(new Plate(Image.SubImage(p.Left, 0, p.Diff, Image.Height)));
+            response.Add(new Plate(Image.SubImage(peak.Left, 0, peak.Diff, Image.Height)));
 
         return response;
     }
 
-    public BandGraph Histogram(Bitmap bi)
+    public BandGraph Histogram(Bitmap bitmap)
     {
         var graph = new BandGraph(this);
-        for (var x = 0; x < bi.Width; x++)
+        for (var x = 0; x < bitmap.Width; x++)
         {
             float counter = 0;
-            for (var y = 0; y < bi.Height; y++)
-                counter += GetBrightness(bi, x, y);
+            for (var y = 0; y < bitmap.Height; y++)
+                counter += GetBrightness(bitmap, x, y);
 
             graph.AddPeak(counter);
         }
@@ -69,7 +65,7 @@ public class Band(Bitmap image) : Photo(image)
         return graph;
     }
 
-    public void FullEdgeDetector(Bitmap source)
+    public static void FullEdgeDetector(Bitmap source)
     {
         float[] verticalMatrix = [-1, 0, 1, -2, 0, 2, -1, 0, 1];
         float[] horizontalMatrix = [-1, -2, -1, 0, 0, 0, 1, 2, 1];
@@ -88,7 +84,7 @@ public class Band(Bitmap image) : Photo(image)
         for (var x = 0; x < width; x++)
         for (var y = 0; y < height; y++)
         {
-            var sum = GetBrightness(source, x, y);
+            var sum = GetBrightness(i1, x, y);
             sum += GetBrightness(i2, x, y);
             SetBrightness(source, x, y, Math.Min(1f, sum));
         }

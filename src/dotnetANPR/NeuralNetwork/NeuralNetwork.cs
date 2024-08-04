@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml;
+using DotNetANPR.Utilities;
 using Microsoft.Extensions.Logging;
 
 namespace DotNetANPR.NeuralNetwork;
 
 public class NeuralNetwork
 {
-    private static readonly ILogger<NeuralNetwork> Logger =
-        LoggerFactory.Create(_ => { }).CreateLogger<NeuralNetwork>();
+    private static readonly ILogger<NeuralNetwork> Logger = Logging.GetLogger<NeuralNetwork>();
 
     private readonly Random _randomGenerator;
 

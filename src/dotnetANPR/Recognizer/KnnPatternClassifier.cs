@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using DotNetANPR.Configuration;
 using DotNetANPR.ImageAnalysis;
+using DotNetANPR.Utilities;
 using Microsoft.Extensions.Logging;
 
 namespace DotNetANPR.Recognizer;
 
 public class KnnPatternClassifier : CharacterRecognizer
 {
-    private static readonly ILogger<KnnPatternClassifier> Logger =
-        LoggerFactory.Create(_ => { }).CreateLogger<KnnPatternClassifier>();
+    private static readonly ILogger<KnnPatternClassifier> Logger = Logging.GetLogger<KnnPatternClassifier>();
 
     private readonly List<List<double>> _learnLists;
 

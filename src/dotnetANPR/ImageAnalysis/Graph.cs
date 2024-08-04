@@ -8,7 +8,7 @@ namespace DotNetANPR.ImageAnalysis;
 
 public class Graph
 {
-    public  List<Peak>? Peaks = null;
+    private List<Peak>? _peaks = null;
     protected List<float> YValues = [];
 
     private bool _actualAverageValue; // are values up-to-date?
@@ -17,6 +17,12 @@ public class Graph
     private float _averageValue;
     private float _maximumValue;
     private float _minimumValue;
+
+    public List<Peak> Peaks
+    {
+        get => _peaks ?? [];
+        protected set => _peaks = value;
+    }
 
     public void DeActualizeFlags()
     {

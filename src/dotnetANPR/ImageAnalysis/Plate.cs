@@ -177,7 +177,7 @@ public class Plate : Photo, ICloneable
             _graphHandle.FindPeaks(NumberOfCandidates);
         }
 
-        return _graphHandle.Peaks!;
+        return _graphHandle.Peaks;
     }
 
     private Bitmap CutTopBottom(Bitmap origin, PlateVerticalGraph graph)

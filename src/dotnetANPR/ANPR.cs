@@ -11,8 +11,7 @@ namespace DotNetANPR;
 
 public class ANPR
 {
-    private static readonly ILogger<ANPR> Logger =
-        LoggerFactory.Create(_ => { }).CreateLogger<ANPR>();
+    private static readonly ILogger<ANPR> Logger = Logging.GetLogger<ANPR>();
 
     private static void NewAlphabet(string srcDir, string dstDir)
     {

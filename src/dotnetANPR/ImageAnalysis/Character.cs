@@ -55,7 +55,7 @@ public class Character : Photo
         directory = directory.TrimEnd('/');
         List<string> filenames = [];
         filenames.AddRange(alphaString
-            .Select(t => directory + Path.PathSeparator + t + suffix + ".jpg")
+            .Select(t => Path.Combine(directory, t + suffix + ".jpg"))
             .Where(File.Exists));
 
         return filenames;

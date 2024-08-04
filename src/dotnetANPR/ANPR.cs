@@ -30,18 +30,18 @@ public class ANPR
         }
     }
 
-    public static void Recognize(string imagePath, string? reportPath = null)
+    public static string? Recognize(string imagePath, string? reportPath = null)
     {
         if (!File.Exists(imagePath))
             throw new ArgumentException("Invalid image path: " + imagePath, nameof(imagePath));
 
-        Recognize(new Bitmap(imagePath), reportPath);
+        return Recognize(new Bitmap(imagePath), reportPath);
     }
 
-    public static void Recognize(Stream imageStream, string? reportPath = null) =>
+    public static string? Recognize(Stream imageStream, string? reportPath = null) =>
         Recognize(new Bitmap(imageStream), reportPath);
 
-    public static void Recognize(Bitmap image, string? reportPath = null)
+    public static string? Recognize(Bitmap image, string? reportPath = null)
     {
         if (reportPath is not null && string.IsNullOrWhiteSpace(reportPath))
             throw new ArgumentException("Invalid report path: " + reportPath, nameof(reportPath));
@@ -49,7 +49,7 @@ public class ANPR
         // load snapshot arg[2] and generate report into arg[4]
         var reportGenerator = reportPath == null ? null : new ReportGenerator(reportPath);
         var intelligence = new Intelligence.Intelligence();
-        intelligence.Recognize(new CarSnapshot(image), reportGenerator);
+        return intelligence.Recognize(new CarSnapshot(image), reportGenerator);
     }
 
     /// <summary>

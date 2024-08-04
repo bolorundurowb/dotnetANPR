@@ -182,7 +182,11 @@ public class Photo(Bitmap image) : IDisposable, ICloneable
         var stats = new Statistics(this);
         for (var x = 0; x < Width; x++)
         for (var y = 0; y < Height; y++)
-            SetBrightness(image, x, y, stats.ThresholdBrightness(GetBrightness(image, x, y), coef));
+        {
+            var currentBrightness = GetBrightness(image, x, y);
+            var thresholdBrightness = stats.ThresholdBrightness(currentBrightness, coef);
+            SetBrightness(image, x, y, thresholdBrightness);
+        }
     }
 
     public Photo Duplicate() => new(DuplicateBitmap(image));

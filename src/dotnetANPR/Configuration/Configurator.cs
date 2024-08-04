@@ -99,7 +99,7 @@ public sealed class Configurator
     public string GetPath(string name)
     {
         var rawValue = Get<string>(name);
-        return rawValue.Replace('/', Path.PathSeparator);
+        return rawValue.Replace('/', Path.DirectorySeparatorChar);
     }
 
     public T Get<T>(string name)

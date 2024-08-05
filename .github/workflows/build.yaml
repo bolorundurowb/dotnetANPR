@@ -20,10 +20,8 @@ jobs:
 
     - name: Restore dependencies
       run: |
-        cd ./src/
-        dotnet restore
+        dotnet restore ./src/dotnetANPR/DotNetANPR.csproj
+        dotnet restore ./src/dotnetANPR.CLI/DotNetANPR.CLI.csproj
 
     - name: Build
-      run: |
-        cd ./src/
-        dotnet build --configuration Release
+      run: dotnet build --configuration Release

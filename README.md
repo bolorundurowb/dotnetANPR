@@ -1,5 +1,7 @@
 # dotNETANPR
 
+[![Build and Test](https://github.com/bolorundurowb/dotnetANPR/actions/workflows/build.yaml/badge.svg)](https://github.com/bolorundurowb/dotnetANPR/actions/workflows/build.yaml)
+
 
 ## About
 dotnetANPR is an automatic number plate recognition software, which implements algorithmic and mathematical principles from field of artificial intelligence, machine vision and neural networks.

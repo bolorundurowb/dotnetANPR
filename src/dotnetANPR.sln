@@ -1,8 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetANPR", "DotNetANPR\DotNetANPR.csproj", "{303E73C3-20A9-437D-8868-33FAFF3DB67A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetANPR", "dotnetANPR\DotNetANPR.csproj", "{303E73C3-20A9-437D-8868-33FAFF3DB67A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetANPR.CLI", "DotNetANPR.CLI\DotNetANPR.CLI.csproj", "{C4F084C3-7757-4846-8BF9-B8BE86AE98DF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetANPR.CLI", "dotnetANPR.CLI\DotNetANPR.CLI.csproj", "{C4F084C3-7757-4846-8BF9-B8BE86AE98DF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

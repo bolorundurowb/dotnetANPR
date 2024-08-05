@@ -2,511 +2,432 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
-using dotnetANPR.ImageAnalysis.Util;
+using System.Linq;
 
-namespace dotnetANPR.ImageAnalysis
+namespace DotNetANPR.ImageAnalysis;
+
+public class PixelMap
 {
-    public class PixelMap
+    private static bool[,] _matrix = null!;
+    private Piece? _bestPiece;
+    private int _width;
+    private int _height;
+
+    public PixelMap(Photo photo) => MatrixInit(photo);
+
+    public Bitmap Render()
     {
-        private Piece bestPiece;
-        private int height;
-        private int width;
-        public static bool[,] matrix;
+        var image = new Bitmap(_width, _height, PixelFormat.Format24bppRgb);
+        for (var x = 0; x < _width; x++)
+        for (var y = 0; y < _height; y++)
+            image.SetPixel(x, y, _matrix[x, y] ? Color.Black : Color.White);
 
-        public class Point
+        return image;
+    }
+
+    public Piece BestPiece()
+    {
+        ReduceOtherPieces();
+        return _bestPiece ?? [];
+    }
+
+    public PixelMap Skeletonize()
+    {
+        PointSet flaggedPoints = [];
+        PointSet boundaryPoints = [];
+        bool cont;
+        do
         {
-            public int X { get; set; }
-            public int Y { get; set; }
+            cont = false;
+            FindBoundaryPoints(boundaryPoints);
+            // apply step 1 to flag boundary points for deletion
+            flaggedPoints.AddRange(boundaryPoints.Where(point => Step1Passed(point.X, point.Y)));
 
-            public Point(int x, int y)
+            // delete flagged points
+            if (!flaggedPoints.Any())
+                cont = true;
+
+            foreach (var point in flaggedPoints)
             {
-                X = x;
-                Y = y;
+                _matrix[point.X, point.Y] = false;
+                boundaryPoints.Remove(point);
             }
 
-            public bool Equals(Point point)
-            {
-                return point.X == X && point.Y == Y;
-            }
+            flaggedPoints.Clear();
+            // apply step 2 to flag remaining points
+            flaggedPoints.AddRange(boundaryPoints.Where(point => Step2Passed(point.X, point.Y)));
 
-            public bool Equals(int x, int y)
-            {
-                return x == X && y == Y;
-            }
+            // delete flagged points
+            if (!flaggedPoints.Any())
+                cont = true;
 
-            public bool Value()
+            foreach (var point in flaggedPoints)
+                _matrix[point.X, point.Y] = false;
+
+            boundaryPoints.Clear();
+            flaggedPoints.Clear();
+        } while (cont);
+
+        return this;
+    }
+
+    public PixelMap ReduceNoise()
+    {
+        PointSet pointsToReduce = [];
+        for (var x = 0; x < _width; x++)
+        for (var y = 0; y < _height; y++)
+            if (N(x, y) < 4)
+                pointsToReduce.Add(new Point(x, y)); // recommended 4
+
+        // remove marked points
+        foreach (var point in pointsToReduce)
+            _matrix[point.X, point.Y] = false;
+
+        return this;
+    }
+
+    public PieceSet FindPieces()
+    {
+        PieceSet pieces = [];
+        // put all black points into a set
+        PointSet unsorted = [];
+        for (var x = 0; x < _width; x++)
+        for (var y = 0; y < _height; y++)
+            if (_matrix[x, y])
+                unsorted.Add(new Point(x, y));
+
+        while (!unsorted.Any())
+            pieces.Add(CreatePiece(unsorted));
+
+        return pieces;
+    }
+
+    public void ReduceOtherPieces()
+    {
+        if (_bestPiece != null)
+            return; // we've got a best piece already
+
+        var pieces = FindPieces();
+        var maxCost = 0;
+        var maxIndex = 0;
+        // find the best cost
+        for (var i = 0; i < pieces.Count; i++)
+        {
+            if (pieces[i].Cost() > maxCost)
             {
-                return matrix[X, Y];
+                maxCost = pieces[i].Cost();
+                maxIndex = i;
             }
         }
 
-        public class PointSet : CustomStack<Point>
+        // delete the others
+        for (var i = 0; i < pieces.Count; i++)
+            if (i != maxIndex)
+                pieces[i].BleachPiece();
+
+        if (pieces.Count != 0)
+            _bestPiece = pieces[maxIndex];
+    }
+
+    #region Private Helpers
+
+    private void MatrixInit(Photo bi)
+    {
+        _width = bi.Width;
+        _height = bi.Height;
+        _matrix = new bool[_width, _height];
+        for (var x = 0; x < _width; x++)
+        for (var y = 0; y < _height; y++)
+            _matrix[x, y] = bi.GetBrightness(x, y) < 0.5;
+    }
+
+    private bool GetPointValue(int x, int y)
+    {
+        if (x < 0 || y < 0 || x >= _width || y >= _height)
+            return false;
+
+        return _matrix[x, y];
+    }
+
+    private bool IsBoundaryPoint(int x, int y)
+    {
+        if (!GetPointValue(x, y))
+            // if it's white (outside points are automatically white)
+            return false;
+
+        // a boundary point must have at least one neighbor point that's white
+        return !GetPointValue(x - 1, y - 1) || !GetPointValue(x - 1, y + 1) || !GetPointValue(x + 1, y - 1)
+               || !GetPointValue(x + 1, y + 1) || !GetPointValue(x, y + 1) || !GetPointValue(x, y - 1)
+               || !GetPointValue(x + 1, y) || !GetPointValue(x - 1, y);
+    }
+
+    private int N(int x, int y)
+    {
+        // number of black points in the neighborhood
+        var n = 0;
+        if (GetPointValue(x - 1, y - 1))
+            n++;
+
+        if (GetPointValue(x - 1, y + 1))
+            n++;
+
+        if (GetPointValue(x + 1, y - 1))
+            n++;
+
+        if (GetPointValue(x + 1, y + 1))
+            n++;
+
+        if (GetPointValue(x, y + 1))
+            n++;
+
+        if (GetPointValue(x, y - 1))
+            n++;
+
+        if (GetPointValue(x + 1, y))
+            n++;
+
+        if (GetPointValue(x - 1, y))
+            n++;
+
+        return n;
+    }
+
+    private int T(int x, int y)
+    {
+        var n = 0;
+        for (var i = 2; i <= 8; i++)
+            if (!P(i, x, y) && P(i + 1, x, y))
+                n++;
+
+        if (!P(9, x, y) && P(2, x, y))
+            n++;
+
+        return n;
+    }
+
+    private bool P(int i, int x, int y)
+    {
+        switch (i)
         {
-            public static long SerialVersionuid = 0;
-
-            public void RemovePoint(Point point)
-            {
-                Point toRemove = null;
-                foreach (var px in this)
-                {
-                    if (px.Equals(point))
-                    {
-                        toRemove = px;
-                    }
-                }
-                Remove(toRemove);
-            }
-        }
-
-        public class PieceSet : List<Piece>
-        {
-            public static long SerialVersionuid = 0;
-        }
-        
-        public class Piece : PointSet
-        {
-            public static long SerialVersionuid = 0;
-            public int mostLeftPoint;
-            public int mostRightPoint;
-            public int mostTopPoint;
-            public int mostBottomPoint;
-            public int Width;
-            public int Height;
-            public int CenterX;
-            public int CenterY;
-            public float magnitude;
-            public int numberOfBlackPoints;
-            public int numberOfAllPoints;
-
-            public Bitmap Render()
-            {
-                if (numberOfAllPoints == 0)
-                {
-                    return null;
-                }
-                var bitmap = new Bitmap(Width, Height);
-                for (var x = mostLeftPoint; x < mostRightPoint; x++)
-                {
-                    for (var y = mostTopPoint; y < mostBottomPoint; y++)
-                    {
-                        if (matrix[x, y])
-                        {
-                            bitmap.SetPixel(x - mostLeftPoint,
-                                y - mostTopPoint,
-                                Color.Black);
-                        }
-                        else
-                        {
-                            bitmap.SetPixel(x - mostLeftPoint,
-                                y - mostTopPoint,
-                                Color.White);
-                        }
-                    }
-                }
-                return bitmap;
-            }
-
-            public void CreateStatistics()
-            {
-                mostLeftPoint = MostLeftPoint();
-                mostRightPoint = MostRightPoint();
-                mostTopPoint = MostTopPoint();
-                mostBottomPoint = MostBottomPoint();
-                Width = mostRightPoint - mostLeftPoint + 1;
-                Height = mostBottomPoint - mostTopPoint + 1;
-                CenterX = (mostLeftPoint + mostRightPoint) / 2;
-                CenterY = (mostTopPoint + mostBottomPoint) / 2;
-                numberOfBlackPoints = NumberOfBlackPoints();
-                numberOfAllPoints = NumberOfAllPoints();
-                magnitude = Magnitude();
-            }
-
-            public int Cost()
-            {
-                return numberOfAllPoints - NumberOfBlackPoints();
-            }
-
-            public void BleachPiece()
-            {
-                foreach (var point in this)
-                {
-                    matrix[point.X, point.Y] = false;
-                }
-            }
-
-            private float Magnitude()
-            {
-                return (float) numberOfBlackPoints / numberOfAllPoints;
-            }
-
-            private int NumberOfAllPoints()
-            {
-                return Width * Height;
-            }
-
-            private int NumberOfBlackPoints()
-            {
-                return Count;
-            }
-
-            private int MostRightPoint()
-            {
-                var position = 0;
-                foreach (var point in this)
-                {
-                    position = Math.Max(position, point.X);
-                }
-                return position;
-            }
-
-            private int MostLeftPoint()
-            {
-                var position = Int32.MaxValue;
-                foreach (var point in this)
-                {
-                    position = Math.Min(position, point.X);
-                }
-                return position;
-            }
-
-            private int MostBottomPoint()
-            {
-                var position = 0;
-                foreach (var point in this)
-                {
-                    position = Math.Max(position, point.Y);
-                }
-                return position;
-            }
-
-            private int MostTopPoint()
-            {
-                var position = Int32.MaxValue;
-                foreach (var point in this)
-                {
-                    position = Math.Min(position, point.Y);
-                }
-                return position;
-            }
-        }
-
-        public PixelMap(Photo photo)
-        {
-            MatrixInit(photo);
-        }
-
-        public void MatrixInit(Photo photo)
-        {
-            width = photo.GetWidth();
-            height = photo.GetHeight();
-            matrix = new bool[width, height];
-            for (var x = 0; x < width; x++)
-            {
-                for (var y = 0; y < height; y++)
-                {
-                    matrix[x, y] = photo.GetBrightness(x, y) < 0.5;
-                }
-            }
-        }
-
-        public Bitmap Render()
-        {
-            var bitmap = new Bitmap(width, height, PixelFormat.Format8bppIndexed);
-            for (var x = 0; x < width; x++)
-            {
-                for (var y = 0; y < height; y++)
-                {
-                    if (matrix[x, y])
-                    {
-                        bitmap.SetPixel(x, y, Color.Black);
-                    }
-                    else
-                    {
-                        bitmap.SetPixel(x, y, Color.White);
-                    }
-                }
-            }
-            return bitmap;
-        }
-
-        public Piece GetBestPiece()
-        {
-            ReduceOtherPieces();
-            if (bestPiece == null)
-            {
-                return new Piece();
-            }
-            return bestPiece;
-        }
-
-        private bool GetPointValue(int x, int y)
-        {
-            if (x < 0 || y < 0 || x >= width || y >= height)
-            {
+            case 1:
+                return GetPointValue(x, y);
+            case 2:
+                return GetPointValue(x, y - 1);
+            case 3:
+                return GetPointValue(x + 1, y - 1);
+            case 4:
+                return GetPointValue(x + 1, y);
+            case 5:
+                return GetPointValue(x + 1, y + 1);
+            case 6:
+                return GetPointValue(x, y + 1);
+            case 7:
+                return GetPointValue(x - 1, y + 1);
+            case 8:
+                return GetPointValue(x - 1, y);
+            case 9:
+                return GetPointValue(x - 1, y - 1);
+            default:
                 return false;
+        }
+    }
+
+    private bool Step1Passed(int x, int y)
+    {
+        var n = N(x, y);
+        return 2 <= n && n <= 6 && T(x, y) == 1 && (!P(2, x, y) || !P(4, x, y) || !P(6, x, y))
+               && (!P(4, x, y) || !P(6, x, y) || !P(8, x, y));
+    }
+
+    private bool Step2Passed(int x, int y)
+    {
+        var n = N(x, y);
+        return 2 <= n && n <= 6 && T(x, y) == 1 && (!P(2, x, y) || !P(4, x, y) || !P(8, x, y))
+               && (!P(2, x, y) || !P(6, x, y) || !P(8, x, y));
+    }
+
+    private void FindBoundaryPoints(PointSet set)
+    {
+        if (!set.Any())
+            set.Clear();
+
+        for (var x = 0; x < _width; x++)
+        for (var y = 0; y < _height; y++)
+            if (IsBoundaryPoint(x, y))
+                set.Add(new Point(x, y));
+    }
+
+    private bool SeedShouldBeAdded(Piece piece, Point point)
+    {
+        // if it's not out of bounds
+        if (point.X < 0 || point.Y < 0 || point.X >= _width || point.Y >= _height)
+            return false;
+
+        // if it's black
+        if (!_matrix[point.X, point.Y])
+            return false;
+
+        // if it's not part of the piece yet
+        foreach (var piecePoint in piece)
+            if (piecePoint == point)
+                return false;
+
+        return true;
+    }
+
+    private Piece CreatePiece(PointSet unsorted)
+    {
+        Piece piece = [];
+        PointSet stack = [];
+        stack.Push(unsorted.Last());
+        while (!stack.Any())
+        {
+            var point = stack.Pop();
+            if (SeedShouldBeAdded(piece, point))
+            {
+                piece.Add(point);
+                unsorted.RemovePoint(point);
+                stack.Push(new Point(point.X + 1, point.Y));
+                stack.Push(new Point(point.X - 1, point.Y));
+                stack.Push(new Point(point.X, point.Y + 1));
+                stack.Push(new Point(point.X, point.Y - 1));
             }
-            return matrix[x, y];
         }
 
-        private bool IsBoundaryPoint(int x, int y)
-        {
-            if (!GetPointValue(x, y))
-            {
-                return false;
-            }
+        piece.CreateStatistics();
+        return piece;
+    }
 
-            if (!GetPointValue(x - 1, y - 1) ||
-                !GetPointValue(x - 1, y + 1) ||
-                !GetPointValue(x + 1, y - 1) ||
-                !GetPointValue(x + 1, y + 1) ||
-                !GetPointValue(x, y + 1) ||
-                !GetPointValue(x, y - 1) ||
-                !GetPointValue(x + 1, y) ||
-                !GetPointValue(x - 1, y))
+    #endregion
+
+    public sealed class Point(int x, int y) : IEquatable<Point>
+    {
+        public int X { get; } = x;
+
+        public int Y { get; } = y;
+
+        public override bool Equals(object? obj)
+        {
+            if (ReferenceEquals(null, obj))
+                return false;
+
+            var objAsPoint = obj as Point;
+
+            return !ReferenceEquals(null, objAsPoint) && Equals(objAsPoint);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
             {
+                return (X * 397) ^ Y;
+            }
+        }
+
+        public bool Equals(Point? other)
+        {
+            if (ReferenceEquals(null, other))
+                return false;
+
+            if (ReferenceEquals(this, other))
                 return true;
-            }
-            return false;
+
+            return X == other.X && Y == other.Y;
         }
 
-        private int N(int x, int y)
+        public static bool operator ==(Point? left, Point? right) => Equals(left, right);
+
+        public static bool operator !=(Point? left, Point? right) => !Equals(left, right);
+    }
+
+    public class PointSet : List<Point>
+    {
+        public void Push(Point point) { Add(point); }
+
+        public Point Pop()
         {
-            var n = 0;
-            if (GetPointValue(x - 1, y - 1)) n++;
-            if (GetPointValue(x - 1, y + 1)) n++;
-            if (GetPointValue(x + 1, y - 1)) n++;
-            if (GetPointValue(x + 1, y + 1)) n++;
-            if (GetPointValue(x, y + 1)) n++;
-            if (GetPointValue(x, y - 1)) n++;
-            if (GetPointValue(x + 1, y)) n++;
-            if (GetPointValue(x - 1, y)) n++;
-            return n;
+            var value = this[Count - 1];
+            RemoveAt(Count - 1);
+            return value;
         }
 
-        private int T(int x, int y)
+        public void RemovePoint(Point point)
         {
-            var n = 0;
-            for (var i = 2; i <= 8; i++)
-            {
-                if (!P(i, x, y) && P(i + 1, x, y)) n++;
-            }
-            if (!P(9, x, y) && P(2, x, y)) n++;
-            return n;
+            if (Contains(point))
+                Remove(point);
         }
+    }
 
-        private bool P(int i, int x, int y)
+    public class PieceSet : List<Piece> { }
+
+    public class Piece : PointSet
+    {
+        public int MostLeftPoint { get; set; }
+
+        public int MostRightPoint { get; set; }
+
+        public int MostTopPoint { get; set; }
+
+        public int MostBottomPoint { get; set; }
+
+        public int CenterX { get; set; }
+
+        public int CenterY { get; set; }
+
+        public float Magnitude { get; set; }
+
+        public int NumberOfBlackPoints { get; set; }
+
+        public int NumberOfAllPoints { get; set; }
+
+        public int Width { get; set; }
+
+        public int Height { get; set; }
+
+
+        public Bitmap? Render()
         {
-            if (i == 1) return GetPointValue(x, y);
-            if (i == 2) return GetPointValue(x, y - 1);
-            if (i == 3) return GetPointValue(x + 1, y - 1);
-            if (i == 4) return GetPointValue(x + 1, y);
-            if (i == 5) return GetPointValue(x + 1, y + 1);
-            if (i == 6) return GetPointValue(x, y + 1);
-            if (i == 7) return GetPointValue(x - 1, y + 1);
-            if (i == 8) return GetPointValue(x - 1, y);
-            if (i == 9) return GetPointValue(x - 1, y - 1);
-            return false;
+            if (NumberOfAllPoints == 0)
+                return null;
+
+            var image = new Bitmap(Width, Height);
+
+            for (var x = MostLeftPoint; x <= MostRightPoint; x++)
+            for (var y = MostTopPoint; y <= MostBottomPoint; y++)
+                image.SetPixel(x - MostLeftPoint, y - MostTopPoint, _matrix[x, y] ? Color.Black : Color.White);
+
+            return image;
         }
 
-        private bool Step1Passed(int x, int y)
+        public void CreateStatistics()
         {
-            var n = N(x, y);
-            return 2 <= n && n <= 6 &&
-                   T(x, y) == 1 &&
-                   (!P(2, x, y) || !P(4, x, y) || !P(6, x, y)) &&
-                   (!P(4, x, y) || !P(6, x, y) || !P(8, x, y));
+            MostLeftPoint = ComputeMostLeftPoint();
+            MostRightPoint = ComputeMostRightPoint();
+            MostTopPoint = ComputeMostTopPoint();
+            MostBottomPoint = ComputeMostBottomPoint();
+            Width = MostRightPoint - MostLeftPoint + 1;
+            Height = MostBottomPoint - MostTopPoint + 1;
+            CenterX = (MostLeftPoint + MostRightPoint) / 2;
+            CenterY = (MostTopPoint + MostBottomPoint) / 2;
+            NumberOfBlackPoints = Count;
+            NumberOfAllPoints = Width * Height;
+            Magnitude = (float)NumberOfBlackPoints / NumberOfAllPoints;
         }
 
-        private bool Step2Passed(int x, int y)
+        public int Cost() => NumberOfAllPoints - NumberOfBlackPoints;
+
+        public void BleachPiece()
         {
-            var n = N(x, y);
-            return 2 <= n && n <= 6 &&
-                   T(x, y) == 1 &&
-                   (!P(2, x, y) || !P(4, x, y) || !P(8, x, y)) &&
-                   (!P(2, x, y) || !P(6, x, y) || !P(8, x, y));
+            foreach (var point in this)
+                _matrix[point.X, point.Y] = false;
         }
 
-        private void FindBoundaryPoints(PointSet set)
-        {
-            if (set.Count != 0) set.Clear();
-            for (var x = 0; x < width; x++)
-            {
-                for (var y = 0; y < height; y++)
-                {
-                    if (IsBoundaryPoint(x, y)) set.Add(new Point(x, y));
-                }
-            }
-        }
+        private int ComputeMostLeftPoint() => this.Select(point => point.X).Prepend(int.MaxValue).Min();
 
-        public PixelMap Skeletonize()
-        {
-            var flaggedPoints = new PointSet();
-            var boundaryPoints = new PointSet();
-            bool cont;
+        private int ComputeMostRightPoint() => this.Select(point => point.X).Prepend(0).Max();
 
-            do
-            {
-                cont = false;
-                FindBoundaryPoints(boundaryPoints);
+        private int ComputeMostTopPoint() => this.Select(point => point.Y).Prepend(int.MaxValue).Min();
 
-                foreach (var p in boundaryPoints)
-                {
-                    if (Step1Passed(p.X, p.Y))
-                        flaggedPoints.Add(p);
-                }
-
-                if (flaggedPoints.Count != 0)
-                    cont = true;
-                foreach (var p in flaggedPoints)
-                {
-                    matrix[p.X, p.Y] = false;
-                    boundaryPoints.Remove(p);
-                }
-                flaggedPoints.Clear();
-
-                foreach (var p in boundaryPoints)
-                {
-                    if (Step2Passed(p.X, p.Y))
-                        flaggedPoints.Add(p);
-                }
-
-                if (flaggedPoints.Count != 0) cont = true;
-                foreach (var p in flaggedPoints)
-                {
-                    matrix[p.X, p.Y] = false;
-                }
-                boundaryPoints.Clear();
-                flaggedPoints.Clear();
-            } while (cont);
-            return this;
-        }
-
-        public PixelMap ReduceNoise()
-        {
-            var pointsToReduce = new PointSet();
-            for (var x = 0; x < width; x++)
-            {
-                for (var y = 0; y < height; y++)
-                {
-                    if (N(x, y) < 4)
-                    {
-                        pointsToReduce.Add(new Point(x, y));
-                    }
-                }
-            }
-
-            foreach (var point in pointsToReduce)
-            {
-                matrix[point.X, point.Y] = false;
-            }
-            return this;
-        }
-
-        public bool IsInPieces(PieceSet pieces, int x, int y)
-        {
-            foreach (var piece in pieces)
-            {
-                foreach (var point in piece)
-                {
-                    if (point.Equals(x, y))
-                    {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
-
-        public bool SeedShouldBeAdded(Piece piece, Point point)
-        {
-            if (point.X < 0 || point.Y < 0 || point.X >= width || point.Y >= height)
-            {
-                return false;
-            }
-            if (!matrix[point.X, point.Y])
-            {
-                return false;
-            }
-            foreach (var piecePoint in piece)
-            {
-                if (piecePoint.Equals(point))
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        private Piece CreatePiece(PointSet unsorted)
-        {
-            var piece = new Piece();
-
-            var stack = new PointSet();
-            stack.Push(unsorted.FindLast(x => true));
-
-            while (stack.Count != 0)
-            {
-                var p = stack.Pop();
-                if (SeedShouldBeAdded(piece, p))
-                {
-                    piece.Add(p);
-                    unsorted.RemovePoint(p);
-                    stack.Push(new Point(p.X + 1, p.Y));
-                    stack.Push(new Point(p.X - 1, p.Y));
-                    stack.Push(new Point(p.X, p.Y + 1));
-                    stack.Push(new Point(p.X, p.Y - 1));
-                }
-            }
-            piece.CreateStatistics();
-            return piece;
-        }
-
-        public PieceSet FindPieces()
-        {
-            var pieces = new PieceSet();
-            var unsorted = new PointSet();
-            for (var x = 0; x < width; x++)
-            {
-                for (var y = 0; y < height; y++)
-                {
-                    if (matrix[x, y])
-                    {
-                        unsorted.Add(new Point(x, y));
-                    }
-                }
-            }
-
-            while (unsorted.Count != 0)
-            {
-                pieces.Add(CreatePiece(unsorted));
-            }
-            return pieces;
-        }
-
-        public PixelMap ReduceOtherPieces()
-        {
-            if (bestPiece != null)
-            {
-                return this;
-            }
-            var pieces = FindPieces();
-            var maxCost = 0;
-            var maxIndex = 0;
-            for (var i = 0; i < pieces.Count; i++)
-            {
-                if (pieces[i].Cost() > maxCost)
-                {
-                    maxCost = pieces[i].Cost();
-                    maxIndex = i;
-                }
-            }
-
-            for (var i = 0; i < pieces.Count; i++)
-            {
-                if (i != maxIndex) pieces[i].BleachPiece();
-            }
-            if (pieces.Count != 0) bestPiece = pieces[maxIndex];
-            return this;
-        }
+        private int ComputeMostBottomPoint() => this.Select(point => point.Y).Prepend(0).Max();
     }
 }

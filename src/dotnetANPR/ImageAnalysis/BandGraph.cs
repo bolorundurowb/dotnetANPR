@@ -1,122 +1,78 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using DotNetANPR.Configuration;
 
-namespace dotnetANPR.ImageAnalysis
+namespace DotNetANPR.ImageAnalysis;
+
+public class BandGraph(Band handle) : Graph
 {
-    public class BandGraph : Graph
+    private static readonly double PeakFootConstant =
+        Configurator.Instance.Get<double>("bandgraph_peakfootconstant"); // 0.75
+
+    private static readonly double PeakDiffMultiplicationConstant =
+        Configurator.Instance.Get<double>("bandgraph_peakDiffMultiplicationConstant"); // 0.2
+
+    /**
+     * The Band to which this Graph is related.
+     */
+    private readonly Band _handle = handle;
+
+    public void FindPeaks(int count)
     {
-        private Band _handle;
-
-        private static double _peakFootConstant =
-            Intelligence.Intelligence.Configurator.GetDoubleProperty("bandgraph_peakfootconstant");
-
-        private static double _peakDiffMultiplicationConstant =
-            Intelligence.Intelligence.Configurator.GetDoubleProperty("bandgraph_peakDiffMultiplicationConstant");
-
-        public BandGraph(Band band)
+        List<Peak> outPeaks = [];
+        for (var c = 0; c < count; c++)
         {
-            _handle = band;
-        }
-
-        public class PeakComparer : IComparer<Peak>
-        {
-            private List<float> _yValues;
-
-            public PeakComparer(List<float> yValues)
-            {
-                _yValues = yValues;
-            }
-
-            private float GetPeakValue(Peak peak)
-            {
-                return _yValues[peak.Center];
-            }
-
-            public int Compare(Peak x, Peak y)
-            {
-                double difference = GetPeakValue(y) - GetPeakValue(x);
-                if (difference < 0)
-                {
-                    return -1;
-                }
-                if (difference > 0)
-                {
-                    return 1;
-                }
-                return 0;
-            }
-        }
-
-        public List<Peak> FindPeaks(int numOfCandidates)
-        {
-            var outPeaks = new List<Peak>();
-            for (var c = 0; c < numOfCandidates; c++)
-            {
-                var maxValue = 0.0f;
-                var maxIndex = 0;
-                for (var i = 0; i < YValues.Count; i++)
-                {
-                    if (AllowedInterval(outPeaks, i))
+            var maxValue = 0.0f;
+            var maxIndex = 0;
+            for (var i = 0; i < YValues.Count; i++)
+                // left to right
+                if (AllowedInterval(outPeaks, i))
+                    if (YValues[i] >= maxValue)
                     {
-                        if (YValues[i] >= maxValue)
-                        {
-                            maxValue = YValues[i];
-                            maxIndex = i;
-                        }
+                        maxValue = YValues[i];
+                        maxIndex = i;
                     }
-                }
-                var leftIndex = IndexOfLeftPeakRel(maxIndex, _peakFootConstant);
-                var rightIndex = IndexOfRightPeakRel(maxIndex, _peakFootConstant);
-                var diff = rightIndex - leftIndex;
-                leftIndex -= (int) _peakDiffMultiplicationConstant * diff;
-                rightIndex += (int) _peakDiffMultiplicationConstant * diff;
 
-                outPeaks.Add(new Peak(
-                    Math.Max(0, leftIndex),
-                    maxIndex,
-                    Math.Min(YValues.Count - 1, rightIndex)
-                ));
-            }
-            var outPeaksFiltered = new List<Peak>();
-            foreach (var peak in outPeaks)
-            {
-                if (peak.GetDiff() > 2 * _handle.GetHeight()
-                    && peak.GetDiff() < 15 * _handle.GetHeight())
-                {
-                    outPeaksFiltered.Add(peak);
-                }
-            }
-            outPeaksFiltered.Sort(new PeakComparer(YValues));
-            Peaks = outPeaksFiltered;
-            return outPeaksFiltered;
+            // we found the biggest peak, let's do the first cut
+            var leftIndex = IndexOfLeftPeakRel(maxIndex, PeakFootConstant);
+            var rightIndex = IndexOfRightPeakRel(maxIndex, PeakFootConstant);
+            var diff = rightIndex - leftIndex;
+            leftIndex -= (int)Math.Round(PeakDiffMultiplicationConstant * diff);
+            rightIndex += (int)Math.Round(PeakDiffMultiplicationConstant * diff);
+            outPeaks.Add(new Peak(Math.Max(0, leftIndex), maxIndex, Math.Min(YValues.Count - 1, rightIndex)));
         }
 
-        public int IndexOfLeftPeakAbs(int peak, double peakFootConstantAbs)
+        // filter the candidates that don't correspond with plate proportions
+        List<Peak> outPeaksFiltered = [];
+        outPeaksFiltered.AddRange(outPeaks.Where(p => p.Diff > 2 * _handle.Height && p.Diff < 15 * _handle.Height));
+        outPeaksFiltered.Sort(new PeakComparator(YValues));
+        Peaks = outPeaksFiltered;
+    }
+
+    public int IndexOfLeftPeakAbs(int peak, double peakFootConstantAbs)
+    {
+        var index = peak;
+        for (var i = peak; i >= 0; i--)
         {
-            var index = peak;
-            for (var i = peak; i >= 0; i--)
-            {
-                index = i;
-                if (YValues[index] < peakFootConstantAbs)
-                {
-                    break;
-                }
-            }
-            return Math.Max(0, index);
+            index = i;
+            if (YValues[index] < peakFootConstantAbs)
+                break;
         }
 
-        public int IndexOfRightPeakAbs(int peak, double peakFootConstantAbs)
+        return Math.Max(0, index);
+    }
+
+    public int IndexOfRightPeakAbs(int peak, double peakFootConstantAbs)
+    {
+        var index = peak;
+        for (var i = peak; i < YValues.Count; i++)
         {
-            var index = peak;
-            for (var i = peak; i < YValues.Count; i++)
-            {
-                index = i;
-                if (YValues[index] < peakFootConstantAbs)
-                {
-                    break;
-                }
-            }
-            return Math.Min(YValues.Count, index);
+            index = i;
+            if (YValues[index] < peakFootConstantAbs)
+                break;
         }
+
+        return Math.Min(YValues.Count, index);
     }
 }

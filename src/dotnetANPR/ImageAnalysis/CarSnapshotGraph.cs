@@ -1,78 +1,43 @@
-﻿﻿using System;
- using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using DotNetANPR.Configuration;
 
-namespace dotnetANPR.ImageAnalysis
+namespace DotNetANPR.ImageAnalysis;
+
+public class CarSnapshotGraph : Graph
 {
-    public class CarSnapshotGraph : Graph
+    private static readonly double PeakFootConstant =
+        Configurator.Instance.Get<double>("carsnapshotgraph_peakfootconstant"); // 0.55
+
+    private static readonly double PeakDiffMultiplicationConstant =
+        Configurator.Instance.Get<double>("carsnapshotgraph_peakDiffMultiplicationConstant"); // 0.1
+
+    public void FindPeaks(int count)
     {
-        private static double peakFootConstant=
-            Intelligence.Intelligence.Configurator.GetDoubleProperty("carsnapshotgraph_peakfootconstant");
-        private static double peakDiffMultiplicationConstant =
-            Intelligence.Intelligence.Configurator.GetDoubleProperty("carsnapshotgraph_peakDiffMultiplicationConstant");
-        CarSnapshot handle;
-
-        public CarSnapshotGraph(CarSnapshot carSnapshot)
+        List<Peak> outPeaks = [];
+        for (var c = 0; c < count; c++)
         {
-            handle = carSnapshot;
+            var maxValue = 0.0f;
+            var maxIndex = 0;
+            for (var i = 0; i < YValues.Count; i++)
+                // left to right
+                if (AllowedInterval(outPeaks, i))
+                    if (YValues[i] >= maxValue)
+                    {
+                        maxValue = YValues[i];
+                        maxIndex = i;
+                    }
+
+            // we found the biggest peak
+            var leftIndex = IndexOfLeftPeakRel(maxIndex, PeakFootConstant);
+            var rightIndex = IndexOfRightPeakRel(maxIndex, PeakFootConstant);
+            var diff = rightIndex - leftIndex;
+            leftIndex -= (int)Math.Round(PeakDiffMultiplicationConstant * diff);
+            rightIndex += (int)Math.Round(PeakDiffMultiplicationConstant * diff);
+            outPeaks.Add(new Peak(Math.Max(0, leftIndex), maxIndex, Math.Min(YValues.Count - 1, rightIndex)));
         }
 
-        public class PeakComparer : IComparer<Peak>
-        {
-            private List<float> yValues = null;
-
-            public PeakComparer(List<float> yValues)
-            {
-                this.yValues = yValues;
-            }
-
-            private float GetPeakValue(Peak peak)
-            {
-                return yValues[peak.Center];
-            }
-
-            public int Compare(Peak x, Peak y)
-            {
-                double difference = GetPeakValue(y) - GetPeakValue(x);
-                if (difference < 0)
-                {
-                    return -1;
-                }
-                if (difference > 0)
-                {
-                    return 1;
-                }
-                return 0;           }
-        }
-
-        public List<Peak> FindPeaks(int numberOfCandidates)
-        {
-            var outPeaks = new List<Peak>();
-            for (var c = 0; c < numberOfCandidates; c++)
-            {
-                var maxValue = 0.0f;
-                var maxIndex = 0;
-                for (var i = 0; i < YValues.Count; i++)
-                {
-                    if (!AllowedInterval(outPeaks, i)) continue;
-                    if (!(YValues[i] >= maxValue)) continue;
-                    maxValue = YValues[i];
-                    maxIndex = i;
-                }
-                var leftIndex = IndexOfLeftPeakRel(maxIndex, peakFootConstant);
-                var rightIndex = IndexOfRightPeakRel(maxIndex, peakFootConstant);
-                var diff = rightIndex - leftIndex;
-                leftIndex -= (int) peakDiffMultiplicationConstant * diff;
-                rightIndex += (int) peakDiffMultiplicationConstant * diff;
-
-                outPeaks.Add(new Peak(
-                    Math.Max(0, leftIndex),
-                    maxIndex,
-                    Math.Min(YValues.Count - 1, rightIndex)
-                ));
-            }
-            outPeaks.Sort(new PeakComparer(YValues));
-            Peaks = outPeaks;
-            return outPeaks;
-        }
+        outPeaks.Sort(new PeakComparator(YValues));
+        Peaks = outPeaks;
     }
 }

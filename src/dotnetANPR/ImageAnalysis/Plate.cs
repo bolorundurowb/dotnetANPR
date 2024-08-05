@@ -1,320 +1,228 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Imaging;
-using dotnetANPR.ImageAnalysis.Convolution;
+using System.Linq;
+using DotNetANPR.Configuration;
+using DotNetANPR.Extensions;
 
-namespace dotnetANPR.ImageAnalysis
+namespace DotNetANPR.ImageAnalysis;
+
+public class Plate : Photo, ICloneable
 {
-    public class Plate : Photo
+    private static readonly ProbabilityDistributor Distributor = new(0, 0, 0, 0);
+    private static readonly int NumberOfCandidates = Configurator.Instance.Get<int>("intelligence_numberOfChars");
+
+    private static readonly int HorizontalDetectionType =
+        Configurator.Instance.Get<int>("platehorizontalgraph_detectionType");
+
+    private Plate? _plateCopy; // TODO refactor: remove this variable completely
+    private PlateGraph? _graphHandle;
+
+    public Plate(Bitmap image, bool isCopy = false) : base(image)
     {
-        public static Graph.ProbabilityDistributor Distributor = new Graph.ProbabilityDistributor(0, 0, 0, 0);
-        private static readonly int NumberOfCandidates =
-            Intelligence.Intelligence.Configurator.GetIntProperty("intelligence_numberOfChars");
-        private static readonly int HorizontalDetectionType =
-            Intelligence.Intelligence.Configurator.GetIntProperty("platehorizontalgraph_detectionType");
-        private PlateGraph _graphHandle;
-        public Plate PlateCopy;
-
-        public Plate()
+        if (!isCopy)
         {
-            Image = null;
+            _plateCopy = new Plate(DuplicateBitmap(Image), true);
+            _plateCopy.AdaptiveThresholding();
         }
-
-        public Plate(Bitmap bitmap) : base(bitmap)
+        else
         {
-            PlateCopy = new Plate(DuplicateBitmap(Image), true);
-            PlateCopy.AdaptiveThresholding();
-        }
-
-        public Plate(Bitmap bitmap, bool isCopy) : base(bitmap) {}
-
-        public Bitmap RenderGraph()
-        {
-            ComputeGraph();
-            return _graphHandle.RenderHorizontally(GetWidth(), 100);
-        }
-
-        private List<Graph.Peak> ComputeGraph()
-        {
-            if (_graphHandle != null) return _graphHandle.Peaks;
-
-            _graphHandle = Histogram(PlateCopy.GetBitmap());
-            _graphHandle.ApplyProbabilityDistributor(Distributor);
-            _graphHandle.FindPeaks(NumberOfCandidates);
-
-            return _graphHandle.Peaks;
-        }
-        
-        public List<Character> GetChars()
-        {
-            var output = new List<Character>();
-            var peaks = ComputeGraph();
-            for (var i = 0; i < peaks.Count; i++)
-            {
-                var p = peaks[i];
-                if (p.GetDiff() <= 0) continue;
-                output.Add(new Character(
-                        Image.Clone(new Rectangle(
-                            p.Left,
-                            0,
-                            p.GetDiff(),
-                            Image.Height
-                        ), PixelFormat.Format8bppIndexed
-                        )
-                        ,
-                        PlateCopy.Image.Clone(new Rectangle(
-                            p.Left,
-                            0,
-                            p.GetDiff(),
-                            Image.Height
-                        ), PixelFormat.Format8bppIndexed
-                        ),
-                        new PositionInPlate(p.Left, p.Right
-                        )
-                    )
-                );
-            }
-            return output;
-        }
-
-        public new Plate Clone()
-        {
-            return new Plate(DuplicateBitmap(Image));
-        }
-
-        public void HorizontalEdgeBi(Bitmap image)
-        {
-            int[,] matrix =
-            {
-                {-1, 0, 1}
-            };
-            var destination = DuplicateBitmap(image);
-            var convolveOp = new ConvolveOp();
-            var kernel = new ConvolutionKernel
-            {
-                Size = 3,
-                Matrix = matrix
-            };
-            destination = convolveOp.Convolve(image, kernel);
-        }
-
-        public void Normalize()
-        {
-            var clone1 = Clone();
-            clone1.VerticalEdgeDetector(clone1.GetBitmap());
-            var vertical = clone1.HistogramYaxis(clone1.GetBitmap());
-            Image = CutTopBottom(Image, vertical);
-            PlateCopy.Image = CutTopBottom(PlateCopy.Image, vertical);
-
-            var clone2 = Clone();
-            if (HorizontalDetectionType == 1) clone2.HorizontalEdgeDetector(clone2.GetBitmap());
-            var horizontal = clone1.HistogramXAxis(clone2.GetBitmap());
-            Image = CutLeftRight(Image, horizontal);
-            PlateCopy.Image = CutLeftRight(PlateCopy.Image, horizontal);
-        }
-
-        private Bitmap CutTopBottom(Bitmap origin, PlateVerticalGraph graph)
-        {
-            graph.ApplyProbabilityDistributor(new Graph.ProbabilityDistributor(0f, 0f, 2, 2));
-            var p = graph.FindPeak(3)[0];
-            return origin.Clone(new Rectangle(0, p.Left, Image.Width, p.GetDiff()), PixelFormat.Format8bppIndexed
-            );
-        }
-        private Bitmap CutLeftRight(Bitmap origin, PlateHorizontalGraph graph)
-        {
-            graph.ApplyProbabilityDistributor(new Graph.ProbabilityDistributor(0f, 0f, 2, 2));
-            var peaks = graph.FindPeak(3);
-
-            if (peaks.Count != 0)
-            {
-                var p = peaks[0];
-                return origin.Clone(new Rectangle(p.Left, 0, p.GetDiff(), Image.Height), PixelFormat.Format8bppIndexed);
-            }
-            return origin;
-        }
-
-        public PlateGraph Histogram(Bitmap bitmap)
-        {
-            var graph = new PlateGraph(this);
-            for (var x = 0; x < bitmap.Width; x++)
-            {
-                float counter = 0;
-                for (var y = 0; y < bitmap.Height; y++)
-                    counter += GetBrightness(bitmap, x, y);
-                graph.AddPeak(counter);
-            }
-            return graph;
-        }
-        
-        private PlateVerticalGraph HistogramYaxis(Bitmap bitmap)
-        {
-            var graph = new PlateVerticalGraph(this);
-            var w = bitmap.Width;
-            var h = bitmap.Height;
-            for (var y = 0; y < h; y++)
-            {
-                float counter = 0;
-                for (var x = 0; x < w; x++)
-                    counter += GetBrightness(bitmap, x, y);
-                graph.AddPeak(counter);
-            }
-            return graph;
-        }
-        
-        private PlateHorizontalGraph HistogramXAxis(Bitmap bitmap)
-        {
-            var graph = new PlateHorizontalGraph(this);
-            var w = bitmap.Width;
-            var h = bitmap.Height;
-            for (var x = 0; x < w; x++)
-            {
-                float counter = 0;
-                for (var y = 0; y < h; y++)
-                    counter += GetBrightness(bitmap, x, y);
-                graph.AddPeak(counter);
-            }
-            return graph;
-        }
-
-        public new void VerticalEdgeDetector(Bitmap source)
-        {
-            int[,] matrix =
-            {
-                {-1, 0, 1},
-                {-1, 0, 1},
-                {-1, 0, 1}
-            };
-            var destination = DuplicateBitmap(source);
-            var convolveOp = new ConvolveOp();
-            var kernel = new ConvolutionKernel
-            {
-                Size = 3,
-                Matrix = matrix
-            };
-            destination = convolveOp.Convolve(source, kernel);
-        }
-
-        public void HorizontalEdgeDetector(Bitmap source)
-        {
-            var destination = DuplicateBitmap(source);
-            int[,] matrix =
-            {
-                {-1, -2, -1},
-                {0, 0, 0},
-                {1, 2, 1}
-            };
-            var convolveOp = new ConvolveOp();
-            var kernel = new ConvolutionKernel
-            {
-                Size = 3,
-                Matrix = matrix
-            };
-            destination = convolveOp.Convolve(source, kernel);
-        }
-
-        public float GetCharsWidthDispersion(List<Character> chars)
-        {
-            float averageDispersion = 0;
-            var averageWidth = GetAverageCharWidth(chars);
-            foreach (var chr in chars)
-                averageDispersion += Math.Abs(averageWidth - chr.FullWidth);
-            averageDispersion /= chars.Count;
-            return averageDispersion / averageWidth;
-        }
-
-        public float GetPiecesWidthDispersion(List<Character> chars)
-        {
-            float averageDispersion = 0;
-            var averageWidth = GetAveragePieceWidth(chars);
-            foreach (var chr in chars)
-                averageDispersion += Math.Abs(averageWidth - chr.PieceWidth);
-            averageDispersion /= chars.Count;
-            return averageDispersion / averageWidth;
-        }
-        
-        public float GetAverageCharWidth(List<Character> chars)
-        {
-            float averageWidth = 0;
-            foreach (var chr in chars)
-                averageWidth += chr.FullWidth;
-            averageWidth /= chars.Count;
-            return averageWidth;
-        }
-        public float GetAveragePieceWidth(List<Character> chars)
-        {
-            float averageWidth = 0;
-            foreach (var chr in chars)
-                averageWidth += chr.PieceWidth;
-            averageWidth /= chars.Count;
-            return averageWidth;
-        }
-
-        public float GetAveragePieceHue(List<Character> chars)
-        {
-            float averageHue = 0;
-            foreach (var chr in chars)
-                averageHue += chr.StatisticAverageHue;
-            averageHue /= chars.Count;
-            return averageHue;
-        }
-        public float GetAveragePieceContrast(List<Character> chars)
-        {
-            float averageContrast = 0;
-            foreach (var chr in chars)
-                averageContrast += chr.StatisticContrast;
-            averageContrast /= chars.Count;
-            return averageContrast;
-        }
-        public float GetAveragePieceBrightness(List<Character> chars)
-        {
-            float averageBrightness = 0;
-            foreach (var chr in chars)
-                averageBrightness += chr.StatisticAverageBrightness;
-            averageBrightness /= chars.Count;
-            return averageBrightness;
-        }
-        public float GetAveragePieceMinBrightness(List<Character> chars)
-        {
-            float averageMinBrightness = 0;
-            foreach (var chr in chars)
-                averageMinBrightness += chr.StatisticMinimumBrightness;
-            averageMinBrightness /= chars.Count;
-            return averageMinBrightness;
-        }
-        public float GetAveragePieceMaxBrightness(List<Character> chars)
-        {
-            float averageMaxBrightness = 0;
-            foreach (var chr in chars)
-                averageMaxBrightness += chr.StatisticMaximumBrightness;
-            averageMaxBrightness /= chars.Count;
-            return averageMaxBrightness;
-        }
-
-        public float GetAveragePieceSaturation(List<Character> chars)
-        {
-            float averageSaturation = 0;
-            foreach (var chr in chars)
-                averageSaturation += chr.StatisticAverageSaturation;
-            averageSaturation /= chars.Count;
-            return averageSaturation;
-        }
-
-        public float GetCharHeight(List<Character> chars)
-        {
-            float averageHeight = 0;
-            foreach (var chr in chars)
-                averageHeight += chr.FullHeight;
-            averageHeight /= chars.Count;
-            return averageHeight;
-        }
-        public float GetAveragePieceHeight(List<Character> chars)
-        {
-            float averageHeight = 0;
-            foreach (var chr in chars)
-                averageHeight += chr.PieceHeight;
-            averageHeight /= chars.Count;
-            return averageHeight;
+            _plateCopy = null;
         }
     }
+
+   public new object Clone() => new Plate(DuplicateBitmap(Image));
+
+    public Bitmap RenderGraph()
+    {
+        ComputeGraph();
+        return _graphHandle!.RenderHorizontally(Width, 100);
+    }
+
+    public List<Character> Characters()
+    {
+        List<Character> characters = [];
+        var peaks = ComputeGraph();
+        foreach (var peak in peaks)
+        {
+            // Cut from the original image of the plate and save to a vector.
+            // ATTENTION: Cutting from original,
+            // we have to apply an inverse transformation to the coordinates calculated from imageCopy
+            if (peak.Diff <= 0)
+                continue;
+
+            characters.Add(new Character(Image.SubImage(peak.Left, 0, peak.Diff, Image.Height),
+                _plateCopy!.Image.SubImage(peak.Left, 0, peak.Diff, Image.Height),
+                new PositionInPlate(peak.Left, peak.Right)));
+        }
+
+        return characters;
+    }
+
+    public void HorizontalEdgeBi(Bitmap image)
+    {
+        var imageCopy = DuplicateBitmap(image);
+        float[] data = [-1, 0, 1];
+        imageCopy.ConvolutionFilter(image, data);
+    }
+
+    public void Normalize()
+    {
+        var clone1 = (Plate)Clone();
+        clone1.VerticalEdgeDetector(clone1.Image);
+        var vertical = clone1.HistogramYaxis(clone1.Image);
+        Image = CutTopBottom(Image, vertical);
+        _plateCopy!.Image = CutTopBottom(_plateCopy.Image, vertical);
+        var clone2 = (Plate)Clone();
+
+        if (HorizontalDetectionType == 1)
+            clone2.HorizontalEdgeDetector(clone2.Image);
+
+        var horizontal = clone1.HistogramXaxis(clone2.Image);
+        Image = CutLeftRight(Image, horizontal);
+        _plateCopy.Image = CutLeftRight(_plateCopy.Image, horizontal);
+    }
+
+    public PlateGraph Histogram(Bitmap bi)
+    {
+        var graph = new PlateGraph(this);
+        for (var x = 0; x < bi.Width; x++)
+        {
+            float counter = 0;
+            for (var y = 0; y < bi.Height; y++)
+                counter += GetBrightness(bi, x, y);
+
+            graph.AddPeak(counter);
+        }
+
+        return graph;
+    }
+
+    public override void VerticalEdgeDetector(Bitmap source)
+    {
+        float[] matrix = [-1, 0, 1];
+        var destination = DuplicateBitmap(source);
+        destination.ConvolutionFilter(source, matrix);
+    }
+
+    public void HorizontalEdgeDetector(Bitmap source)
+    {
+        var destination = DuplicateBitmap(source);
+        float[] matrix = [-1, -2, -1, 0, 0, 0, 1, 2, 1];
+        destination.ConvolutionFilter(source, matrix);
+    }
+
+    public float CharactersWidthDispersion(List<Character> characters)
+    {
+        float averageDispersion = 0;
+        var averageWidth = AverageCharacterWidth(characters);
+        foreach (var chr in characters)
+            averageDispersion += Math.Abs(averageWidth - chr.FullWidth);
+
+        averageDispersion /= characters.Count;
+        return averageDispersion / averageWidth;
+    }
+
+    public float PiecesWidthDispersion(List<Character> characters)
+    {
+        float averageDispersion = 0;
+        var averageWidth = AveragePieceWidth(characters);
+        foreach (var chr in characters)
+            averageDispersion += Math.Abs(averageWidth - chr.PieceWidth);
+
+        averageDispersion /= characters.Count;
+        return averageDispersion / averageWidth;
+    }
+
+    public float AverageCharacterWidth(List<Character> characters) => (float)characters.Average(x => x.FullWidth);
+
+    public float AveragePieceWidth(List<Character> characters) => (float)characters.Average(x => x.PieceWidth);
+
+    public float AveragePieceHue(List<Character> characters) => characters.Average(x => x.StatisticAverageHue);
+
+    public float AveragePieceContrast(List<Character> characters) => characters.Average(x => x.StatisticContrast);
+
+    public float AveragePieceBrightness(List<Character> characters) =>
+        characters.Average(x => x.StatisticAverageBrightness);
+
+    public float AveragePieceMinBrightness(List<Character> characters) =>
+        characters.Average(x => x.StatisticMinimumBrightness);
+
+    public float AveragePieceMaxBrightness(List<Character> characters) =>
+        characters.Average(x => x.StatisticMaximumBrightness);
+
+    public float AveragePieceSaturation(List<Character> characters) =>
+        characters.Average(x => x.StatisticAverageSaturation);
+
+    public float AverageCharacterHeight(List<Character> characters) => (float)characters.Average(x => x.FullHeight);
+
+    public float AveragePieceHeight(List<Character> characters) => (float)characters.Average(x => x.PieceHeight);
+
+    #region Private Helpers
+
+    private List<Peak> ComputeGraph()
+    {
+        if (_graphHandle == null)
+        {
+            if (_plateCopy is null)
+                throw new ArgumentNullException(nameof(_plateCopy), "PlateCopy cannot be null");
+
+            _graphHandle = Histogram(_plateCopy.Image);
+            _graphHandle.ApplyProbabilityDistributor(Distributor);
+            _graphHandle.FindPeaks(NumberOfCandidates);
+        }
+
+        return _graphHandle.Peaks;
+    }
+
+    private Bitmap CutTopBottom(Bitmap origin, PlateVerticalGraph graph)
+    {
+        graph.ApplyProbabilityDistributor(new ProbabilityDistributor(0f, 0f, 2, 2));
+        var p = graph.FindPeak(3)[0];
+        return origin.SubImage(0, p.Left, Image.Width, p.Diff);
+    }
+
+    private Bitmap CutLeftRight(Bitmap origin, PlateHorizontalGraph graph)
+    {
+        graph.ApplyProbabilityDistributor(new ProbabilityDistributor(0f, 0f, 2, 2));
+        var peaks = graph.FindPeak();
+
+        if (peaks.Count != 0)
+        {
+            var peak = peaks[0];
+            return origin.SubImage(peak.Left, 0, peak.Diff, Image.Height);
+        }
+
+        return origin;
+    }
+
+    private PlateVerticalGraph HistogramYaxis(Bitmap bi)
+    {
+        var graph = new PlateVerticalGraph();
+        for (var y = 0; y < bi.Height; y++)
+        {
+            float counter = 0;
+            for (var x = 0; x < bi.Width; x++) counter += GetBrightness(bi, x, y);
+
+            graph.AddPeak(counter);
+        }
+
+        return graph;
+    }
+
+    private PlateHorizontalGraph HistogramXaxis(Bitmap bi)
+    {
+        var graph = new PlateHorizontalGraph();
+        for (var x = 0; x < bi.Width; x++)
+        {
+            float counter = 0;
+            for (var y = 0; y < bi.Height; y++) counter += GetBrightness(bi, x, y);
+
+            graph.AddPeak(counter);
+        }
+
+        return graph;
+    }
+
+    #endregion
 }

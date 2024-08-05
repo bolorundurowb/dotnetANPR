@@ -1,14 +1,8 @@
-﻿namespace dotnetANPR.ImageAnalysis
-{
-    public class PositionInPlate
-    {
-        public int X1 { get; set; }
-        public int X2 { get; set; }
+﻿namespace DotNetANPR.ImageAnalysis;
 
-        public PositionInPlate(int x1, int x2)
-        {
-            X1 = x1;
-            X2 = x2;
-        }
-    }
+public class PositionInPlate(int leftX, int rightX)
+{
+    public int LeftX { get; private set; } = leftX;
+
+    public int RightX { get; private set; } = rightX;
 }

@@ -1,31 +1,26 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using dotnetANPR.Recognizer;
+using System.Text;
+using DotNetANPR.Recognizer;
 
-namespace dotnetANPR.Intelligence
+namespace DotNetANPR.Intelligence;
+
+public class RecognizedPlate
 {
-    public class RecognizedPlate
+    private readonly List<RecognizedCharacter> _characters = [];
+    
+    public List<RecognizedCharacter> Characters => _characters;
+
+    public void AddCharacter(RecognizedCharacter character) => _characters.Add(character);
+
+    public RecognizedCharacter Character(int index) => _characters[index];
+
+    public override string ToString()
     {
-        public readonly List<CharacterRecognizer.RecognizedChar> Chars;
+        var builder = new StringBuilder();
 
-        public RecognizedPlate()
-        {
-            Chars = new List<CharacterRecognizer.RecognizedChar>();
-        }
+        foreach (var character in _characters)
+            builder.Append(character.Pattern(0)?.Char);
 
-        public void AddChar(CharacterRecognizer.RecognizedChar chr)
-        {
-            Chars.Add(chr);
-        }
-
-        public CharacterRecognizer.RecognizedChar GetChar(int i)
-        {
-            return Chars[i];
-        }
-
-        public string GetString()
-        {
-            return Chars.Aggregate(string.Empty, (current, t) => current + t.GetPattern(0).Character);
-        }
+        return builder.ToString();
     }
 }

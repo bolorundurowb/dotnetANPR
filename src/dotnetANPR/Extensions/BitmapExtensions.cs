@@ -6,44 +6,55 @@ namespace DotNetANPR.Extensions;
 
 internal static class BitmapExtensions
 {
-    public static void ConvolutionFilter(this Bitmap source, Bitmap destination, float[] kernel)
+    private static T Clamp<T>(T value, T min, T max) where T : IComparable
+    {
+        if (value.CompareTo(min) < 0)
+            return min;
+
+        if (value.CompareTo(max) > 0)
+            return max;
+
+        return value;
+    }
+
+    public static Bitmap Convolve(this Bitmap image, float[,] kernel)
     {
         var kernelSize = (int)Math.Sqrt(kernel.Length);
-        var kernelRadius = kernelSize / 2;
-        var srcData = source.LockBits(new Rectangle(0, 0, source.Width, source.Height), ImageLockMode.ReadOnly,
-            PixelFormat.Format24bppRgb);
-        var dstData = destination.LockBits(new Rectangle(0, 0, destination.Width, destination.Height),
-            ImageLockMode.WriteOnly, PixelFormat.Format24bppRgb);
+        var kernelOffset = kernelSize / 2;
 
-        unsafe
+        var result = new Bitmap(image.Width, image.Height);
+
+        for (var y = 0; y < image.Height; y++)
         {
-            var srcPtr = (byte*)srcData.Scan0.ToPointer();
-            var dstPtr = (byte*)dstData.Scan0.ToPointer();
-
-            for (var y = kernelRadius; y < source.Height - kernelRadius; y++)
-            for (var x = kernelRadius; x < source.Width - kernelRadius; x++)
+            for (var x = 0; x < image.Width; x++)
             {
-                float sum = 0;
-                for (var ky = -kernelRadius; ky <= kernelRadius; ky++)
-                for (var kx = -kernelRadius; kx <= kernelRadius; kx++)
+                float r = 0, g = 0, b = 0;
+
+                for (var ky = -kernelOffset; ky <= kernelOffset; ky++)
                 {
-                    var pixelX = x + kx;
-                    var pixelY = y + ky;
-                    var pixelPtr = srcPtr + pixelY * srcData.Stride + pixelX * 3;
-                    var pixelBrightness = (pixelPtr[0] + pixelPtr[1] + pixelPtr[2]) / 3.0f / 255.0f;
-                    sum += pixelBrightness * kernel[(ky + kernelRadius) * kernelSize + kx + kernelRadius];
+                    for (var kx = -kernelOffset; kx <= kernelOffset; kx++)
+                    {
+                        var px = Clamp(x + kx, 0, image.Width - 1);
+                        var py = Clamp(y + ky, 0, image.Height - 1);
+
+                        var pixel = image.GetPixel(px, py);
+                        r += pixel.R * kernel[ky + kernelOffset, kx + kernelOffset];
+                        g += pixel.G * kernel[ky + kernelOffset, kx + kernelOffset];
+                        b += pixel.B * kernel[ky + kernelOffset, kx + kernelOffset];
+                    }
                 }
 
-                var brightnessByte = (byte)(sum * 255);
-                var dstPixelPtr = dstPtr + y * dstData.Stride + x * 3;
-                dstPixelPtr[0] = dstPixelPtr[1] = dstPixelPtr[2] = brightnessByte;
+                r = Clamp(r, 0, 255);
+                g = Clamp(g, 0, 255);
+                b = Clamp(b, 0, 255);
+
+                result.SetPixel(x, y, Color.FromArgb((int)r, (int)g, (int)b));
             }
         }
 
-        source.UnlockBits(srcData);
-        destination.UnlockBits(dstData);
+        return result;
     }
-    
+
     public static Bitmap SubImage(this Bitmap source, int x, int y, int width, int height)
     {
         var rect = new Rectangle(x, y, width, height);

@@ -7,7 +7,7 @@ namespace DotNetANPR.Intelligence;
 public class RecognizedPlate
 {
     private readonly List<RecognizedCharacter> _characters = [];
-    
+
     public List<RecognizedCharacter> Characters => _characters;
 
     public void AddCharacter(RecognizedCharacter character) => _characters.Add(character);

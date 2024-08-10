@@ -352,21 +352,21 @@ public class NeuralNetwork
     private List<double> Activities(List<double> inputs)
     {
         for (var layerIndex = 0; layerIndex < Layers.Count; layerIndex++)
-        for (var neuronIndex = 0; neuronIndex < GetLayer(layerIndex).Neurons.Count; neuronIndex++)
-        {
-            var sum = GetLayer(layerIndex).Neurons[neuronIndex].Threshold; // sum <- threshold
-            for (var inputIndex = 0;
-                 inputIndex < GetLayer(layerIndex).Neurons[neuronIndex].Inputs.Count;
-                 inputIndex++)
-                if (layerIndex == 0)
-                    sum += GetLayer(layerIndex).Neurons[neuronIndex].Inputs[inputIndex].Weight *
-                           inputs[neuronIndex];
-                else
-                    sum += GetLayer(layerIndex).Neurons[neuronIndex].Inputs[inputIndex]
-                        .Weight * GetLayer(layerIndex - 1).Neurons[inputIndex].Output;
+            for (var neuronIndex = 0; neuronIndex < GetLayer(layerIndex).Neurons.Count; neuronIndex++)
+            {
+                var sum = GetLayer(layerIndex).Neurons[neuronIndex].Threshold; // sum <- threshold
+                for (var inputIndex = 0;
+                     inputIndex < GetLayer(layerIndex).Neurons[neuronIndex].Inputs.Count;
+                     inputIndex++)
+                    if (layerIndex == 0)
+                        sum += GetLayer(layerIndex).Neurons[neuronIndex].Inputs[inputIndex].Weight *
+                               inputs[neuronIndex];
+                    else
+                        sum += GetLayer(layerIndex).Neurons[neuronIndex].Inputs[inputIndex]
+                            .Weight * GetLayer(layerIndex - 1).Neurons[inputIndex].Output;
 
-            GetLayer(layerIndex).Neurons[neuronIndex].Output = GainFunction(sum);
-        }
+                GetLayer(layerIndex).Neurons[neuronIndex].Output = GainFunction(sum);
+            }
 
         List<double> output = new();
         foreach (var t in GetLayer(Layers.Count - 1).Neurons)

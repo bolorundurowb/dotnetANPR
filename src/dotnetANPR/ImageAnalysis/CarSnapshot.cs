@@ -42,11 +42,16 @@ public class CarSnapshot(Bitmap image) : Photo(image)
         return response;
     }
 
-    public void VerticalEdge(Bitmap image)
+    public Bitmap VerticalEdge(Bitmap image)
     {
         var imageCopy = DuplicateBitmap(image);
-        float[] data = [-1, 0, 1, -1, 0, 1, -1, 0, 1, -1, 0, 1];
-        imageCopy.ConvolutionFilter(image, data);
+        float[,] data = {
+            { -1, 0, 1, },
+            { -1, 0, 1 },
+            { -1, 0, 1 },
+            { -1, 0, 1 }
+        };
+        return image.Convolve(data);
     }
 
     public CarSnapshotGraph Histogram(Bitmap bitmap)
@@ -69,7 +74,7 @@ public class CarSnapshot(Bitmap image) : Photo(image)
         if (_graphHandle == null)
         {
             var imageCopy = DuplicateBitmap(Image);
-            VerticalEdge(imageCopy);
+            imageCopy = VerticalEdge(imageCopy);
             Thresholding(imageCopy);
 
             _graphHandle = Histogram(imageCopy);

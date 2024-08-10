@@ -23,7 +23,9 @@ public class Photo(Bitmap image) : IDisposable, ICloneable
     public Bitmap Image
     {
         get => image;
-        protected set => image = value;
+        // TODO: fix this travesty
+        // protected set => image = value;
+        internal set => image = value;
     }
 
     public static void SetBrightness(Bitmap image, int x, int y, float value)
@@ -233,13 +235,6 @@ public class Photo(Bitmap image) : IDisposable, ICloneable
 
     #endregion
 
-    public virtual void VerticalEdgeDetector(Bitmap source)
-    {
-        var destination = DuplicateBitmap(source);
-        float[] kernel = [-1, 0, 1, -2, 0, 2, -1, 0, 1];
-        destination.ConvolutionFilter(source, kernel);
-    }
-
     public float[,] BitmapToArray(Bitmap image, int width, int height)
     {
         var array = new float[width, height];
@@ -307,11 +302,11 @@ public class Photo(Bitmap image) : IDisposable, ICloneable
 
     public void AdaptiveThresholding()
     {
-        var stat = new Statistics(this);
+        var statistics = new Statistics(this);
         var radius = Configurator.Instance.Get<int>("photo_adaptivethresholdingradius");
         if (radius == 0)
         {
-            PlainThresholding(stat);
+            PlainThresholding(statistics);
             return;
         }
 

@@ -6,7 +6,7 @@ namespace DotNetANPR.NeuralNetwork;
 public class Neuron
 {
     public double Threshold { get; set; }
-    
+
     public double Output { get; set; }
 
     public NeuralLayer NeuralLayer { get; }

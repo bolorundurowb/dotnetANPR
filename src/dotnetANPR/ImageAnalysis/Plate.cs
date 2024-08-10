@@ -31,7 +31,7 @@ public class Plate : Photo, ICloneable
         }
     }
 
-   public new object Clone() => new Plate(DuplicateBitmap(Image));
+    public new object Clone() => new Plate(DuplicateBitmap(Image));
 
     public Bitmap RenderGraph()
     {
@@ -50,35 +50,31 @@ public class Plate : Photo, ICloneable
             // we have to apply an inverse transformation to the coordinates calculated from imageCopy
             if (peak.Diff <= 0)
                 continue;
-
-            characters.Add(new Character(Image.SubImage(peak.Left, 0, peak.Diff, Image.Height),
+            var positionInPlate = new PositionInPlate(peak.Left, peak.Right);
+            var character = new Character(Image.SubImage(peak.Left, 0, peak.Diff, Image.Height),
                 _plateCopy!.Image.SubImage(peak.Left, 0, peak.Diff, Image.Height),
-                new PositionInPlate(peak.Left, peak.Right)));
+                positionInPlate);
+            characters.Add(character);
         }
 
-        return characters;
-    }
+        characters.ForEach(x => x.Save($"/Users/bolorundurowb/Downloads/{Guid.NewGuid()}.jpg"));
 
-    public void HorizontalEdgeBi(Bitmap image)
-    {
-        var imageCopy = DuplicateBitmap(image);
-        float[] data = [-1, 0, 1];
-        imageCopy.ConvolutionFilter(image, data);
+        return characters;
     }
 
     public void Normalize()
     {
         var clone1 = (Plate)Clone();
-        clone1.VerticalEdgeDetector(clone1.Image);
+        clone1.Image = clone1.VerticalEdgeDetector(clone1.Image);
         var vertical = clone1.HistogramYaxis(clone1.Image);
         Image = CutTopBottom(Image, vertical);
         _plateCopy!.Image = CutTopBottom(_plateCopy.Image, vertical);
         var clone2 = (Plate)Clone();
 
         if (HorizontalDetectionType == 1)
-            clone2.HorizontalEdgeDetector(clone2.Image);
+            clone2.Image = clone2.HorizontalEdgeDetector(clone2.Image);
 
-        var horizontal = clone1.HistogramXaxis(clone2.Image);
+        var horizontal = clone1.HistogramXAxis(clone2.Image);
         Image = CutLeftRight(Image, horizontal);
         _plateCopy.Image = CutLeftRight(_plateCopy.Image, horizontal);
     }
@@ -98,18 +94,16 @@ public class Plate : Photo, ICloneable
         return graph;
     }
 
-    public override void VerticalEdgeDetector(Bitmap source)
+    public Bitmap VerticalEdgeDetector(Bitmap source)
     {
-        float[] matrix = [-1, 0, 1];
-        var destination = DuplicateBitmap(source);
-        destination.ConvolutionFilter(source, matrix);
+        float[,] matrix = { { -1, 0, 1 } };
+        return source.Convolve(matrix);
     }
 
-    public void HorizontalEdgeDetector(Bitmap source)
+    public Bitmap HorizontalEdgeDetector(Bitmap source)
     {
-        var destination = DuplicateBitmap(source);
-        float[] matrix = [-1, -2, -1, 0, 0, 0, 1, 2, 1];
-        destination.ConvolutionFilter(source, matrix);
+        float[,] matrix = { { -1, -2, -1 }, { 0, 0, 0 }, { 1, 2, 1 } };
+        return source.Convolve(matrix);
     }
 
     public float CharactersWidthDispersion(List<Character> characters)
@@ -210,13 +204,14 @@ public class Plate : Photo, ICloneable
         return graph;
     }
 
-    private PlateHorizontalGraph HistogramXaxis(Bitmap bi)
+    private PlateHorizontalGraph HistogramXAxis(Bitmap bi)
     {
         var graph = new PlateHorizontalGraph();
         for (var x = 0; x < bi.Width; x++)
         {
             float counter = 0;
-            for (var y = 0; y < bi.Height; y++) counter += GetBrightness(bi, x, y);
+            for (var y = 0; y < bi.Height; y++)
+                counter += GetBrightness(bi, x, y);
 
             graph.AddPeak(counter);
         }

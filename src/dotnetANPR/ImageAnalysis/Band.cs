@@ -67,26 +67,36 @@ public class Band(Bitmap image) : Photo(image)
 
     public static void FullEdgeDetector(Bitmap source)
     {
-        float[] verticalMatrix = [-1, 0, 1, -2, 0, 2, -1, 0, 1];
-        float[] horizontalMatrix = [-1, -2, -1, 0, 0, 0, 1, 2, 1];
-        var i1 = CreateBlankBitmap(source);
-        var i2 = CreateBlankBitmap(source);
+        float[,] verticalMatrix =
+        {
+            { -1, 0, 1 },
+            { -2, 0, 2 },
+            { -1, 0, 1 }
+        };
+
+        float[,] horizontalMatrix =
+        {
+            { -1, -2, -1 },
+            { 0, 0, 0 },
+            { 1, 2, 1 }
+        };
 
         // Apply vertical edge detection
-        source.ConvolutionFilter(i1, verticalMatrix);
+        var i1 = source.Convolve(verticalMatrix);
 
         // Apply horizontal edge detection
-        source.ConvolutionFilter(i2, horizontalMatrix);
+        var i2 = source.Convolve(horizontalMatrix);
 
         // Combine edge detection results
         var width = source.Width;
         var height = source.Height;
+
         for (var x = 0; x < width; x++)
-        for (var y = 0; y < height; y++)
-        {
-            var sum = GetBrightness(i1, x, y);
-            sum += GetBrightness(i2, x, y);
-            SetBrightness(source, x, y, Math.Min(1f, sum));
-        }
+            for (var y = 0; y < height; y++)
+            {
+                var sum = GetBrightness(i1, x, y);
+                sum += GetBrightness(i2, x, y);
+                SetBrightness(source, x, y, Math.Min(1f, sum));
+            }
     }
 }

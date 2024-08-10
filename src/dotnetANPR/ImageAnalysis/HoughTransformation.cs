@@ -41,8 +41,8 @@ public class HoughTransformation
         _height = height;
 
         for (var x = 0; x < width; x++)
-        for (var y = 0; y < height; y++)
-            _bitmap[x, y] = 0;
+            for (var y = 0; y < height; y++)
+                _bitmap[x, y] = 0;
     }
 
     public void AddLine(int x, int y, float brightness)
@@ -76,8 +76,8 @@ public class HoughTransformation
     {
         float sum = 0;
         for (var x = 0; x < _width; x++)
-        for (var y = 0; y < _height; y++)
-            sum += _bitmap[x, y];
+            for (var y = 0; y < _height; y++)
+                sum += _bitmap[x, y];
 
         return sum / (_width * _height);
     }
@@ -89,16 +89,16 @@ public class HoughTransformation
         var g = Graphics.FromImage(output);
 
         for (var x = 0; x < _width; x++)
-        for (var y = 0; y < _height; y++)
-        {
-            var value = (int)(255 * _bitmap[x, y] / average / 3);
-            value = Math.Max(0, Math.Min(value, 255));
+            for (var y = 0; y < _height; y++)
+            {
+                var value = (int)(255 * _bitmap[x, y] / average / 3);
+                value = Math.Max(0, Math.Min(value, 255));
 
-            output.SetPixel(x, y,
-                colorType == ColorType.BlackAndWhite
-                    ? Color.FromArgb(value, value, value)
-                    : ColorExtensions.HsbToRgb(0.67f - (float)value / 255 * 2 / 3, 1.0f, 1.0f));
-        }
+                output.SetPixel(x, y,
+                    colorType == ColorType.BlackAndWhite
+                        ? Color.FromArgb(value, value, value)
+                        : ColorExtensions.HsbToRgb(0.67f - (float)value / 255 * 2 / 3, 1.0f, 1.0f));
+            }
 
         var maximumPoint = FindMaxPoint();
         g.DrawImage(output, 0, 0);
@@ -138,17 +138,17 @@ public class HoughTransformation
         float max = 0;
         int maxX = 0, maxY = 0;
         for (var x = 0; x < _width; x++)
-        for (var y = 0; y < _height; y++)
-        {
-            var curr = _bitmap[x, y];
+            for (var y = 0; y < _height; y++)
+            {
+                var curr = _bitmap[x, y];
 
-            if (!(curr >= max))
-                continue;
+                if (!(curr >= max))
+                    continue;
 
-            maxX = x;
-            maxY = y;
-            max = curr;
-        }
+                maxX = x;
+                maxY = y;
+                max = curr;
+            }
 
         return new Point(maxX, maxY);
     }

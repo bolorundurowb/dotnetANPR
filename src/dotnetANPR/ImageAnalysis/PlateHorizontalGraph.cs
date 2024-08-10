@@ -11,8 +11,8 @@ public class PlateHorizontalGraph : Graph
 
     public float Derivation(int index1, int index2) => YValues[index1] - YValues[index2];
 
-    public List<Peak> FindPeak() => HorizontalDetectionType == 1 
-        ? FindPeakEdgeDetection() 
+    public List<Peak> FindPeak() => HorizontalDetectionType == 1
+        ? FindPeakEdgeDetection()
         : FindPeakDerivative();
 
     public List<Peak> FindPeakDerivative()

@@ -72,7 +72,7 @@ public class Intelligence
                 if (generateReport || skewDetectionMode != 0)
                 {
                     notNormalizedCopy = (Plate)plate.Clone();
-                    notNormalizedCopy.HorizontalEdgeDetector(notNormalizedCopy.Image);
+                    notNormalizedCopy.Image = notNormalizedCopy.HorizontalEdgeDetector(notNormalizedCopy.Image);
                     hough = notNormalizedCopy.GetHoughTransformation();
                     renderedHoughTransform = hough.Render(HoughTransformation.RenderType.RenderAll,
                         HoughTransformation.ColorType.BlackAndWhite);
@@ -177,7 +177,7 @@ public class Intelligence
                             continue;
                     }
 
-                    if (chr.PositionInPlate is null) 
+                    if (chr.PositionInPlate is null)
                         throw new ArgumentNullException(nameof(chr.PositionInPlate), "Character position in plate is null");
 
                     if ((chr.PositionInPlate.LeftX < 2 || chr.PositionInPlate.RightX > plate.Width - 1) && widthHeightRatio < 0.12)
@@ -239,7 +239,7 @@ public class Intelligence
                     {
                         rc = _chrRecognizer.Recognize(chr);
 
-                        if (rc.Patterns is null || rc.Patterns.Count == 0) 
+                        if (rc.Patterns is null || rc.Patterns.Count == 0)
                             throw new ArgumentNullException(nameof(rc), "Recognized character does not have any patterns");
 
                         similarityCost = rc.Patterns![0].Cost;

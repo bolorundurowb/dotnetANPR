@@ -42,16 +42,15 @@ public class CarSnapshot(Bitmap image) : Photo(image)
         return response;
     }
 
-    public Bitmap VerticalEdge(Bitmap image)
+    public Bitmap VerticalEdge(Bitmap bitmap)
     {
-        var imageCopy = DuplicateBitmap(image);
         float[,] data = {
-            { -1, 0, 1, },
+            { -1, 0, 1 },
             { -1, 0, 1 },
             { -1, 0, 1 },
             { -1, 0, 1 }
         };
-        return image.Convolve(data);
+        return bitmap.Convolve(data);
     }
 
     public CarSnapshotGraph Histogram(Bitmap bitmap)

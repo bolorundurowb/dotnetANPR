@@ -2,8 +2,7 @@
 
 using DotNetANPR;
 
-const string sourceFilePath = "/Users/bolorundurowb/Downloads/snapshots/test_093.jpg";
-const string reportPath = "/Users/bolorundurowb/Downloads/report";
+const string sourceFilePath = "";
 var result = ANPR.Recognize(sourceFilePath);
 
 Console.WriteLine("The result is: " + result);

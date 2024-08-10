@@ -57,8 +57,6 @@ public class Plate : Photo, ICloneable
             characters.Add(character);
         }
 
-        characters.ForEach(x => x.Save($"/Users/bolorundurowb/Downloads/{Guid.NewGuid()}.jpg"));
-
         return characters;
     }
 

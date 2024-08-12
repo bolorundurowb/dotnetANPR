@@ -96,7 +96,7 @@ public class PixelMap
                 if (_matrix[x, y])
                     unsorted.Add(new Point(x, y));
 
-        while (!unsorted.Any())
+        while (unsorted.Any())
             pieces.Add(CreatePiece(unsorted));
 
         return pieces;
@@ -280,7 +280,7 @@ public class PixelMap
         Piece piece = [];
         PointSet stack = [];
         stack.Push(unsorted.Last());
-        while (!stack.Any())
+        while (stack.Any())
         {
             var point = stack.Pop();
             if (SeedShouldBeAdded(piece, point))

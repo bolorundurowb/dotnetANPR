@@ -20,12 +20,16 @@ public class PeakComparator(List<float> yValues) : IComparer<Peak>
     public int Compare(Peak x, Peak y) => yValues[y.Center].CompareTo(yValues[x.Center]);
 }
 
-public class SpaceComparator() : IComparer<Peak>
+public class SpaceComparator : IComparer<Peak>
 {
-    public int Compare(Peak peak1, Peak peak2) => peak2.Center - peak1.Center switch
+    public int Compare(Peak peak1, Peak peak2)
     {
-        < 0 => 1,
-        > 0 => -1,
-        _ => 0
-    };
+        double comparison = peak2.Center - peak1.Center;
+        return comparison switch
+        {
+            < 0 => 1,
+            > 0 => -1,
+            _ => 0
+        };
+    }
 }

@@ -15,22 +15,23 @@ public class Statistics
         var height = photo.Height;
 
         for (var x = 0; x < width; x++)
-            for (var y = 0; y < height; y++)
-            {
-                var pixelValue = photo.GetBrightness(x, y);
-                _maximum = Math.Max(pixelValue, _maximum);
-                _minimum = Math.Min(pixelValue, _minimum);
-                sum += pixelValue;
-            }
+        for (var y = 0; y < height; y++)
+        {
+            var pixelValue = photo.GetBrightness(x, y);
+            _maximum = Math.Max(pixelValue, _maximum);
+            _minimum = Math.Min(pixelValue, _minimum);
+            sum += pixelValue;
+        }
 
         _average = sum / (width * height);
     }
 
     public float ThresholdBrightness(float value, float coefficient)
     {
-        if (value > _average)
-            return coefficient + (1 - coefficient) * (value - _average) / (_maximum - _average);
+        var threshold = (value > _average)
+            ? coefficient + (1 - coefficient) * (value - _average) / (_maximum - _average)
+            : (1 - coefficient) * (value - _minimum) / (_average - _minimum);
 
-        return (1 - coefficient) * (value - _minimum) / (_average - _minimum);
+        return float.IsNaN(threshold) ? 0 : threshold;
     }
 }

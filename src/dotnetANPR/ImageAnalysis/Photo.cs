@@ -47,7 +47,7 @@ public class Photo(Bitmap image) : IDisposable, ICloneable
     public static float GetHue(Bitmap image, int x, int y)
     {
         var color = image.GetPixel(x, y);
-        return Color.FromArgb(color.R, color.G, color.B).GetHue();
+        return Color.FromArgb(color.R, color.G, color.B).GetHue() / 360f;
     }
 
     public static Bitmap LinearResizeImage(Bitmap origin, int width, int height)

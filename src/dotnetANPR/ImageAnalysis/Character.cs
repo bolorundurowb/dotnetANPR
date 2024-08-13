@@ -12,7 +12,10 @@ namespace DotNetANPR.ImageAnalysis;
 
 public class Character : Photo
 {
-    public bool Normalized;
+    private bool Normalized;
+    private readonly Bitmap ThresholdedImage;
+    private PixelMap PixelMap => new(this);
+    
     public PositionInPlate? PositionInPlate;
 
     public int FullWidth, FullHeight, PieceWidth, PieceHeight;
@@ -24,9 +27,6 @@ public class Character : Photo
     public float StatisticAverageHue;
     public float StatisticAverageSaturation;
 
-    public readonly Bitmap ThresholdedImage;
-
-    public PixelMap PixelMap => new(this);
 
     public Character(string fileName) : base(new Bitmap(fileName))
     {
@@ -37,8 +37,6 @@ public class Character : Photo
 
         Init();
     }
-
-    public Character(Bitmap image) : this(image, image, null) { }
 
     public Character(Bitmap image, Bitmap thresholdedImage, PositionInPlate? positionInPlate) : base(image)
     {
@@ -86,49 +84,6 @@ public class Character : Photo
         Normalized = true;
     }
 
-    public List<double> ExtractEdgeFeatures()
-    {
-        var width = Image.Width;
-        var height = Image.Height;
-        var array = BitmapToArrayWithBounds(Image, width, height);
-        width += 2; // add edges
-        height += 2;
-        var features = CharacterRecognizer.Features;
-        var output = new double[features.Length * 4];
-
-        for (var f = 0; f < features.Length; f++)
-            for (var my = 0; my < height - 1; my++)
-                for (var mx = 0; mx < width - 1; mx++)
-                {
-                    double featureMatch = 0;
-                    featureMatch += Math.Abs(array[mx, my] - features[f][0]);
-                    featureMatch += Math.Abs(array[mx + 1, my] - features[f][1]);
-                    featureMatch += Math.Abs(array[mx, my + 1] - features[f][2]);
-                    featureMatch += Math.Abs(array[mx + 1, my + 1] - features[f][3]);
-
-                    var bias = 0;
-                    if (mx >= width / 2)
-                        bias += features.Length; // if we are in the right quadrant, move the bias by one class
-
-                    if (my >= height / 2)
-                        bias += features.Length * 2; // if we are in the left quadrant, move the bias by two classes
-
-                    output[bias + f] += featureMatch < 0.05 ? 1 : 0;
-                }
-
-        return output.ToList();
-    }
-
-    public List<double> ExtractMapFeatures()
-    {
-        List<double> vectorInput = [];
-        for (var y = 0; y < Height; y++)
-            for (var x = 0; x < Width; x++)
-                vectorInput.Add(GetBrightness(x, y));
-
-        return vectorInput;
-    }
-
     public List<double> ExtractFeatures()
     {
         var featureExtractionMethod = Configurator.Instance.Get<int>("char_featuresExtractionMethod");
@@ -141,6 +96,49 @@ public class Character : Photo
     {
         FullHeight = Height;
         FullWidth = Width;
+    }
+
+    private List<double> ExtractEdgeFeatures()
+    {
+        var width = Image.Width;
+        var height = Image.Height;
+        var array = BitmapToArrayWithBounds(Image, width, height);
+        width += 2; // add edges
+        height += 2;
+        var features = CharacterRecognizer.Features;
+        var output = new double[features.Length * 4];
+
+        for (var f = 0; f < features.Length; f++)
+        for (var my = 0; my < height - 1; my++)
+        for (var mx = 0; mx < width - 1; mx++)
+        {
+            double featureMatch = 0;
+            featureMatch += Math.Abs(array[mx, my] - features[f, 0]);
+            featureMatch += Math.Abs(array[mx + 1, my] - features[f, 1]);
+            featureMatch += Math.Abs(array[mx, my + 1] - features[f, 2]);
+            featureMatch += Math.Abs(array[mx + 1, my + 1] - features[f, 3]);
+
+            var bias = 0;
+            if (mx >= width / 2)
+                bias += features.Length; // if we are in the right quadrant, move the bias by one class
+
+            if (my >= height / 2)
+                bias += features.Length * 2; // if we are in the left quadrant, move the bias by two classes
+
+            output[bias + f] += featureMatch < 0.05 ? 1 : 0;
+        }
+
+        return output.ToList();
+    }
+
+    private List<double> ExtractMapFeatures()
+    {
+        List<double> vectorInput = [];
+        for (var y = 0; y < Height; y++)
+        for (var x = 0; x < Width; x++)
+            vectorInput.Add(GetBrightness(x, y));
+
+        return vectorInput;
     }
 
     private static string Suffix(string directoryName)
@@ -180,8 +178,8 @@ public class Character : Photo
         var w = bi.Width;
         var h = bi.Height;
         for (var x = 0; x < w; x++)
-            for (var y = 0; y < h; y++)
-                sum += Math.Abs(StatisticAverageBrightness - GetBrightness(bi, x, y));
+        for (var y = 0; y < h; y++)
+            sum += Math.Abs(StatisticAverageBrightness - GetBrightness(bi, x, y));
 
         StatisticContrast = sum / (w * h);
     }
@@ -195,13 +193,13 @@ public class Character : Photo
         var w = bi.Width;
         var h = bi.Height;
         for (var x = 0; x < w; x++)
-            for (var y = 0; y < h; y++)
-            {
-                var value = GetBrightness(bi, x, y);
-                sum += value;
-                min = Math.Min(min, value);
-                max = Math.Max(max, value);
-            }
+        for (var y = 0; y < h; y++)
+        {
+            var value = GetBrightness(bi, x, y);
+            sum += value;
+            min = Math.Min(min, value);
+            max = Math.Max(max, value);
+        }
 
         StatisticAverageBrightness = sum / (w * h);
         StatisticMinimumBrightness = min;
@@ -214,8 +212,8 @@ public class Character : Photo
         var w = bi.Width;
         var h = bi.Height;
         for (var x = 0; x < w; x++)
-            for (var y = 0; y < h; y++)
-                sum += GetHue(bi, x, y);
+        for (var y = 0; y < h; y++)
+            sum += GetHue(bi, x, y);
 
         StatisticAverageHue = sum / (w * h);
     }
@@ -226,8 +224,8 @@ public class Character : Photo
         var w = bi.Width;
         var h = bi.Height;
         for (var x = 0; x < w; x++)
-            for (var y = 0; y < h; y++)
-                sum += GetSaturation(bi, x, y);
+        for (var y = 0; y < h; y++)
+            sum += GetSaturation(bi, x, y);
 
         StatisticAverageSaturation = sum / (w * h);
     }

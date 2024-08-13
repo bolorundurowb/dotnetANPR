@@ -44,21 +44,21 @@ public abstract class CharacterRecognizer
         'Z'
     ];
 
-    public static readonly float[][] Features =
-    [
-        [0, 1, 0, 1], // 0
-        [1, 0, 1, 0], // 1
-        [0, 0, 1, 1], // 2
-        [1, 1, 0, 0], // 3
-        [0, 0, 0, 1], // 4
-        [1, 0, 0, 0], // 5
-        [1, 1, 1, 0], // 6
-        [0, 1, 1, 1], // 7
-        [0, 0, 1, 0], // 8
-        [0, 1, 0, 0], // 9
-        [1, 0, 1, 1], // 10
-        [1, 1, 0, 1]  // 11
-    ];
+    public static readonly float[,] Features =
+    {
+        { 0, 1, 0, 1 }, // 0
+        { 1, 0, 1, 0 }, // 1
+        { 0, 0, 1, 1 }, // 2
+        { 1, 1, 0, 0 }, // 3
+        { 0, 0, 0, 1 }, // 4
+        { 1, 0, 0, 0 }, // 5
+        { 1, 1, 1, 0 }, // 6
+        { 0, 1, 1, 1 }, // 7
+        { 0, 0, 1, 0 }, // 8
+        { 0, 1, 0, 0 }, // 9
+        { 1, 0, 1, 1 }, // 10
+        { 1, 1, 0, 1 }  // 11
+    };
 
     public abstract RecognizedCharacter Recognize(Character character);
 }

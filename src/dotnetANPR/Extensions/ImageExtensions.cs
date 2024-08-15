@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Drawing;
+using ImageMagick;
 
 namespace DotNetANPR.Extensions;
 
-internal static class BitmapExtensions
+internal static class ImageExtensions
 {
     private static T Clamp<T>(T value, T min, T max) where T : IComparable
     {
@@ -16,12 +17,12 @@ internal static class BitmapExtensions
         return value;
     }
 
-    public static Bitmap Convolve(this Bitmap image, float[,] kernel)
+    public static MagickImage Convolve(this MagickImage image, float[,] kernel)
     {
         var kernelSize = (int)Math.Sqrt(kernel.Length);
         var kernelOffset = kernelSize / 2;
 
-        var result = new Bitmap(image.Width, image.Height);
+        var result = new MagickImage(image.Width, image.Height);
 
         for (var y = 0; y < image.Height; y++)
         {
@@ -54,7 +55,7 @@ internal static class BitmapExtensions
         return result;
     }
 
-    public static Bitmap SubImage(this Bitmap source, int x, int y, int width, int height)
+    public static MagickImage SubImage(this MagickImage source, int x, int y, int width, int height)
     {
         var rect = new Rectangle(x, y, width, height);
         return source.Clone(rect, source.PixelFormat);

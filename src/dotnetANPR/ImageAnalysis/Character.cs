@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using DotNetANPR.Configuration;
-using DotNetANPR.Extensions;
 using DotNetANPR.Recognizer;
 
 namespace DotNetANPR.ImageAnalysis;
@@ -24,13 +21,13 @@ public class Character : Photo
     public float StatisticAverageHue;
     public float StatisticAverageSaturation;
 
-    public readonly Bitmap ThresholdedImage;
+    public readonly MagickImage ThresholdedImage;
 
     public PixelMap PixelMap => new(this);
 
-    public Character(string fileName) : base(new Bitmap(fileName))
+    public Character(string fileName) : base(new MagickImage(fileName))
     {
-        var origin = DuplicateBitmap(Image);
+        var origin = DuplicateMagickImage(Image);
         AdaptiveThresholding();
         ThresholdedImage = Image;
         Image = origin;
@@ -38,9 +35,9 @@ public class Character : Photo
         Init();
     }
 
-    public Character(Bitmap image) : this(image, image, null) { }
+    public Character(MagickImage image) : this(image, image, null) { }
 
-    public Character(Bitmap image, Bitmap thresholdedImage, PositionInPlate? positionInPlate) : base(image)
+    public Character(MagickImage image, MagickImage thresholdedImage, PositionInPlate? positionInPlate) : base(image)
     {
         ThresholdedImage = thresholdedImage;
         PositionInPlate = positionInPlate;
@@ -66,7 +63,7 @@ public class Character : Photo
         if (Normalized)
             return;
 
-        var colorImage = DuplicateBitmap(Image);
+        var colorImage = DuplicateMagickImage(Image);
         Image = ThresholdedImage;
         var pixelMap = PixelMap;
         var bestPiece = pixelMap.BestPiece();
@@ -78,7 +75,7 @@ public class Character : Photo
         ComputeStatisticHue(colorImage);
         ComputeStatisticSaturation(colorImage);
 
-        Image = bestPiece.Render() ?? new Bitmap(1, 1, PixelFormat.Format24bppRgb);
+        Image = bestPiece.Render() ?? new MagickImage(1, 1, PixelFormat.Format24bppRgb);
 
         PieceWidth = Width;
         PieceHeight = Height;
@@ -90,7 +87,7 @@ public class Character : Photo
     {
         var width = Image.Width;
         var height = Image.Height;
-        var array = BitmapToArrayWithBounds(Image, width, height);
+        var array = MagickImageToArrayWithBounds(Image, width, height);
         width += 2; // add edges
         height += 2;
         var features = CharacterRecognizer.Features;
@@ -149,7 +146,7 @@ public class Character : Photo
         return directoryName.Substring(directoryName.LastIndexOf('_'));
     }
 
-    private Bitmap BestPieceInFullColor(Bitmap bi, PixelMap.Piece piece)
+    private MagickImage BestPieceInFullColor(MagickImage bi, PixelMap.Piece piece)
     {
         if (piece.Width <= 0 || piece.Height <= 0)
             return bi;
@@ -174,7 +171,7 @@ public class Character : Photo
         NormalizeBrightness(0.5f);
     }
 
-    private void ComputeStatisticContrast(Bitmap bi)
+    private void ComputeStatisticContrast(MagickImage bi)
     {
         float sum = 0;
         var w = bi.Width;
@@ -186,7 +183,7 @@ public class Character : Photo
         StatisticContrast = sum / (w * h);
     }
 
-    private void ComputeStatisticBrightness(Bitmap bi)
+    private void ComputeStatisticBrightness(MagickImage bi)
     {
         float sum = 0;
         var min = float.PositiveInfinity;
@@ -208,7 +205,7 @@ public class Character : Photo
         StatisticMaximumBrightness = max;
     }
 
-    private void ComputeStatisticHue(Bitmap bi)
+    private void ComputeStatisticHue(MagickImage bi)
     {
         float sum = 0;
         var w = bi.Width;
@@ -220,7 +217,7 @@ public class Character : Photo
         StatisticAverageHue = sum / (w * h);
     }
 
-    private void ComputeStatisticSaturation(Bitmap bi)
+    private void ComputeStatisticSaturation(MagickImage bi)
     {
         float sum = 0;
         var w = bi.Width;

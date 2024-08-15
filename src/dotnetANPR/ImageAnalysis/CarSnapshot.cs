@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
-using System.Drawing;
 using DotNetANPR.Configuration;
 using DotNetANPR.Extensions;
+using ImageMagick;
 
 namespace DotNetANPR.ImageAnalysis;
 
-public class CarSnapshot(Bitmap image) : Photo(image)
+public class CarSnapshot(MagickImage image) : Photo(image)
 {
     private static readonly int DistributorMargins =
         Configurator.Instance.Get<int>("carsnapshot_distributormargins");
@@ -21,7 +21,7 @@ public class CarSnapshot(Bitmap image) : Photo(image)
 
     private CarSnapshotGraph? _graphHandle;
 
-    public Bitmap RenderGraph()
+    public MagickImage RenderGraph()
     {
         ComputeGraph();
         return _graphHandle!.RenderVertically(100, Height);
@@ -42,7 +42,7 @@ public class CarSnapshot(Bitmap image) : Photo(image)
         return response;
     }
 
-    public Bitmap VerticalEdge(Bitmap bitmap)
+    public MagickImage VerticalEdge(MagickImage bitmap)
     {
         float[,] data = {
             { -1, 0, 1 },
@@ -53,7 +53,7 @@ public class CarSnapshot(Bitmap image) : Photo(image)
         return bitmap.Convolve(data);
     }
 
-    public CarSnapshotGraph Histogram(Bitmap bitmap)
+    public CarSnapshotGraph Histogram(MagickImage bitmap)
     {
         var graph = new CarSnapshotGraph();
         for (var y = 0; y < bitmap.Height; y++)
@@ -72,7 +72,7 @@ public class CarSnapshot(Bitmap image) : Photo(image)
     {
         if (_graphHandle == null)
         {
-            var imageCopy = DuplicateBitmap(Image);
+            var imageCopy = DuplicateMagickImage(Image);
             imageCopy = VerticalEdge(imageCopy);
             Thresholding(imageCopy);
 

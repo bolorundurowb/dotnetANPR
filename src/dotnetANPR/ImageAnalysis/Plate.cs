@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using DotNetANPR.Configuration;
 using DotNetANPR.Extensions;
+using ImageMagick;
 
 namespace DotNetANPR.ImageAnalysis;
 
@@ -18,11 +18,11 @@ public class Plate : Photo, ICloneable
     private Plate? _plateCopy; // TODO refactor: remove this variable completely
     private PlateGraph? _graphHandle;
 
-    public Plate(Bitmap image, bool isCopy = false) : base(image)
+    public Plate(MagickImage image, bool isCopy = false) : base(image)
     {
         if (!isCopy)
         {
-            _plateCopy = new Plate(DuplicateBitmap(Image), true);
+            _plateCopy = new Plate(DuplicateMagickImage(Image), true);
             _plateCopy.AdaptiveThresholding();
         }
         else
@@ -31,9 +31,9 @@ public class Plate : Photo, ICloneable
         }
     }
 
-    public new object Clone() => new Plate(DuplicateBitmap(Image));
+    public new object Clone() => new Plate(DuplicateMagickImage(Image));
 
-    public Bitmap RenderGraph()
+    public MagickImage RenderGraph()
     {
         ComputeGraph();
         return _graphHandle!.RenderHorizontally(Width, 100);
@@ -77,7 +77,7 @@ public class Plate : Photo, ICloneable
         _plateCopy.Image = CutLeftRight(_plateCopy.Image, horizontal);
     }
 
-    public PlateGraph Histogram(Bitmap bi)
+    public PlateGraph Histogram(MagickImage bi)
     {
         var graph = new PlateGraph(this);
         for (var x = 0; x < bi.Width; x++)
@@ -92,13 +92,13 @@ public class Plate : Photo, ICloneable
         return graph;
     }
 
-    public Bitmap VerticalEdgeDetector(Bitmap source)
+    public MagickImage VerticalEdgeDetector(MagickImage source)
     {
         float[,] matrix = { { -1, 0, 1 } };
         return source.Convolve(matrix);
     }
 
-    public Bitmap HorizontalEdgeDetector(Bitmap source)
+    public MagickImage HorizontalEdgeDetector(MagickImage source)
     {
         float[,] matrix = { { -1, -2, -1 }, { 0, 0, 0 }, { 1, 2, 1 } };
         return source.Convolve(matrix);
@@ -167,14 +167,14 @@ public class Plate : Photo, ICloneable
         return _graphHandle.Peaks;
     }
 
-    private Bitmap CutTopBottom(Bitmap origin, PlateVerticalGraph graph)
+    private MagickImage CutTopBottom(MagickImage origin, PlateVerticalGraph graph)
     {
         graph.ApplyProbabilityDistributor(new ProbabilityDistributor(0f, 0f, 2, 2));
         var p = graph.FindPeak(3)[0];
         return origin.SubImage(0, p.Left, Image.Width, p.Diff);
     }
 
-    private Bitmap CutLeftRight(Bitmap origin, PlateHorizontalGraph graph)
+    private MagickImage CutLeftRight(MagickImage origin, PlateHorizontalGraph graph)
     {
         graph.ApplyProbabilityDistributor(new ProbabilityDistributor(0f, 0f, 2, 2));
         var peaks = graph.FindPeak();
@@ -188,7 +188,7 @@ public class Plate : Photo, ICloneable
         return origin;
     }
 
-    private PlateVerticalGraph HistogramYaxis(Bitmap bi)
+    private PlateVerticalGraph HistogramYaxis(MagickImage bi)
     {
         var graph = new PlateVerticalGraph();
         for (var y = 0; y < bi.Height; y++)
@@ -202,7 +202,7 @@ public class Plate : Photo, ICloneable
         return graph;
     }
 
-    private PlateHorizontalGraph HistogramXAxis(Bitmap bi)
+    private PlateHorizontalGraph HistogramXAxis(MagickImage bi)
     {
         var graph = new PlateHorizontalGraph();
         for (var x = 0; x < bi.Width; x++)

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Linq;
+using ImageMagick;
 
 namespace DotNetANPR.ImageAnalysis;
 
@@ -163,11 +163,11 @@ public class Graph
         return maxIndex;
     }
 
-    public Bitmap RenderHorizontally(int width, int height)
+    public MagickImage RenderHorizontally(int width, int height)
     {
         // Create images
-        var content = new Bitmap(width, height);
-        var axis = new Bitmap(width + 40, height + 40);
+        var content = new MagickImage(width, height);
+        var axis = new MagickImage(width + 40, height + 40);
 
         using var graphicContent = Graphics.FromImage(content);
         using var graphicAxis = Graphics.FromImage(axis);
@@ -237,11 +237,11 @@ public class Graph
         return axis;
     }
 
-    public Bitmap RenderVertically(int width, int height)
+    public MagickImage RenderVertically(int width, int height)
     {
         // Create images
-        var content = new Bitmap(width, height);
-        var axis = new Bitmap(width + 10, height + 40);
+        var content = new MagickImage(width, height);
+        var axis = new MagickImage(width + 10, height + 40);
 
         using var graphicContent = Graphics.FromImage(content);
         using var graphicAxis = Graphics.FromImage(axis);

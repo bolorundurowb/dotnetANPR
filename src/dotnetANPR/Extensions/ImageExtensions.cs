@@ -19,10 +19,12 @@ internal static class ImageExtensions
 
     public static MagickImage Convolve(this MagickImage image, float[,] kernel)
     {
+        double[] convertedKernel = [];
+        return image.Convolve(convertedKernel);
         var kernelSize = (int)Math.Sqrt(kernel.Length);
         var kernelOffset = kernelSize / 2;
 
-        var result = new MagickImage(image.Width, image.Height);
+        var result = new MagickImage(MagickColors.White, image.Width, image.Height);
 
         for (var y = 0; y < image.Height; y++)
         {
@@ -59,5 +61,26 @@ internal static class ImageExtensions
     {
         var rect = new Rectangle(x, y, width, height);
         return source.Clone(rect, source.PixelFormat);
+    }
+
+    public static void SetPixel(this MagickImage image, int x, int y, MagickColors colour)
+    {
+        var pixels = image.GetWritablePixels()
+    }
+}
+
+class MagickConvolveMatrix : IConvolveMatrix
+{
+    public double GetValue(int x, int y) => throw new NotImplementedException();
+    public void SetColumn(int x, params double[] values) { throw new NotImplementedException(); }
+    public void SetRow(int y, params double[] values) { throw new NotImplementedException(); }
+    public void SetValue(int x, int y, double value) { throw new NotImplementedException(); }
+    public double[] ToArray() => throw new NotImplementedException();
+    public int Order { get; }
+
+    public double this[int x, int y]
+    {
+        get => throw new NotImplementedException();
+        set => throw new NotImplementedException();
     }
 }

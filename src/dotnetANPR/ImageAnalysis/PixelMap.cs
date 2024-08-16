@@ -17,9 +17,13 @@ public class PixelMap
 
     public MagickImage Render()
     {
-        var image = new MagickImage(_width, _height, PixelFormat.Format24bppRgb);
+        var image = new MagickImage(MagickColors.White, _width, _height);
         for (var x = 0; x < _width; x++)
             for (var y = 0; y < _height; y++)
+                if (_matrix[x, y])
+                {
+                    
+                }
                 image.SetPixel(x, y, _matrix[x, y] ? Color.Black : Color.White);
 
         return image;

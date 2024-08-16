@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Drawing;
+
 using DotNetANPR.Configuration;
 using DotNetANPR.ImageAnalysis;
 using DotNetANPR.Recognizer;

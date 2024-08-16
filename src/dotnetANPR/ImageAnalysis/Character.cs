@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using DotNetANPR.Configuration;
+using DotNetANPR.Extensions;
 using DotNetANPR.Recognizer;
+using SkiaSharp;
 
 namespace DotNetANPR.ImageAnalysis;
 
@@ -25,7 +27,7 @@ public class Character : Photo
 
     public PixelMap PixelMap => new(this);
 
-    public Character(string fileName) : base(new SKBitmap(fileName))
+    public Character(string fileName) : base(SKBitmap.Decode(fileName))
     {
         var origin = DuplicateSKBitmap(Image);
         AdaptiveThresholding();
@@ -75,7 +77,7 @@ public class Character : Photo
         ComputeStatisticHue(colorImage);
         ComputeStatisticSaturation(colorImage);
 
-        Image = bestPiece.Render() ?? new SKBitmap(1, 1, PixelFormat.Format24bppRgb);
+        Image = bestPiece.Render() ?? new SKBitmap(1, 1, SKColorType.Rgb888x, SKAlphaType.Opaque);
 
         PieceWidth = Width;
         PieceHeight = Height;
@@ -94,24 +96,24 @@ public class Character : Photo
         var output = new double[features.Length * 4];
 
         for (var f = 0; f < features.Length; f++)
-            for (var my = 0; my < height - 1; my++)
-                for (var mx = 0; mx < width - 1; mx++)
-                {
-                    double featureMatch = 0;
-                    featureMatch += Math.Abs(array[mx, my] - features[f][0]);
-                    featureMatch += Math.Abs(array[mx + 1, my] - features[f][1]);
-                    featureMatch += Math.Abs(array[mx, my + 1] - features[f][2]);
-                    featureMatch += Math.Abs(array[mx + 1, my + 1] - features[f][3]);
+        for (var my = 0; my < height - 1; my++)
+        for (var mx = 0; mx < width - 1; mx++)
+        {
+            double featureMatch = 0;
+            featureMatch += Math.Abs(array[mx, my] - features[f][0]);
+            featureMatch += Math.Abs(array[mx + 1, my] - features[f][1]);
+            featureMatch += Math.Abs(array[mx, my + 1] - features[f][2]);
+            featureMatch += Math.Abs(array[mx + 1, my + 1] - features[f][3]);
 
-                    var bias = 0;
-                    if (mx >= width / 2)
-                        bias += features.Length; // if we are in the right quadrant, move the bias by one class
+            var bias = 0;
+            if (mx >= width / 2)
+                bias += features.Length; // if we are in the right quadrant, move the bias by one class
 
-                    if (my >= height / 2)
-                        bias += features.Length * 2; // if we are in the left quadrant, move the bias by two classes
+            if (my >= height / 2)
+                bias += features.Length * 2; // if we are in the left quadrant, move the bias by two classes
 
-                    output[bias + f] += featureMatch < 0.05 ? 1 : 0;
-                }
+            output[bias + f] += featureMatch < 0.05 ? 1 : 0;
+        }
 
         return output.ToList();
     }
@@ -120,8 +122,8 @@ public class Character : Photo
     {
         List<double> vectorInput = [];
         for (var y = 0; y < Height; y++)
-            for (var x = 0; x < Width; x++)
-                vectorInput.Add(GetBrightness(x, y));
+        for (var x = 0; x < Width; x++)
+            vectorInput.Add(GetBrightness(x, y));
 
         return vectorInput;
     }
@@ -177,8 +179,8 @@ public class Character : Photo
         var w = bi.Width;
         var h = bi.Height;
         for (var x = 0; x < w; x++)
-            for (var y = 0; y < h; y++)
-                sum += Math.Abs(StatisticAverageBrightness - GetBrightness(bi, x, y));
+        for (var y = 0; y < h; y++)
+            sum += Math.Abs(StatisticAverageBrightness - GetBrightness(bi, x, y));
 
         StatisticContrast = sum / (w * h);
     }
@@ -192,13 +194,13 @@ public class Character : Photo
         var w = bi.Width;
         var h = bi.Height;
         for (var x = 0; x < w; x++)
-            for (var y = 0; y < h; y++)
-            {
-                var value = GetBrightness(bi, x, y);
-                sum += value;
-                min = Math.Min(min, value);
-                max = Math.Max(max, value);
-            }
+        for (var y = 0; y < h; y++)
+        {
+            var value = GetBrightness(bi, x, y);
+            sum += value;
+            min = Math.Min(min, value);
+            max = Math.Max(max, value);
+        }
 
         StatisticAverageBrightness = sum / (w * h);
         StatisticMinimumBrightness = min;
@@ -211,8 +213,8 @@ public class Character : Photo
         var w = bi.Width;
         var h = bi.Height;
         for (var x = 0; x < w; x++)
-            for (var y = 0; y < h; y++)
-                sum += GetHue(bi, x, y);
+        for (var y = 0; y < h; y++)
+            sum += GetHue(bi, x, y);
 
         StatisticAverageHue = sum / (w * h);
     }
@@ -223,8 +225,8 @@ public class Character : Photo
         var w = bi.Width;
         var h = bi.Height;
         for (var x = 0; x < w; x++)
-            for (var y = 0; y < h; y++)
-                sum += GetSaturation(bi, x, y);
+        for (var y = 0; y < h; y++)
+            sum += GetSaturation(bi, x, y);
 
         StatisticAverageSaturation = sum / (w * h);
     }

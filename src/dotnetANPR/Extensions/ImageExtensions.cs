@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Drawing;
 using SkiaSharp;
 
 namespace DotNetANPR.Extensions;
@@ -48,7 +47,7 @@ internal static class ImageExtensions
                 g = Clamp(g, 0, 255);
                 b = Clamp(b, 0, 255);
 
-                result.SetPixel(x, y, Color.FromArgb((int)r, (int)g, (int)b));
+                result.SetPixel(x, y, SKColors.FromArgb((int)r, (int)g, (int)b));
             }
         }
 
@@ -59,26 +58,5 @@ internal static class ImageExtensions
     {
         var rect = new Rectangle(x, y, width, height);
         return source.Clone(rect, source.PixelFormat);
-    }
-
-    public static void SetPixel(this SKBitmap image, int x, int y, MagickColors colour)
-    {
-        var pixels = image.GetWritablePixels()
-    }
-}
-
-class MagickConvolveMatrix : IConvolveMatrix
-{
-    public double GetValue(int x, int y) => throw new NotImplementedException();
-    public void SetColumn(int x, params double[] values) { throw new NotImplementedException(); }
-    public void SetRow(int y, params double[] values) { throw new NotImplementedException(); }
-    public void SetValue(int x, int y, double value) { throw new NotImplementedException(); }
-    public double[] ToArray() => throw new NotImplementedException();
-    public int Order { get; }
-
-    public double this[int x, int y]
-    {
-        get => throw new NotImplementedException();
-        set => throw new NotImplementedException();
     }
 }

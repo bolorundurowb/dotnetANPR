@@ -1,6 +1,7 @@
 ﻿using System;
-using System.Drawing;
+
 using DotNetANPR.Extensions;
+using SkiaSharp;
 
 namespace DotNetANPR.ImageAnalysis;
 
@@ -95,8 +96,8 @@ public class HoughTransformation
 
                 output.SetPixel(x, y,
                     colorType == ColorType.BlackAndWhite
-                        ? Color.FromArgb(value, value, value)
-                        : ColorExtensions.HsbToRgb(0.67f - (float)value / 255 * 2 / 3, 1.0f, 1.0f));
+                        ? SKColors.FromArgb(value, value, value)
+                        : SKColor.FromHsv(0.67f - (float)value / 255 * 2 / 3, 1.0f, 1.0f));
             }
 
         var maximumPoint = FindMaxPoint();

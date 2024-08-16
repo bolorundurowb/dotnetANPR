@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DotNetANPR.Configuration;
 using DotNetANPR.Extensions;
+using SkiaSharp;
 
 namespace DotNetANPR.ImageAnalysis;
 

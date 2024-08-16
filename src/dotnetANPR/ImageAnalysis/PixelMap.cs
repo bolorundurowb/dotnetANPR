@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
+using SkiaSharp;
 
 namespace DotNetANPR.ImageAnalysis;
 
@@ -16,14 +16,10 @@ public class PixelMap
 
     public SKBitmap Render()
     {
-        var image = new SKBitmap(MagickColors.White, _width, _height);
+        var image = new SKBitmap(_width, _height);
         for (var x = 0; x < _width; x++)
             for (var y = 0; y < _height; y++)
-                if (_matrix[x, y])
-                {
-                    
-                }
-                image.SetPixel(x, y, _matrix[x, y] ? Color.Black : Color.White);
+                image.SetPixel(x, y, _matrix[x, y] ? SKColors.Black : SKColors.White);
 
         return image;
     }
@@ -397,7 +393,7 @@ public class PixelMap
 
             for (var x = MostLeftPoint; x <= MostRightPoint; x++)
                 for (var y = MostTopPoint; y <= MostBottomPoint; y++)
-                    image.SetPixel(x - MostLeftPoint, y - MostTopPoint, _matrix[x, y] ? Color.Black : Color.White);
+                    image.SetPixel(x - MostLeftPoint, y - MostTopPoint, _matrix[x, y] ? SKColors.Black : SKColors.White);
 
             return image;
         }

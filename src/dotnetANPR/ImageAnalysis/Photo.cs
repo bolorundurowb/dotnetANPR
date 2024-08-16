@@ -1,6 +1,7 @@
 ﻿using System;
-using System.Drawing;
+
 using DotNetANPR.Configuration;
+using SkiaSharp;
 
 namespace DotNetANPR.ImageAnalysis;
 
@@ -26,26 +27,26 @@ public class Photo(SKBitmap image) : IDisposable, ICloneable
 
     public static void SetBrightness(SKBitmap image, int x, int y, float value)
     {
-        var brightness = (int)(value * 255);
-        image.SetPixel(x, y, Color.FromArgb(brightness, brightness, brightness));
+        var brightness = (byte)(value * 255);
+        image.SetPixel(x, y, new SKColor(brightness, brightness, brightness));
     }
 
     public static float GetBrightness(SKBitmap image, int x, int y)
     {
         var color = image.GetPixel(x, y);
-        return Color.FromArgb(color.R, color.G, color.B).GetBrightness();
+        return new SKColor(color.R, color.G, color.B).GetBrightness();
     }
 
     public static float GetSaturation(SKBitmap image, int x, int y)
     {
         var color = image.GetPixel(x, y);
-        return Color.FromArgb(color.R, color.G, color.B).GetSaturation();
+        return new SKColor(color.R, color.G, color.B).GetSaturation();
     }
 
     public static float GetHue(SKBitmap image, int x, int y)
     {
         var color = image.GetPixel(x, y);
-        return Color.FromArgb(color.R, color.G, color.B).GetHue() / 360f;
+        return new SKColor(color.R, color.G, color.B).GetHue() / 360f;
     }
 
     public static SKBitmap LinearResizeImage(SKBitmap origin, int width, int height)
@@ -153,7 +154,7 @@ public class Photo(SKBitmap image) : IDisposable, ICloneable
 
     public void SetBrightness(int x, int y, int value)
     {
-        var color = Color.FromArgb(value, value, value);
+        var color = new SKColor(value, value, value);
         image.SetPixel(x, y, color);
     }
 

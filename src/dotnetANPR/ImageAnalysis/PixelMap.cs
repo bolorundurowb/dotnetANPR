@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using ImageMagick;
 
 namespace DotNetANPR.ImageAnalysis;
 
@@ -15,9 +14,9 @@ public class PixelMap
 
     public PixelMap(Photo photo) => MatrixInit(photo);
 
-    public MagickImage Render()
+    public SKBitmap Render()
     {
-        var image = new MagickImage(MagickColors.White, _width, _height);
+        var image = new SKBitmap(MagickColors.White, _width, _height);
         for (var x = 0; x < _width; x++)
             for (var y = 0; y < _height; y++)
                 if (_matrix[x, y])
@@ -389,12 +388,12 @@ public class PixelMap
         public int Height { get; set; }
 
 
-        public MagickImage? Render()
+        public SKBitmap? Render()
         {
             if (NumberOfAllPoints == 0)
                 return null;
 
-            var image = new MagickImage(Width, Height);
+            var image = new SKBitmap(Width, Height);
 
             for (var x = MostLeftPoint; x <= MostRightPoint; x++)
                 for (var y = MostTopPoint; y <= MostBottomPoint; y++)

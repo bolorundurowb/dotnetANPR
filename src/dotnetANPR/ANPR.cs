@@ -4,7 +4,6 @@ using DotNetANPR.Configuration;
 using DotNetANPR.ImageAnalysis;
 using DotNetANPR.Recognizer;
 using DotNetANPR.Utilities;
-using ImageMagick;
 using Microsoft.Extensions.Logging;
 
 namespace DotNetANPR;
@@ -34,13 +33,13 @@ public class ANPR
         if (!File.Exists(imagePath))
             throw new ArgumentException("Invalid image path: " + imagePath, nameof(imagePath));
 
-        return Recognize(new MagickImage(imagePath), reportPath);
+        return Recognize(new SKBitmap(imagePath), reportPath);
     }
 
     public static string? Recognize(Stream imageStream, string? reportPath = null) =>
-        Recognize(new MagickImage(imageStream), reportPath);
+        Recognize(new SKBitmap(imageStream), reportPath);
 
-    public static string? Recognize(MagickImage image, string? reportPath = null)
+    public static string? Recognize(SKBitmap image, string? reportPath = null)
     {
         if (reportPath is not null && string.IsNullOrWhiteSpace(reportPath))
             throw new ArgumentException("Invalid report path: " + reportPath, nameof(reportPath));

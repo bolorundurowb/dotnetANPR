@@ -4,7 +4,6 @@ using DotNetANPR.Configuration;
 using DotNetANPR.ImageAnalysis;
 using DotNetANPR.Recognizer;
 using DotNetANPR.Utilities;
-using ImageMagick;
 using PS = DotNetANPR.Intelligence.Parser;
 
 namespace DotNetANPR.Intelligence;
@@ -38,7 +37,7 @@ public class Intelligence
             reportGenerator.InsertText("<span>Image height: " + carSnapshot.Height + " px</span>");
             reportGenerator.InsertText("<h2>Vertical and Horizontal plate projection</h2>");
             reportGenerator.InsertImage(carSnapshot.RenderGraph(), "snapshotgraph", 0, 0);
-            reportGenerator.InsertImage(carSnapshot.GetMagickImageWithAxes(), "snapshot", 0, 0);
+            reportGenerator.InsertImage(carSnapshot.GetSKBitmapWithAxes(), "snapshot", 0, 0);
         }
 
         foreach (var band in carSnapshot.Bands())
@@ -66,7 +65,7 @@ public class Intelligence
 
                 // Skew-related
                 Plate? notNormalizedCopy = null;
-                MagickImage? renderedHoughTransform = null;
+                SKBitmap? renderedHoughTransform = null;
                 HoughTransformation? hough = null;
                 // detection is done either: 1. because of the report generator 2. because of skew detection
                 if (generateReport || skewDetectionMode != 0)
@@ -88,7 +87,7 @@ public class Intelligence
                         shearTransform.Shear(0, (float)shearFactor);
 
                         // Create a blank image with the same dimensions as the plate image
-                        var core = new MagickImage(plate.Image.Width, plate.Image.Height);
+                        var core = new SKBitmap(plate.Image.Width, plate.Image.Height);
 
                         using (var g = Graphics.FromImage(core))
                         {
@@ -123,12 +122,12 @@ public class Intelligence
                 if (generateReport)
                 {
                     reportGenerator!.InsertText("<h2>Detected band</h2>");
-                    reportGenerator.InsertImage(band.GetMagickImageWithAxes(), "band", 0, 0);
+                    reportGenerator.InsertImage(band.GetSKBitmapWithAxes(), "band", 0, 0);
                     reportGenerator.InsertImage(band.RenderGraph(), "bandgraph", 0, 0);
                     reportGenerator.InsertText("<h2>Detected plate</h2>");
                     var plateCopy = (Plate)plate.Clone();
                     plateCopy.LinearResize(450, 90);
-                    reportGenerator.InsertImage(plateCopy.GetMagickImageWithAxes(), "plate", 0, 0);
+                    reportGenerator.InsertImage(plateCopy.GetSKBitmapWithAxes(), "plate", 0, 0);
                     reportGenerator.InsertImage(plateCopy.RenderGraph(), "plategraph", 0, 0);
                 }
 

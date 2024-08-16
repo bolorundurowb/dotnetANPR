@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using DotNetANPR.Configuration;
-using ImageMagick;
 
 namespace DotNetANPR.Utilities;
 
@@ -50,7 +49,7 @@ public class ReportGenerator
     /// <param name="cssClass">The CSS class to be applied to the image.</param>
     /// <param name="width">The width of the image.</param>
     /// <param name="height">The height of the image.</param>
-    public void InsertImage(MagickImage? image, string cssClass, int width, int height)
+    public void InsertImage(SKBitmap? image, string cssClass, int width, int height)
     {
         if (image is null)
             return;
@@ -85,7 +84,7 @@ public class ReportGenerator
     /// </summary>
     /// <param name="image">The image to be saved.</param>
     /// <param name="fileName">The name of the file where the image will be saved.</param>
-    public void SaveImage(MagickImage image, string fileName)
+    public void SaveImage(SKBitmap image, string fileName)
     {
         var fileExtension = Path.GetExtension(fileName).ToLowerInvariant();
 

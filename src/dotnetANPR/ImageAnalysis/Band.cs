@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using DotNetANPR.Configuration;
 using DotNetANPR.Extensions;
-using ImageMagick;
 
 namespace DotNetANPR.ImageAnalysis;
 
-public class Band(MagickImage image) : Photo(image)
+public class Band(SKBitmap image) : Photo(image)
 {
     private static readonly ProbabilityDistributor Distributor = new(0, 0, 25, 25);
 
@@ -15,7 +14,7 @@ public class Band(MagickImage image) : Photo(image)
 
     private BandGraph? _graphHandle;
 
-    public MagickImage RenderGraph()
+    public SKBitmap RenderGraph()
     {
         ComputeGraph();
         return _graphHandle!.RenderHorizontally(Width, 100);
@@ -25,7 +24,7 @@ public class Band(MagickImage image) : Photo(image)
     {
         if (_graphHandle == null)
         {
-            var image = DuplicateMagickImage(Image);
+            var image = DuplicateSKBitmap(Image);
             FullEdgeDetector(image);
 
             _graphHandle = Histogram(image);
@@ -50,7 +49,7 @@ public class Band(MagickImage image) : Photo(image)
         return response;
     }
 
-    public BandGraph Histogram(MagickImage bitmap)
+    public BandGraph Histogram(SKBitmap bitmap)
     {
         var graph = new BandGraph(this);
         for (var x = 0; x < bitmap.Width; x++)
@@ -65,7 +64,7 @@ public class Band(MagickImage image) : Photo(image)
         return graph;
     }
 
-    public static void FullEdgeDetector(MagickImage source)
+    public static void FullEdgeDetector(SKBitmap source)
     {
         float[,] verticalMatrix =
         {

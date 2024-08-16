@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using ImageMagick;
 
 namespace DotNetANPR.Recognizer;
 
@@ -26,11 +25,11 @@ public class RecognizedCharacter
         IsSorted = true;
     }
 
-    public MagickImage Render()
+    public SKBitmap Render()
     {
         var width = 500;
         var height = 200;
-        var histogram = new MagickImage(width + 20, height + 20);
+        var histogram = new SKBitmap(width + 20, height + 20);
         using var graphic = Graphics.FromImage(histogram);
         graphic.Clear(Color.LightGray);
         var backRect = new Rectangle(0, 0, width + 20, height + 20);

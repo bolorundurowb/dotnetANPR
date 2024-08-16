@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Drawing;
 using DotNetANPR.Configuration;
-using ImageMagick;
 
 namespace DotNetANPR.ImageAnalysis;
 
-public class Photo(MagickImage image) : IDisposable, ICloneable
+public class Photo(SKBitmap image) : IDisposable, ICloneable
 {
     public int Width => image.Width;
 
@@ -17,7 +16,7 @@ public class Photo(MagickImage image) : IDisposable, ICloneable
 
     public float Hue => GetHue(image, Width / 2, Height / 2);
 
-    public MagickImage Image
+    public SKBitmap Image
     {
         get => image;
         // TODO: fix this travesty
@@ -25,33 +24,33 @@ public class Photo(MagickImage image) : IDisposable, ICloneable
         internal set => image = value;
     }
 
-    public static void SetBrightness(MagickImage image, int x, int y, float value)
+    public static void SetBrightness(SKBitmap image, int x, int y, float value)
     {
         var brightness = (int)(value * 255);
         image.SetPixel(x, y, Color.FromArgb(brightness, brightness, brightness));
     }
 
-    public static float GetBrightness(MagickImage image, int x, int y)
+    public static float GetBrightness(SKBitmap image, int x, int y)
     {
         var color = image.GetPixel(x, y);
         return Color.FromArgb(color.R, color.G, color.B).GetBrightness();
     }
 
-    public static float GetSaturation(MagickImage image, int x, int y)
+    public static float GetSaturation(SKBitmap image, int x, int y)
     {
         var color = image.GetPixel(x, y);
         return Color.FromArgb(color.R, color.G, color.B).GetSaturation();
     }
 
-    public static float GetHue(MagickImage image, int x, int y)
+    public static float GetHue(SKBitmap image, int x, int y)
     {
         var color = image.GetPixel(x, y);
         return Color.FromArgb(color.R, color.G, color.B).GetHue() / 360f;
     }
 
-    public static MagickImage LinearResizeImage(MagickImage origin, int width, int height)
+    public static SKBitmap LinearResizeImage(SKBitmap origin, int width, int height)
     {
-        var resizedImage = new MagickImage(width, height);
+        var resizedImage = new SKBitmap(width, height);
         using var graphics = Graphics.FromImage(resizedImage);
         var xScale = (float)width / origin.Width;
         var yScale = (float)height / origin.Height;
@@ -62,16 +61,16 @@ public class Photo(MagickImage image) : IDisposable, ICloneable
         return resizedImage;
     }
 
-    public static MagickImage DuplicateMagickImage(MagickImage image)
+    public static SKBitmap DuplicateSKBitmap(SKBitmap image)
     {
-        var imageCopy = new MagickImage(image.Width, image.Height, PixelFormat.Format24bppRgb);
+        var imageCopy = new SKBitmap(image.Width, image.Height, PixelFormat.Format24bppRgb);
         using var graphics = Graphics.FromImage(imageCopy);
         graphics.DrawImage(image, 0, 0, image.Width, image.Height);
 
         return imageCopy;
     }
 
-    public static void Thresholding(MagickImage bitmap)
+    public static void Thresholding(SKBitmap bitmap)
     {
         // Define the threshold array
         var threshold = new byte[256];
@@ -105,25 +104,25 @@ public class Photo(MagickImage image) : IDisposable, ICloneable
         bitmap.UnlockBits(bmpData);
     }
 
-    public static MagickImage ArrayToMagickImage(float[,] array, int w, int h)
+    public static SKBitmap ArrayToSKBitmap(float[,] array, int w, int h)
     {
-        var bitmap = new MagickImage(w, h, PixelFormat.Format24bppRgb);
+        var bitmap = new SKBitmap(w, h, PixelFormat.Format24bppRgb);
         for (var x = 0; x < w; x++)
         for (var y = 0; y < h; y++)
             SetBrightness(bitmap, x, y, array[x, y]);
         return bitmap;
     }
 
-    public static MagickImage CreateBlankMagickImage(MagickImage image) => CreateBlankMagickImage(image.Width, image.Height);
+    public static SKBitmap CreateBlankSKBitmap(SKBitmap image) => CreateBlankSKBitmap(image.Width, image.Height);
 
-    public static MagickImage CreateBlankMagickImage(int width, int height) => new(width, height, PixelFormat.Format24bppRgb);
+    public static SKBitmap CreateBlankSKBitmap(int width, int height) => new(width, height, PixelFormat.Format24bppRgb);
 
-    public MagickImage GetMagickImageWithAxes()
+    public SKBitmap GetSKBitmapWithAxes()
     {
         var widthWithAxes = image.Width + 40;
         var heightWithAxes = image.Height + 40;
 
-        var axis = new MagickImage(widthWithAxes, heightWithAxes, PixelFormat.Format24bppRgb);
+        var axis = new SKBitmap(widthWithAxes, heightWithAxes, PixelFormat.Format24bppRgb);
         using var graphicAxis = Graphics.FromImage(axis);
         // Set the background color to light gray
         graphicAxis.Clear(Color.LightGray);
@@ -178,7 +177,7 @@ public class Photo(MagickImage image) : IDisposable, ICloneable
         }
     }
 
-    public Photo Duplicate() => new(DuplicateMagickImage(image));
+    public Photo Duplicate() => new(DuplicateSKBitmap(image));
 
     public object Clone() => Duplicate();
 
@@ -188,7 +187,7 @@ public class Photo(MagickImage image) : IDisposable, ICloneable
 
     public void AverageResize(int width, int height) { image = AverageResizeImage(image, width, height); }
 
-    public MagickImage AverageResizeImage(MagickImage origin, int width, int height)
+    public SKBitmap AverageResizeImage(SKBitmap origin, int width, int height)
     {
         // TODO: Doesn't work well for characters of size similar to the target size
         if (origin.Width < width || origin.Height < height)
@@ -199,7 +198,7 @@ public class Photo(MagickImage image) : IDisposable, ICloneable
         // Java traditionally makes images smaller with the bilinear method (linear mapping), which brings large
         // information loss. Fourier transformation would be ideal, but it is too slow.
         // Therefore we use the method of weighted average.
-        var resized = new MagickImage(width, height, PixelFormat.Format24bppRgb);
+        var resized = new SKBitmap(width, height, PixelFormat.Format24bppRgb);
         var xScale = (float)origin.Width / width;
         var yScale = (float)origin.Height / height;
 
@@ -232,7 +231,7 @@ public class Photo(MagickImage image) : IDisposable, ICloneable
 
     #endregion
 
-    public float[,] MagickImageToArray(MagickImage image, int width, int height)
+    public float[,] SKBitmapToArray(SKBitmap image, int width, int height)
     {
         var array = new float[width, height];
 
@@ -243,7 +242,7 @@ public class Photo(MagickImage image) : IDisposable, ICloneable
         return array;
     }
 
-    public float[,] MagickImageToArrayWithBounds(MagickImage image, int width, int height)
+    public float[,] SKBitmapToArrayWithBounds(SKBitmap image, int width, int height)
     {
         var array = new float[width + 2, height + 2];
 
@@ -267,12 +266,12 @@ public class Photo(MagickImage image) : IDisposable, ICloneable
         return array;
     }
 
-    public MagickImage SumMagickImages(MagickImage image1, MagickImage image2)
+    public SKBitmap SumSKBitmaps(SKBitmap image1, SKBitmap image2)
     {
         var outWidth = Math.Min(image1.Width, image2.Width);
         var outHeight = Math.Min(image1.Height, image2.Height);
 
-        var outImage = new MagickImage(outWidth, outHeight, PixelFormat.Format24bppRgb);
+        var outImage = new SKBitmap(outWidth, outHeight, PixelFormat.Format24bppRgb);
         for (var x = 0; x < outWidth; x++)
         for (var y = 0; y < outHeight; y++)
         {
@@ -309,8 +308,8 @@ public class Photo(MagickImage image) : IDisposable, ICloneable
 
         var width = image.Width;
         var height = image.Height;
-        var sourceArray = MagickImageToArray(image, width, height);
-        var destinationArray = MagickImageToArray(image, width, height);
+        var sourceArray = SKBitmapToArray(image, width, height);
+        var destinationArray = SKBitmapToArray(image, width, height);
 
         for (var x = 0; x < width; x++)
         for (var y = 0; y < height; y++)
@@ -330,7 +329,7 @@ public class Photo(MagickImage image) : IDisposable, ICloneable
             destinationArray[x, y] = destinationArray[x, y] < neighborhood ? 0f : 1f;
         }
 
-        image = ArrayToMagickImage(destinationArray, width, height);
+        image = ArrayToSKBitmap(destinationArray, width, height);
     }
 
     public HoughTransformation GetHoughTransformation()

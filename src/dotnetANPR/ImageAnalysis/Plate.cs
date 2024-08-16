@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using DotNetANPR.Configuration;
 using DotNetANPR.Extensions;
-using ImageMagick;
 
 namespace DotNetANPR.ImageAnalysis;
 
@@ -18,11 +17,11 @@ public class Plate : Photo, ICloneable
     private Plate? _plateCopy; // TODO refactor: remove this variable completely
     private PlateGraph? _graphHandle;
 
-    public Plate(MagickImage image, bool isCopy = false) : base(image)
+    public Plate(SKBitmap image, bool isCopy = false) : base(image)
     {
         if (!isCopy)
         {
-            _plateCopy = new Plate(DuplicateMagickImage(Image), true);
+            _plateCopy = new Plate(DuplicateSKBitmap(Image), true);
             _plateCopy.AdaptiveThresholding();
         }
         else
@@ -31,9 +30,9 @@ public class Plate : Photo, ICloneable
         }
     }
 
-    public new object Clone() => new Plate(DuplicateMagickImage(Image));
+    public new object Clone() => new Plate(DuplicateSKBitmap(Image));
 
-    public MagickImage RenderGraph()
+    public SKBitmap RenderGraph()
     {
         ComputeGraph();
         return _graphHandle!.RenderHorizontally(Width, 100);
@@ -77,7 +76,7 @@ public class Plate : Photo, ICloneable
         _plateCopy.Image = CutLeftRight(_plateCopy.Image, horizontal);
     }
 
-    public PlateGraph Histogram(MagickImage bi)
+    public PlateGraph Histogram(SKBitmap bi)
     {
         var graph = new PlateGraph(this);
         for (var x = 0; x < bi.Width; x++)
@@ -92,13 +91,13 @@ public class Plate : Photo, ICloneable
         return graph;
     }
 
-    public MagickImage VerticalEdgeDetector(MagickImage source)
+    public SKBitmap VerticalEdgeDetector(SKBitmap source)
     {
         float[,] matrix = { { -1, 0, 1 } };
         return source.Convolve(matrix);
     }
 
-    public MagickImage HorizontalEdgeDetector(MagickImage source)
+    public SKBitmap HorizontalEdgeDetector(SKBitmap source)
     {
         float[,] matrix = { { -1, -2, -1 }, { 0, 0, 0 }, { 1, 2, 1 } };
         return source.Convolve(matrix);
@@ -167,14 +166,14 @@ public class Plate : Photo, ICloneable
         return _graphHandle.Peaks;
     }
 
-    private MagickImage CutTopBottom(MagickImage origin, PlateVerticalGraph graph)
+    private SKBitmap CutTopBottom(SKBitmap origin, PlateVerticalGraph graph)
     {
         graph.ApplyProbabilityDistributor(new ProbabilityDistributor(0f, 0f, 2, 2));
         var p = graph.FindPeak(3)[0];
         return origin.SubImage(0, p.Left, Image.Width, p.Diff);
     }
 
-    private MagickImage CutLeftRight(MagickImage origin, PlateHorizontalGraph graph)
+    private SKBitmap CutLeftRight(SKBitmap origin, PlateHorizontalGraph graph)
     {
         graph.ApplyProbabilityDistributor(new ProbabilityDistributor(0f, 0f, 2, 2));
         var peaks = graph.FindPeak();
@@ -188,7 +187,7 @@ public class Plate : Photo, ICloneable
         return origin;
     }
 
-    private PlateVerticalGraph HistogramYaxis(MagickImage bi)
+    private PlateVerticalGraph HistogramYaxis(SKBitmap bi)
     {
         var graph = new PlateVerticalGraph();
         for (var y = 0; y < bi.Height; y++)
@@ -202,7 +201,7 @@ public class Plate : Photo, ICloneable
         return graph;
     }
 
-    private PlateHorizontalGraph HistogramXAxis(MagickImage bi)
+    private PlateHorizontalGraph HistogramXAxis(SKBitmap bi)
     {
         var graph = new PlateHorizontalGraph();
         for (var x = 0; x < bi.Width; x++)

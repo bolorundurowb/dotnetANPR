@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Drawing;
 using DotNetANPR.Extensions;
-using ImageMagick;
 
 namespace DotNetANPR.ImageAnalysis;
 
@@ -82,10 +81,10 @@ public class HoughTransformation
         return sum / (_width * _height);
     }
 
-    public MagickImage Render(RenderType renderType, ColorType colorType)
+    public SKBitmap Render(RenderType renderType, ColorType colorType)
     {
         var average = GetAverageValue();
-        var output = new MagickImage(_width, _height, PixelFormat.Format24bppRgb);
+        var output = new SKBitmap(_width, _height, PixelFormat.Format24bppRgb);
         var g = Graphics.FromImage(output);
 
         for (var x = 0; x < _width; x++)

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using ImageMagick;
+using SkiaSharp;
 
 namespace DotNetANPR.ImageAnalysis;
 
@@ -163,11 +163,11 @@ public class Graph
         return maxIndex;
     }
 
-    public MagickImage RenderHorizontally(int width, int height)
+    public SKBitmap RenderHorizontally(int width, int height)
     {
         // Create images
-        var content = new MagickImage(width, height);
-        var axis = new MagickImage(width + 40, height + 40);
+        var content = new SKBitmap(width, height);
+        var axis = new SKBitmap(width + 40, height + 40);
 
         using var graphicContent = Graphics.FromImage(content);
         using var graphicAxis = Graphics.FromImage(axis);
@@ -237,11 +237,11 @@ public class Graph
         return axis;
     }
 
-    public MagickImage RenderVertically(int width, int height)
+    public SKBitmap RenderVertically(int width, int height)
     {
         // Create images
-        var content = new MagickImage(width, height);
-        var axis = new MagickImage(width + 10, height + 40);
+        var content = new SKBitmap(width, height);
+        var axis = new SKBitmap(width + 10, height + 40);
 
         using var graphicContent = Graphics.FromImage(content);
         using var graphicAxis = Graphics.FromImage(axis);

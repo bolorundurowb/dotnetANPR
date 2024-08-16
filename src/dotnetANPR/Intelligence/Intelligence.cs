@@ -1,9 +1,9 @@
 ﻿using System;
-
 using DotNetANPR.Configuration;
 using DotNetANPR.ImageAnalysis;
 using DotNetANPR.Recognizer;
 using DotNetANPR.Utilities;
+using SkiaSharp;
 using PS = DotNetANPR.Intelligence.Parser;
 
 namespace DotNetANPR.Intelligence;
@@ -79,21 +79,13 @@ public class Intelligence
                     if (skewDetectionMode != 0)
                     {
                         // skew detection on
-                        // Calculate the shear factor
-                        var shearFactor = -(double)hough.Dy / hough.Dx;
-
-                        // Create a shear transform
-                        var shearTransform = new Matrix();
-                        shearTransform.Shear(0, (float)shearFactor);
-
-                        // Create a blank image with the same dimensions as the plate image
+                        var shearFactor = -hough.Dy / hough.Dx;
                         var core = new SKBitmap(plate.Image.Width, plate.Image.Height);
-
-                        using (var g = Graphics.FromImage(core))
+                        var shearMatrix = SKMatrix.CreateSkew(0, shearFactor);
+                        using (var canvas = new SKCanvas(core))
                         {
-                            // Apply the shear transform to the image
-                            g.Transform = shearTransform;
-                            g.DrawImage(plate.Image, new Point(0, 0));
+                            canvas.SetMatrix(shearMatrix);
+                            canvas.DrawBitmap(plate.Image, 0, 0);
                         }
 
                         // Update the plate with the new image
@@ -104,7 +96,8 @@ public class Intelligence
                 localPlate.Normalize();
 
                 var plateWHratio = localPlate.Width / (float)localPlate.Height;
-                if (plateWHratio < Configurator.Get<double>("intelligence_minPlateWidthHeightRatio") || plateWHratio > Configurator.Get<double>("intelligence_maxPlateWidthHeightRatio"))
+                if (plateWHratio < Configurator.Get<double>("intelligence_minPlateWidthHeightRatio") ||
+                    plateWHratio > Configurator.Get<double>("intelligence_maxPlateWidthHeightRatio"))
                     continue;
 
                 var chars = localPlate.Characters();
@@ -167,7 +160,8 @@ public class Intelligence
                     // when normalizing the chars, keep the width/height ratio in mind
                     float widthHeightRatio = chr.PieceWidth;
                     widthHeightRatio /= chr.PieceHeight;
-                    if (widthHeightRatio < Configurator.Get<double>("intelligence_minCharWidthHeightRatio") || widthHeightRatio > Configurator
+                    if (widthHeightRatio < Configurator.Get<double>("intelligence_minCharWidthHeightRatio") ||
+                        widthHeightRatio > Configurator
                             .Get<double>("intelligence_maxCharWidthHeightRatio"))
                     {
                         errorFlags += "WHR ";
@@ -177,9 +171,11 @@ public class Intelligence
                     }
 
                     if (chr.PositionInPlate is null)
-                        throw new ArgumentNullException(nameof(chr.PositionInPlate), "Character position in plate is null");
+                        throw new ArgumentNullException(nameof(chr.PositionInPlate),
+                            "Character position in plate is null");
 
-                    if ((chr.PositionInPlate.LeftX < 2 || chr.PositionInPlate.RightX > plate.Width - 1) && widthHeightRatio < 0.12)
+                    if ((chr.PositionInPlate.LeftX < 2 || chr.PositionInPlate.RightX > plate.Width - 1) &&
+                        widthHeightRatio < 0.12)
                     {
                         errorFlags += "POS ";
                         ok = false;
@@ -239,7 +235,8 @@ public class Intelligence
                         rc = _chrRecognizer.Recognize(chr);
 
                         if (rc.Patterns is null || rc.Patterns.Count == 0)
-                            throw new ArgumentNullException(nameof(rc), "Recognized character does not have any patterns");
+                            throw new ArgumentNullException(nameof(rc),
+                                "Recognized character does not have any patterns");
 
                         similarityCost = rc.Patterns![0].Cost;
                         if (similarityCost > Configurator.Get<double>("intelligence_maxSimilarityCostDispersion"))

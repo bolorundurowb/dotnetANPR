@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using SkiaSharp;
 
@@ -30,40 +29,48 @@ public class RecognizedCharacter
     {
         var width = 500;
         var height = 200;
+
+        // Create an SKBitmap to hold the histogram image
         var histogram = new SKBitmap(width + 20, height + 20);
-        using var graphic = Graphics.FromImage(histogram);
-        graphic.Clear(Color.LightGray);
-        var backRect = new Rectangle(0, 0, width + 20, height + 20);
-        graphic.FillRectangle(Brushes.LightGray, backRect);
-        graphic.DrawRectangle(Pens.Black, backRect);
 
-        graphic.DrawString("0", new Font("Arial", 8), Brushes.Black, new PointF(3, height - 5));
+        // Create an SKCanvas to draw on the SKBitmap
+        using var canvas = new SKCanvas(histogram);
 
+        // Set the background color to light gray
+        var paint = new SKPaint
+        {
+            Color = SKColors.LightGray
+        };
+
+        // Draw the background rectangle
+        var backRect = new SKRect(0, 0, width + 20, height + 20);
+        canvas.DrawRect(backRect, paint);
+
+        // Set the color to black for drawing text and lines
+        paint.Color = SKColors.Black;
+
+        // Draw the Y-axis labels and lines
         var colWidth = width / _patterns.Count;
-        int left, top;
-
         for (var ay = 0; ay <= 100; ay += 10)
         {
-            var y = 15 + (int)((100 - ay) / 100.0f * (height - 20));
-            graphic.DrawString(ay.ToString(), new Font("Arial", 8), Brushes.Black, new PointF(3, y + 11));
-            graphic.DrawLine(Pens.Black, 25, y + 5, 35, y + 5);
+            var y = 15 + (int)(((100 - ay) / 100.0f) * (height - 20));
+            canvas.DrawText(ay.ToString(), 3, y + 11, paint);
+            canvas.DrawLine(25, y + 5, 35, y + 5, paint);
         }
 
-        graphic.DrawLine(Pens.Black, 35, 19, 35, height);
-        graphic.DrawString("100", new Font("Arial", 8), Brushes.Black,
-            new PointF(3, 15 + (int)((100 - 100) / 100.0f * (height - 20)) + 11));
+        // Draw the Y-axis line
+        canvas.DrawLine(35, 19, 35, height, paint);
 
-        graphic.DrawLine(Pens.Black, 35, 19, 35, height);
+        // Set the color to blue for drawing the rectangles and text
+        paint.Color = SKColors.Blue;
 
-        graphic.DrawLine(Pens.Black, 35, 19, 35, height);
-
+        // Draw the bars and labels for each pattern
         for (var i = 0; i < _patterns.Count; i++)
         {
-            left = i * colWidth + 42;
-            top = height - (int)(_patterns[i].Cost * (height - 20));
-            graphic.DrawRectangle(Pens.Blue, left, top, colWidth - 2, height - top);
-            graphic.DrawString(_patterns[i].Char + " ", new Font("Arial", 8), Brushes.Black,
-                new PointF(left + 2, top - 8));
+            var left = (i * colWidth) + 42;
+            var top = height - (int)(_patterns[i].Cost * (height - 20));
+            canvas.DrawRect(new SKRect(left, top, left + colWidth - 2, height), paint);
+            canvas.DrawText(_patterns[i].Char + " ", left + 2, top - 8, paint);
         }
 
         return histogram;

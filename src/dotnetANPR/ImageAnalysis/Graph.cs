@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-
 using System.Linq;
 using SkiaSharp;
 
@@ -32,7 +31,8 @@ public class Graph
     }
 
     // TODO: change name
-    public bool AllowedInterval(List<Peak> peaks, int xPosition) => peaks.All(peak => peak.Left > xPosition || xPosition > peak.Right);
+    public bool AllowedInterval(List<Peak> peaks, int xPosition) =>
+        peaks.All(peak => peak.Left > xPosition || xPosition > peak.Right);
 
     public void ApplyProbabilityDistributor(ProbabilityDistributor probabilityDistributor)
     {
@@ -163,7 +163,7 @@ public class Graph
         return maxIndex;
     }
 
-   public SKBitmap RenderHorizontally(int width, int height)
+    public SKBitmap RenderHorizontally(int width, int height)
     {
         // Create the content and axis bitmaps
         using var content = new SKBitmap(width, height);
@@ -205,7 +205,8 @@ public class Graph
             {
                 contentCanvas.DrawLine((float)(p.Left * multConst), 0, (float)(p.Center * multConst), 30, graphPaint);
                 contentCanvas.DrawLine((float)(p.Center * multConst), 30, (float)(p.Right * multConst), 0, graphPaint);
-                contentCanvas.DrawText($"{i}.", (float)(p.Center * multConst) - 5, 42, new SKPaint { Color = SKColors.Red, TextSize = 12 });
+                contentCanvas.DrawText($"{i}.", (float)(p.Center * multConst) - 5, 42,
+                    new SKPaint { Color = SKColors.Red, TextSize = 12 });
                 i++;
             }
         }
@@ -267,9 +268,12 @@ public class Graph
             int i = 0;
             foreach (var p in Peaks)
             {
-                contentCanvas.DrawLine(width, (float)(p.Left * multConst), width - 30, (float)(p.Center * multConst), graphPaint);
-                contentCanvas.DrawLine(width - 30, (float)(p.Center * multConst), width, (float)(p.Right * multConst), graphPaint);
-                contentCanvas.DrawText($"{i}.", width - 38, (float)(p.Center * multConst) + 5, new SKPaint { Color = SKColors.Red, TextSize = 12 });
+                contentCanvas.DrawLine(width, (float)(p.Left * multConst), width - 30, (float)(p.Center * multConst),
+                    graphPaint);
+                contentCanvas.DrawLine(width - 30, (float)(p.Center * multConst), width, (float)(p.Right * multConst),
+                    graphPaint);
+                contentCanvas.DrawText($"{i}.", width - 38, (float)(p.Center * multConst) + 5,
+                    new SKPaint { Color = SKColors.Red, TextSize = 12 });
                 i++;
             }
         }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using SkiaSharp;
 
 namespace DotNetANPR.Extensions;
@@ -66,8 +67,44 @@ internal static class ImageExtensions
         return subImage;
     }
 
-    public static void Save(this SKBitmap source, string path)
+    public static void Save(this SKBitmap image, string filePath)
     {
-        
+        var fileExtension = Path.GetExtension(filePath).ToLowerInvariant();
+        var imageFormat = GetImageFormat(fileExtension);
+
+        using var stream = File.Create(filePath);
+        image.Encode(stream, imageFormat, 100);
+    }
+
+    private static SKEncodedImageFormat GetImageFormat(string fileExtension)
+    {
+        switch (fileExtension.ToLowerInvariant())
+        {
+            case ".jpg":
+            case ".jpeg":
+                return SKEncodedImageFormat.Jpeg;
+            case ".png":
+                return SKEncodedImageFormat.Png;
+            case ".gif":
+                return SKEncodedImageFormat.Gif;
+            case ".bmp":
+                return SKEncodedImageFormat.Bmp;
+            case ".webp":
+                return SKEncodedImageFormat.Webp;
+            case ".ico":
+                return SKEncodedImageFormat.Ico;
+            case ".wbmp":
+                return SKEncodedImageFormat.Wbmp;
+            case ".pkm":
+                return SKEncodedImageFormat.Pkm;
+            case ".ktx":
+                return SKEncodedImageFormat.Ktx;
+            case ".astc":
+                return SKEncodedImageFormat.Astc;
+            case ".dng":
+                return SKEncodedImageFormat.Dng;
+            default:
+                throw new ArgumentException("Unsupported file extension", nameof(fileExtension));
+        }
     }
 }

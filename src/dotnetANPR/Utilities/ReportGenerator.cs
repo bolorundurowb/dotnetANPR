@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using DotNetANPR.Configuration;
+using DotNetANPR.Extensions;
 using SkiaSharp;
 
 namespace DotNetANPR.Utilities;
@@ -93,7 +94,6 @@ public class ReportGenerator
             throw new InvalidOperationException("Unsupported file extension: " + fileExtension);
 
         var outputPath = Path.Combine(_reportDirectory, fileName);
-        using var stream = File.Create(outputPath);
-        image.Encode(stream, SKEncodedImageFormat.Jpeg, 100);
+        image.Save(outputPath);
     }
 }

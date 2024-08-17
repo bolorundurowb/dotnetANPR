@@ -65,4 +65,9 @@ internal static class ImageExtensions
 
         return subImage;
     }
+
+    public static void Save(this SKBitmap source, string path)
+    {
+        
+    }
 }

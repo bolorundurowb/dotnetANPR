@@ -186,10 +186,10 @@ public class Graph
         // Draw the line graph
         var graphPaint = new SKPaint { Color = SKColors.Green, IsStroke = true, StrokeWidth = 1 };
         int x = 0, y = 0;
-        for (int i = 0; i < YValues.Count; i++)
+        for (var i = 0; i < YValues.Count; i++)
         {
-            int x0 = x;
-            int y0 = y;
+            var x0 = x;
+            var y0 = y;
             x = (int)(((float)i / YValues.Count) * width);
             y = (int)((1 - (YValues[i] / MaxValue())) * height);
             contentCanvas.DrawLine(x0, y0, x, y, graphPaint);
@@ -199,8 +199,8 @@ public class Graph
         if (Peaks != null)
         {
             graphPaint.Color = SKColors.Red;
-            double multConst = (double)width / YValues.Count;
-            int i = 0;
+            var multConst = (double)width / YValues.Count;
+            var i = 0;
             foreach (var p in Peaks)
             {
                 contentCanvas.DrawLine((float)(p.Left * multConst), 0, (float)(p.Center * multConst), 30, graphPaint);
@@ -219,13 +219,13 @@ public class Graph
         axisCanvas.DrawRect(new SKRect(35, 5, 35 + content.Width, 5 + content.Height), axisPaint);
 
         var textPaint = new SKPaint { Color = SKColors.Black, TextSize = 12 };
-        for (int ax = 0; ax < content.Width; ax += 50)
+        for (var ax = 0; ax < content.Width; ax += 50)
         {
             axisCanvas.DrawText(ax.ToString(), ax + 35, axis.Height - 10, textPaint);
             axisCanvas.DrawLine(ax + 35, content.Height + 5, ax + 35, content.Height + 15, axisPaint);
         }
 
-        for (int ay = 0; ay < content.Height; ay += 20)
+        for (var ay = 0; ay < content.Height; ay += 20)
         {
             axisCanvas.DrawText($"{(int)((1 - ((float)ay / content.Height)) * 100)}%", 1, ay + 15, textPaint);
             axisCanvas.DrawLine(25, ay + 5, 35, ay + 5, axisPaint);
@@ -252,10 +252,10 @@ public class Graph
 
         var graphPaint = new SKPaint { Color = SKColors.Green, IsStroke = true, StrokeWidth = 1 };
         int x = width, y = 0;
-        for (int i = 0; i < YValues.Count; i++)
+        for (var i = 0; i < YValues.Count; i++)
         {
-            int x0 = x;
-            int y0 = y;
+            var x0 = x;
+            var y0 = y;
             y = (int)(((float)i / YValues.Count) * height);
             x = (int)((YValues[i] / MaxValue()) * width);
             contentCanvas.DrawLine(x0, y0, x, y, graphPaint);
@@ -264,8 +264,8 @@ public class Graph
         if (Peaks != null)
         {
             graphPaint.Color = SKColors.Red;
-            double multConst = (double)height / YValues.Count;
-            int i = 0;
+            var multConst = (double)height / YValues.Count;
+            var i = 0;
             foreach (var p in Peaks)
             {
                 contentCanvas.DrawLine(width, (float)(p.Left * multConst), width - 30, (float)(p.Center * multConst),

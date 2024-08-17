@@ -5,6 +5,7 @@ using DotNetANPR.ImageAnalysis;
 using DotNetANPR.Recognizer;
 using DotNetANPR.Utilities;
 using Microsoft.Extensions.Logging;
+using SkiaSharp;
 
 namespace DotNetANPR;
 
@@ -33,11 +34,11 @@ public class ANPR
         if (!File.Exists(imagePath))
             throw new ArgumentException("Invalid image path: " + imagePath, nameof(imagePath));
 
-        return Recognize(new SKBitmap(imagePath), reportPath);
+        return Recognize(SKBitmap.Decode(imagePath), reportPath);
     }
 
     public static string? Recognize(Stream imageStream, string? reportPath = null) =>
-        Recognize(new SKBitmap(imageStream), reportPath);
+        Recognize(SKBitmap.Decode(imageStream), reportPath);
 
     public static string? Recognize(SKBitmap image, string? reportPath = null)
     {

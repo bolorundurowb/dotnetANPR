@@ -1,6 +1,6 @@
 ﻿using System;
-
 using DotNetANPR.Configuration;
+using DotNetANPR.Extensions;
 using SkiaSharp;
 
 namespace DotNetANPR.ImageAnalysis;
@@ -34,42 +34,46 @@ public class Photo(SKBitmap image) : IDisposable, ICloneable
     public static float GetBrightness(SKBitmap image, int x, int y)
     {
         var color = image.GetPixel(x, y);
-        return new SKColor(color.R, color.G, color.B).GetBrightness();
+        new SKColor(color.Red, color.Green, color.Blue).ToHsv(out _, out _, out var brightness);
+        return brightness;
     }
 
     public static float GetSaturation(SKBitmap image, int x, int y)
     {
         var color = image.GetPixel(x, y);
-        return new SKColor(color.R, color.G, color.B).GetSaturation();
+        new SKColor(color.Red, color.Green, color.Blue).ToHsv(out _, out var saturation, out _);
+        return saturation;
     }
 
     public static float GetHue(SKBitmap image, int x, int y)
     {
         var color = image.GetPixel(x, y);
-        return new SKColor(color.R, color.G, color.B).GetHue() / 360f;
+        new SKColor(color.Red, color.Green, color.Blue).ToHsv(out var hue, out _, out _);
+        return hue;
     }
 
     public static SKBitmap LinearResizeImage(SKBitmap origin, int width, int height)
     {
         var resizedImage = new SKBitmap(width, height);
-        using var graphics = Graphics.FromImage(resizedImage);
+        using var canvas = new SKCanvas(resizedImage);
         var xScale = (float)width / origin.Width;
         var yScale = (float)height / origin.Height;
+        canvas.Scale(xScale, yScale);
+        canvas.DrawBitmap(origin, 0, 0);
 
-        graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
-        graphics.ScaleTransform(xScale, yScale);
-        graphics.DrawImage(origin, new Rectangle(0, 0, origin.Width, origin.Height));
         return resizedImage;
     }
 
+
     public static SKBitmap DuplicateSKBitmap(SKBitmap image)
     {
-        var imageCopy = new SKBitmap(image.Width, image.Height, PixelFormat.Format24bppRgb);
-        using var graphics = Graphics.FromImage(imageCopy);
-        graphics.DrawImage(image, 0, 0, image.Width, image.Height);
+        var imageCopy = new SKBitmap(image.Width, image.Height, SKColorType.Rgb888x, SKAlphaType.Premul);
+        using var canvas = new SKCanvas(imageCopy);
+        canvas.DrawBitmap(image, new SKRect(0, 0, image.Width, image.Height));
 
         return imageCopy;
     }
+
 
     public static void Thresholding(SKBitmap bitmap)
     {
@@ -77,92 +81,82 @@ public class Photo(SKBitmap image) : IDisposable, ICloneable
         var threshold = new byte[256];
         for (var i = 0; i < 36; i++)
             threshold[i] = 0;
-        for (var i = 36; i < 256; i++) 
+        for (var i = 36; i < 256; i++)
             threshold[i] = (byte)i;
 
-        // Lock the bitmap's bits
-        var rect = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
-        var bmpData = bitmap.LockBits(rect, ImageLockMode.ReadWrite, bitmap.PixelFormat);
+        for (var x = 0; x < bitmap.Width; x++)
+        {
+            for (var y = 0; y < bitmap.Height; y++)
+            {
+                var color = bitmap.GetPixel(x, y);
 
-        // Get the address of the first line
-        var ptr = bmpData.Scan0;
+                // Apply threshold to each color component
+                var r = threshold[color.Red];
+                var g = threshold[color.Green];
+                var b = threshold[color.Blue];
 
-        // Declare an array to hold the bytes of the bitmap
-        var bytes = Math.Abs(bmpData.Stride) * bitmap.Height;
-        var rgbValues = new byte[bytes];
-
-        // Copy the RGB values into the array
-        System.Runtime.InteropServices.Marshal.Copy(ptr, rgbValues, 0, bytes);
-
-        // Apply the thresholding
-        for (var i = 0; i < rgbValues.Length; i++) 
-            rgbValues[i] = threshold[rgbValues[i]];
-
-        // Copy the RGB values back to the bitmap
-        System.Runtime.InteropServices.Marshal.Copy(rgbValues, 0, ptr, bytes);
-
-        // Unlock the bits
-        bitmap.UnlockBits(bmpData);
+                var newColor = new SKColor(r, g, b);
+                bitmap.SetPixel(x, y, newColor);
+            }
+        }
     }
+
 
     public static SKBitmap ArrayToSKBitmap(float[,] array, int w, int h)
     {
-        var bitmap = new SKBitmap(w, h, PixelFormat.Format24bppRgb);
+        var bitmap = new SKBitmap(new SKImageInfo(w, h, SKColorType.Rgba8888, SKAlphaType.Premul));
         for (var x = 0; x < w; x++)
-        for (var y = 0; y < h; y++)
-            SetBrightness(bitmap, x, y, array[x, y]);
+        {
+            for (var y = 0; y < h; y++)
+            {
+                var color = new SKColor((byte)(array[x, y] * 255), (byte)(array[x, y] * 255),
+                    (byte)(array[x, y] * 255));
+                bitmap.SetPixel(x, y, color);
+            }
+        }
+
         return bitmap;
     }
-
-    public static SKBitmap CreateBlankSKBitmap(SKBitmap image) => CreateBlankSKBitmap(image.Width, image.Height);
-
-    public static SKBitmap CreateBlankSKBitmap(int width, int height) => new(width, height, PixelFormat.Format24bppRgb);
 
     public SKBitmap GetSKBitmapWithAxes()
     {
         var widthWithAxes = image.Width + 40;
         var heightWithAxes = image.Height + 40;
 
-        var axis = new SKBitmap(widthWithAxes, heightWithAxes, PixelFormat.Format24bppRgb);
-        using var graphicAxis = Graphics.FromImage(axis);
+
+        var axis = new SKBitmap(widthWithAxes, heightWithAxes, SKColorType.Rgb888x, SKAlphaType.Premul);
+        using var canvas = new SKCanvas(axis);
+
         // Set the background color to light gray
-        graphicAxis.Clear(Color.LightGray);
+        canvas.Clear(SKColors.LightGray);
 
         // Draw the image
-        graphicAxis.DrawImage(image, 35, 5, image.Width, image.Height);
+        canvas.DrawBitmap(image, 35, 5);
 
         // Draw the black border around the image
-        graphicAxis.DrawRectangle(Pens.Black, 35, 5, image.Width, image.Height);
+        canvas.DrawRect(SKRect.Create(35, 5, image.Width, image.Height),
+            new SKPaint { Color = SKColors.Black, Style = SKPaintStyle.Stroke });
 
         // Draw the X axis labels and ticks
         for (var ax = 0; ax < image.Width; ax += 50)
         {
-            graphicAxis.DrawString(ax.ToString(), SystemFonts.DefaultFont, Brushes.Black, ax + 35,
-                axis.Height - 10);
-            graphicAxis.DrawLine(Pens.Black, ax + 35, image.Height + 5, ax + 35, image.Height + 15);
+            canvas.DrawText(ax.ToString(), ax + 35, heightWithAxes - 10,
+                new SKPaint { Color = SKColors.Black, TextSize = 12 });
+            canvas.DrawLine(ax + 35, image.Height + 5, ax + 35, image.Height + 15,
+                new SKPaint { Color = SKColors.Black, StrokeWidth = 1 });
         }
 
         // Draw the Y axis labels and ticks
         for (var ay = 0; ay < image.Height; ay += 50)
         {
-            graphicAxis.DrawString(ay.ToString(), SystemFonts.DefaultFont, Brushes.Black, 3, ay + 15);
-            graphicAxis.DrawLine(Pens.Black, 25, ay + 5, 35, ay + 5);
+            canvas.DrawText(ay.ToString(), 3, ay + 15, new SKPaint { Color = SKColors.Black, TextSize = 12 });
+            canvas.DrawLine(25, ay + 5, 35, ay + 5, new SKPaint { Color = SKColors.Black, StrokeWidth = 1 });
         }
 
         return axis;
     }
 
-    public void SetBrightness(int x, int y, int value)
-    {
-        var color = new SKColor(value, value, value);
-        image.SetPixel(x, y, color);
-    }
-
     public float GetBrightness(int x, int y) => GetBrightness(image, x, y);
-
-    public float GetSaturation(int x, int y) => GetSaturation(image, x, y);
-
-    public float GetHue(int x, int y) => GetHue(image, x, y);
 
     public void Save(string path) { image.Save(path); }
 
@@ -196,10 +190,9 @@ public class Photo(SKBitmap image) : IDisposable, ICloneable
             // use linear transformation
             return LinearResizeImage(origin, width, height);
 
-        // Java traditionally makes images smaller with the bilinear method (linear mapping), which brings large
-        // information loss. Fourier transformation would be ideal, but it is too slow.
-        // Therefore we use the method of weighted average.
-        var resized = new SKBitmap(width, height, PixelFormat.Format24bppRgb);
+        var resized = new SKBitmap(width, height, origin.ColorType, origin.AlphaType, origin.ColorSpace);
+
+        using var canvas = new SKCanvas(resized);
         var xScale = (float)origin.Width / width;
         var yScale = (float)origin.Height / height;
 
@@ -223,7 +216,9 @@ public class Photo(SKBitmap image) : IDisposable, ICloneable
                 }
 
                 sum /= sumCount;
-                SetBrightness(resized, x, y, sum);
+                var sumAsByte = (byte)sum;
+                var color = new SKColor(sumAsByte, sumAsByte, sumAsByte);
+                canvas.DrawPoint(x, y, color);
             }
         }
 
@@ -267,22 +262,6 @@ public class Photo(SKBitmap image) : IDisposable, ICloneable
         return array;
     }
 
-    public SKBitmap SumSKBitmaps(SKBitmap image1, SKBitmap image2)
-    {
-        var outWidth = Math.Min(image1.Width, image2.Width);
-        var outHeight = Math.Min(image1.Height, image2.Height);
-
-        var outImage = new SKBitmap(outWidth, outHeight, PixelFormat.Format24bppRgb);
-        for (var x = 0; x < outWidth; x++)
-        for (var y = 0; y < outHeight; y++)
-        {
-            var brightness = Math.Min(1.0f, GetBrightness(image1, x, y) + GetBrightness(image2, x, y));
-            SetBrightness(outImage, x, y, brightness);
-        }
-
-        return outImage;
-    }
-
     public void PlainThresholding(Statistics stat)
     {
         var width = image.Width;
@@ -295,7 +274,7 @@ public class Photo(SKBitmap image) : IDisposable, ICloneable
         }
     }
 
-    public int GetPixelColor(int x, int y) => image.GetPixel(x, y).ToArgb();
+    public int GetPixelColor(int x, int y) => (int)(uint)image.GetPixel(x, y);
 
     public void AdaptiveThresholding()
     {

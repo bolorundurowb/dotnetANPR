@@ -18,8 +18,8 @@ public class PixelMap
     {
         var image = new SKBitmap(_width, _height);
         for (var x = 0; x < _width; x++)
-            for (var y = 0; y < _height; y++)
-                image.SetPixel(x, y, _matrix[x, y] ? SKColors.Black : SKColors.White);
+        for (var y = 0; y < _height; y++)
+            image.SetPixel(x, y, _matrix[x, y] ? SKColors.Black : SKColors.White);
 
         return image;
     }
@@ -74,9 +74,9 @@ public class PixelMap
     {
         PointSet pointsToReduce = [];
         for (var x = 0; x < _width; x++)
-            for (var y = 0; y < _height; y++)
-                if (N(x, y) < 4)
-                    pointsToReduce.Add(new Point(x, y)); // recommended 4
+        for (var y = 0; y < _height; y++)
+            if (N(x, y) < 4)
+                pointsToReduce.Add(new Point(x, y)); // recommended 4
 
         // remove marked points
         foreach (var point in pointsToReduce)
@@ -91,9 +91,9 @@ public class PixelMap
         // put all black points into a set
         PointSet unsorted = [];
         for (var x = 0; x < _width; x++)
-            for (var y = 0; y < _height; y++)
-                if (_matrix[x, y])
-                    unsorted.Add(new Point(x, y));
+        for (var y = 0; y < _height; y++)
+            if (_matrix[x, y])
+                unsorted.Add(new Point(x, y));
 
         while (unsorted.Any())
             pieces.Add(CreatePiece(unsorted));
@@ -136,8 +136,8 @@ public class PixelMap
         _height = bi.Height;
         _matrix = new bool[_width, _height];
         for (var x = 0; x < _width; x++)
-            for (var y = 0; y < _height; y++)
-                _matrix[x, y] = bi.GetBrightness(x, y) < 0.5;
+        for (var y = 0; y < _height; y++)
+            _matrix[x, y] = bi.GetBrightness(x, y) < 0.5;
     }
 
     private bool GetPointValue(int x, int y)
@@ -251,9 +251,9 @@ public class PixelMap
             set.Clear();
 
         for (var x = 0; x < _width; x++)
-            for (var y = 0; y < _height; y++)
-                if (IsBoundaryPoint(x, y))
-                    set.Add(new Point(x, y));
+        for (var y = 0; y < _height; y++)
+            if (IsBoundaryPoint(x, y))
+                set.Add(new Point(x, y));
     }
 
     private bool SeedShouldBeAdded(Piece piece, Point point)
@@ -298,46 +298,6 @@ public class PixelMap
     }
 
     #endregion
-
-    public sealed class Point(int x, int y) : IEquatable<Point>
-    {
-        public int X { get; } = x;
-
-        public int Y { get; } = y;
-
-        public override bool Equals(object? obj)
-        {
-            if (ReferenceEquals(null, obj))
-                return false;
-
-            var objAsPoint = obj as Point;
-
-            return !ReferenceEquals(null, objAsPoint) && Equals(objAsPoint);
-        }
-
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                return (X * 397) ^ Y;
-            }
-        }
-
-        public bool Equals(Point? other)
-        {
-            if (ReferenceEquals(null, other))
-                return false;
-
-            if (ReferenceEquals(this, other))
-                return true;
-
-            return X == other.X && Y == other.Y;
-        }
-
-        public static bool operator ==(Point? left, Point? right) => Equals(left, right);
-
-        public static bool operator !=(Point? left, Point? right) => !Equals(left, right);
-    }
 
     public class PointSet : List<Point>
     {
@@ -392,8 +352,8 @@ public class PixelMap
             var image = new SKBitmap(Width, Height);
 
             for (var x = MostLeftPoint; x <= MostRightPoint; x++)
-                for (var y = MostTopPoint; y <= MostBottomPoint; y++)
-                    image.SetPixel(x - MostLeftPoint, y - MostTopPoint, _matrix[x, y] ? SKColors.Black : SKColors.White);
+            for (var y = MostTopPoint; y <= MostBottomPoint; y++)
+                image.SetPixel(x - MostLeftPoint, y - MostTopPoint, _matrix[x, y] ? SKColors.Black : SKColors.White);
 
             return image;
         }

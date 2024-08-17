@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using DotNetANPR.Configuration;
 using DotNetANPR.Extensions;
+using SkiaSharp;
 
 namespace DotNetANPR.ImageAnalysis;
 

@@ -1,6 +1,4 @@
 ﻿using System;
-
-using DotNetANPR.Extensions;
 using SkiaSharp;
 
 namespace DotNetANPR.ImageAnalysis;
@@ -41,8 +39,8 @@ public class HoughTransformation
         _height = height;
 
         for (var x = 0; x < width; x++)
-            for (var y = 0; y < height; y++)
-                _bitmap[x, y] = 0;
+        for (var y = 0; y < height; y++)
+            _bitmap[x, y] = 0;
     }
 
     public void AddLine(int x, int y, float brightness)
@@ -76,8 +74,8 @@ public class HoughTransformation
     {
         float sum = 0;
         for (var x = 0; x < _width; x++)
-            for (var y = 0; y < _height; y++)
-                sum += _bitmap[x, y];
+        for (var y = 0; y < _height; y++)
+            sum += _bitmap[x, y];
 
         return sum / (_width * _height);
     }
@@ -85,30 +83,23 @@ public class HoughTransformation
     public SKBitmap Render(RenderType renderType, ColorType colorType)
     {
         var average = GetAverageValue();
-        var output = new SKBitmap(_width, _height, PixelFormat.Format24bppRgb);
-        var g = Graphics.FromImage(output);
+        var output = new SKBitmap(_width, _height);
+
+        var canvas = new SKCanvas(output);
 
         for (var x = 0; x < _width; x++)
-            for (var y = 0; y < _height; y++)
-            {
-                var value = (int)(255 * _bitmap[x, y] / average / 3);
-                value = Math.Max(0, Math.Min(value, 255));
+        for (var y = 0; y < _height; y++)
+        {
+            var value = (byte)Math.Max(0, Math.Min(255 * _bitmap[x, y] / average / 3, 255));
+            var color = colorType == ColorType.BlackAndWhite
+                ? new SKColor(value, value, value)
+                : new SKColor((byte)(255 - (value * 2 / 3)), 255, 255);
 
-                output.SetPixel(x, y,
-                    colorType == ColorType.BlackAndWhite
-                        ? SKColors.FromArgb(value, value, value)
-                        : SKColor.FromHsv(0.67f - (float)value / 255 * 2 / 3, 1.0f, 1.0f));
-            }
+            canvas.DrawPoint(x, y, new SKPaint { Color = color });
+        }
 
         var maximumPoint = FindMaxPoint();
-        g.DrawImage(output, 0, 0);
-        g.Dispose();
-
-        g = Graphics.FromImage(output);
-        g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-        g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
-
-        g.FillEllipse(Brushes.Orange, maximumPoint.X - 5, maximumPoint.Y - 5, 10, 10);
+        canvas.DrawBitmap(output, new SKRect(0, 0, _width, _height));
 
         var a = 2 * (float)maximumPoint.X / _width - 1;
         var b = 2 * (float)maximumPoint.Y / _height - 1;
@@ -122,33 +113,43 @@ public class HoughTransformation
         _dy = y1 - y0;
         _angle = (float)(180 * Math.Atan(_dy / _dx) / Math.PI);
 
+        var paint = new SKPaint
+        {
+            Color = SKColors.Orange,
+            Style = SKPaintStyle.Fill,
+            IsAntialias = true
+        };
+
+        canvas.DrawCircle(maximumPoint.X - 5, maximumPoint.Y - 5, 5, paint);
+
         if (renderType == RenderType.RenderAll)
         {
-            g.DrawLine(Pens.Orange, 0, _height / 2 - _dy / 2 - 1, _width, _height / 2 + _dy / 2 - 1);
-            g.DrawLine(Pens.Orange, 0, _height / 2 - _dy / 2, _width, _height / 2 + _dy / 2);
-            g.DrawLine(Pens.Orange, 0, _height / 2 - _dy / 2 + 1, _width, _height / 2 + _dy / 2 + 1);
+            canvas.DrawLine(0, _height / 2f - _dy / 2 - 1, _width, _height / 2f + _dy / 2 - 1, paint);
+            canvas.DrawLine(0, _height / 2f - _dy / 2, _width, _height / 2f + _dy / 2, paint);
+            canvas.DrawLine(0, _height / 2f - _dy / 2 + 1, _width, _height / 2f + _dy / 2 + 1, paint);
         }
 
-        g.Dispose();
+        canvas.Dispose();
         return output;
     }
+
 
     private Point FindMaxPoint()
     {
         float max = 0;
         int maxX = 0, maxY = 0;
         for (var x = 0; x < _width; x++)
-            for (var y = 0; y < _height; y++)
-            {
-                var curr = _bitmap[x, y];
+        for (var y = 0; y < _height; y++)
+        {
+            var curr = _bitmap[x, y];
 
-                if (!(curr >= max))
-                    continue;
+            if (!(curr >= max))
+                continue;
 
-                maxX = x;
-                maxY = y;
-                max = curr;
-            }
+            maxX = x;
+            maxY = y;
+            max = curr;
+        }
 
         return new Point(maxX, maxY);
     }

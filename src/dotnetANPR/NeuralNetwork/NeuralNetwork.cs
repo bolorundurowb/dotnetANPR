@@ -232,7 +232,7 @@ public class NeuralNetwork
                     var currentNeuron = currentLayer.Neurons[neuronIndex];
                     for (var inputIndex = 0; inputIndex < currentNeuron.Inputs.Count; inputIndex++)
                         gradients.SetWeight(layerIndex, neuronIndex, inputIndex,
-                            gradients.GetThreshold(layerIndex, neuronIndex) * currentLayer.LowerLayer()
+                            gradients.GetThreshold(layerIndex, neuronIndex) * currentLayer.LowerLayer()!
                                 .Neurons[inputIndex].Output);
                 }
             }
@@ -240,7 +240,7 @@ public class NeuralNetwork
             {
                 for (var neuronIndex = 0; neuronIndex < currentLayer.Neurons.Count; neuronIndex++)
                 {
-                    double aux = currentLayer.UpperLayer().Neurons
+                    var aux = currentLayer.UpperLayer()!.Neurons
                         .Select((t, axonIndex) =>
                             gradients.GetThreshold(layerIndex + 1, axonIndex) * t.Inputs[neuronIndex].Weight)
                         .Sum();
@@ -255,7 +255,7 @@ public class NeuralNetwork
                     var currentNeuron = currentLayer.Neurons[neuronIndex];
                     for (var inputIndex = 0; inputIndex < currentNeuron.Inputs.Count; inputIndex++)
                         gradients.SetWeight(layerIndex, neuronIndex, inputIndex,
-                            gradients.GetThreshold(layerIndex, neuronIndex) * currentLayer.LowerLayer()
+                            gradients.GetThreshold(layerIndex, neuronIndex) * currentLayer.LowerLayer()!
                                 .Neurons[inputIndex].Output);
                 }
             }
@@ -277,7 +277,7 @@ public class NeuralNetwork
                 {
                     totalGradients.IncrementThreshold(layerIndex, neuronIndex,
                         partialGradients.GetThreshold(layerIndex, neuronIndex));
-                    for (var inputIndex = 0; inputIndex < currentLayer.LowerLayer().Neurons.Count; inputIndex++)
+                    for (var inputIndex = 0; inputIndex < currentLayer.LowerLayer()!.Neurons.Count; inputIndex++)
                         totalGradients.IncrementWeight(layerIndex, neuronIndex, inputIndex,
                             partialGradients.GetWeight(layerIndex, neuronIndex, inputIndex));
                 }

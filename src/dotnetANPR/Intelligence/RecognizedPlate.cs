@@ -1,26 +1,16 @@
-﻿using System.Collections.Generic;
-using System.Text;
-using DotNetANPR.Recognizer;
-
-namespace DotNetANPR.Intelligence;
-
-public class RecognizedPlate
+﻿namespace DotNetANPR.Intelligence
 {
-    private readonly List<RecognizedCharacter> _characters = [];
-
-    public List<RecognizedCharacter> Characters => _characters;
-
-    public void AddCharacter(RecognizedCharacter character) => _characters.Add(character);
-
-    public RecognizedCharacter Character(int index) => _characters[index];
-
-    public override string ToString()
+    public class RecognizedPlate
     {
-        var builder = new StringBuilder();
+        public string Text { get; }
+        public double Confidence { get; }
+        public ImageAnalysis.LicensePlate SourcePlate { get; }
 
-        foreach (var character in _characters)
-            builder.Append(character.Pattern(0)?.Char);
-
-        return builder.ToString();
+        public RecognizedPlate(string text, double confidence, ImageAnalysis.LicensePlate plate)
+        {
+            Text = text;
+            Confidence = confidence;
+            SourcePlate = plate;
+        }
     }
 }

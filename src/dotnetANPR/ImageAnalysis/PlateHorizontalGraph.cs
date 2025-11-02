@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using DotNetANPR.Configuration;
 
 namespace DotNetANPR.ImageAnalysis;
 
-public class PlateHorizontalGraph : Graph
+public class PlateHorizontalGraph : ProjectionGraph
 {
     private static readonly int HorizontalDetectionType =
         Configurator.Instance.Get<int>("platehorizontalgraph_detectionType");

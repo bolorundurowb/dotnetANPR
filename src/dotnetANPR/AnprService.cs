@@ -5,7 +5,6 @@ using DotNetANPR.Recognizer;
 using DotNetANPR.ImageAnalysis;
 using SkiaSharp;
 using System.IO;
-using DotNetANPR.Configuration;
 
 namespace DotNetANPR
 {

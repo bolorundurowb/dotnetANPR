@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using DotNetANPR.Configuration;
 
 namespace DotNetANPR.ImageAnalysis;
 
-public class PlateGraph : Graph
+public class PlateGraph : ProjectionGraph
 {
     /**
     * 0.75: Smaller numbers have a tendency to cut characters, bigger have a tendency to incorrectly merge them.

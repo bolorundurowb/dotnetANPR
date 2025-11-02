@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using DotNetANPR.Configuration;
 
 namespace DotNetANPR.ImageAnalysis;
 
-public class PlateVerticalGraph : Graph
+public class PlateVerticalGraph : ProjectionGraph
 {
     private static readonly double PeakFootConstant =
         Configurator.Instance.Get<double>("plateverticalgraph_peakfootconstant");

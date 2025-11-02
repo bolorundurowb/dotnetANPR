@@ -1,0 +1,64 @@
+{
+  "imageAnalysis": {
+    "photoAdaptiveThresholdingRadius": 7,
+    "skewDetection": 0,
+    "bandGraphPeakFootConstant": 0.55,
+    "bandGraphPeakDiffMultiplicationConstant": 0.2,
+    "carSnapshotDistributorMargins": 25,
+    "carSnapshotGraphRankFilter": 9,
+    "carSnapshotGraphPeakFootConstant": 0.55,
+    "carSnapshotGraphPeakDiffMultiplicationConstant": 0.1,
+    "plateGraphPeakFootConstant": 0.7,
+    "plateGraphRelativeMinPeakSize": 0.86,
+    "plateHorizontalGraphPeakFootConstant": 0.05,
+    "plateHorizontalGraphDetectionType": 1,
+    "plateVerticalGraphPeakFootConstant": 0.42
+  },
+  "plateCandidates": {
+    "numberOfBands": 3,
+    "numberOfPlates": 3,
+    "numberOfChars": 20
+  },
+  "heuristics": {
+    "plate": {
+      "minimumChars": 5,
+      "maximumChars": 15,
+      "maxCharWidthDispersion": 0.5,
+      "minPlateWidthHeightRatio": 0.5,
+      "maxPlateWidthHeightRatio": 15.0
+    },
+    "char": {
+      "minCharWidthHeightRatio": 0.1,
+      "maxCharWidthHeightRatio": 0.92,
+      "maxBrightnessCostDispersion": 0.161,
+      "maxContrastCostDispersion": 0.1,
+      "maxHueCostDispersion": 0.145,
+      "maxSaturationCostDispersion": 0.24,
+      "maxHeightCostDispersion": 0.2,
+      "maxSimilarityCostDispersion": 100.0
+    }
+  },
+  "recognition": {
+    "syntaxAnalysisMode": 2,
+    "syntaxDescriptionFile": "./resources/syntax/syntax.json",
+    "classificationMethod": 0,
+    "charNormalizedDimensionsX": 8,
+    "charNormalizedDimensionsY": 13,
+    "charResizeMethod": 1,
+    "charFeaturesExtractionMethod": 0,
+    "charNeuralNetworkPath": "./resources/neuralnetworks/network_avgres_813_map.json",
+    "charLearnAlphabetPath": "./resources/alphabets/alphabet_8x13"
+  },
+  "neuralNetwork": {
+    "maxK": 8000,
+    "epsilon": 0.07,
+    "lambda": 0.05,
+    "micro": 0.5,
+    "topology": 20
+  },
+  "paths": {
+    "helpFile": "./resources/help/help.html",
+    "aboutFile": "./resources/help/about.html",
+    "reportGeneratorCss": "./resources/reportgenerator/style.css"
+  }
+}

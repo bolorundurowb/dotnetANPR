@@ -1,14 +1,7 @@
-﻿namespace DotNetANPR.Recognizer
-{
-    public class RecognizedPattern
-    {
-        public char Character { get; }
-        public double Similarity { get; }
+﻿namespace DotNetANPR.Recognizer;
 
-        public RecognizedPattern(char character, double similarity)
-        {
-            Character = character;
-            Similarity = similarity;
-        }
-    }
+public class RecognizedPattern(char character, double similarity)
+{
+    public char Character { get; } = character;
+    public double Similarity { get; } = similarity;
 }

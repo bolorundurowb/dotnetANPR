@@ -4,85 +4,73 @@ using DotNetANPR.Config;
 using DotNetANPR.ImageAnalysis;
 using DotNetANPR.Recognizer;
 
-namespace DotNetANPR.Intelligence
+namespace DotNetANPR.Intelligence;
+
+public class AnprEngine(AppSettings config, ICharacterRecognizer recognizer, SyntaxParser parser)
 {
-    public class AnprEngine
+    public RecognizedPlate? Recognize(CarSnapshot snapshot)
     {
-        private readonly AppSettings _config;
-        private readonly ICharacterRecognizer _recognizer;
-        private readonly SyntaxParser _parser;
+        var allPlates = new List<RecognizedPlate>();
 
-        public AnprEngine(AppSettings config, ICharacterRecognizer recognizer, SyntaxParser parser)
+        try
         {
-            _config = config;
-            _recognizer = recognizer;
-            _parser = parser;
-        }
+            snapshot.FindBands();
 
-        public RecognizedPlate Recognize(CarSnapshot snapshot)
-        {
-            var allPlates = new List<RecognizedPlate>();
-            
-            try
+            foreach (var band in snapshot.GetBands())
             {
-                snapshot.FindBands();
-
-                foreach (var band in snapshot.GetBands())
+                band.FindPlates();
+                foreach (var plate in band.GetPlates())
                 {
-                    band.FindPlates();
-                    foreach (var plate in band.GetPlates())
+                    try
                     {
-                        try
+                        if (config.ImageAnalysis.SkewDetection != 0)
                         {
-                            if (_config.ImageAnalysis.SkewDetection != 0)
+                            var hough = plate.GetHoughTransformation();
+                            var line = hough.GetBestLine();
+                            if (line.AngleDegrees != 0)
                             {
-                                var hough = plate.GetHoughTransformation();
-                                var line = hough.GetBestLine();
-                                if (line.AngleDegrees != 0)
-                                {
-                                    plate.Rotate(line.AngleDegrees);
-                                }
+                                plate.Rotate(line.AngleDegrees);
                             }
-
-                            plate.Normalize(); // Vertical crop
-
-                            float ratio = (float)plate.Width / plate.Height;
-                            if (ratio < _config.Heuristics.Plate.MinPlateWidthHeightRatio ||
-                                ratio > _config.Heuristics.Plate.MaxPlateWidthHeightRatio)
-                            {
-                                continue;
-                            }
-
-                            plate.Segment();
-                            var chars = plate.GetChars();
-
-                            if (chars.Count < _config.Heuristics.Plate.MinimumChars ||
-                                chars.Count > _config.Heuristics.Plate.MaximumChars)
-                            {
-                                continue;
-                            }
-
-                            var recognizedChars = chars.Select(c => _recognizer.Recognize(c)).ToList();
-                            var finalPlate = _parser.Parse(recognizedChars, "default");
-                            
-                            allPlates.Add(new RecognizedPlate(finalPlate.Text, finalPlate.Confidence, plate.Clone()));
                         }
-                        finally
+
+                        plate.Normalize(); // Vertical crop
+
+                        var ratio = (float)plate.Width / plate.Height;
+                        if (ratio < config.Heuristics.Plate.MinPlateWidthHeightRatio ||
+                            ratio > config.Heuristics.Plate.MaxPlateWidthHeightRatio)
                         {
-                            plate.GetChars().ForEach(c => c.Dispose());
-                            plate.Dispose();
+                            continue;
                         }
+
+                        plate.Segment();
+                        var chars = plate.GetChars();
+
+                        if (chars.Count < config.Heuristics.Plate.MinimumChars ||
+                            chars.Count > config.Heuristics.Plate.MaximumChars)
+                        {
+                            continue;
+                        }
+
+                        var recognizedChars = chars.Select(c => recognizer.Recognize(c)).ToList();
+                        var finalPlate = parser.Parse(recognizedChars, "default");
+
+                        allPlates.Add(new RecognizedPlate(finalPlate.Text, finalPlate.Confidence, plate.Clone()));
                     }
-                    band.Dispose();
+                    finally
+                    {
+                        plate.GetChars().ForEach(c => c.Dispose());
+                        plate.Dispose();
+                    }
                 }
+                band.Dispose();
             }
-            finally
-            {
-                snapshot.Dispose();
-            }
-
-            // Return the best plate found
-            return allPlates.OrderByDescending(p => p.Confidence).FirstOrDefault();
         }
+        finally
+        {
+            snapshot.Dispose();
+        }
+
+        // Return the best plate found
+        return allPlates.OrderByDescending(p => p.Confidence).FirstOrDefault();
     }
 }

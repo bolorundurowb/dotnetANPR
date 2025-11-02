@@ -3,6 +3,7 @@
 using DotNetANPR;
 
 const string sourceFilePath = "";
-var result = ANPR.Recognize(sourceFilePath);
+var anprService = new AnprService();
+var result = anprService.Recognize(sourceFilePath);
 
-Console.WriteLine("The result is: " + result);
+Console.WriteLine("The result is: " + result?.Text + " with confidence " + result?.Confidence);

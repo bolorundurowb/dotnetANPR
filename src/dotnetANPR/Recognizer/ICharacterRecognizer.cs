@@ -1,9 +1,8 @@
 using DotNetANPR.ImageAnalysis;
 
-namespace DotNetANPR.Recognizer
+namespace DotNetANPR.Recognizer;
+
+public interface ICharacterRecognizer
 {
-    public interface ICharacterRecognizer
-    {
-        RecognizedChar Recognize(LicensePlateChar chr);
-    }
+    RecognizedChar Recognize(LicensePlateChar chr);
 }

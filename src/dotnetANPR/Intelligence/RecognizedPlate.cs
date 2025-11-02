@@ -1,16 +1,8 @@
-﻿namespace DotNetANPR.Intelligence
-{
-    public class RecognizedPlate
-    {
-        public string Text { get; }
-        public double Confidence { get; }
-        public ImageAnalysis.LicensePlate SourcePlate { get; }
+﻿namespace DotNetANPR.Intelligence;
 
-        public RecognizedPlate(string text, double confidence, ImageAnalysis.LicensePlate plate)
-        {
-            Text = text;
-            Confidence = confidence;
-            SourcePlate = plate;
-        }
-    }
+public class RecognizedPlate(string text, double confidence, ImageAnalysis.LicensePlate plate)
+{
+    public string Text { get; } = text;
+    public double Confidence { get; } = confidence;
+    public ImageAnalysis.LicensePlate SourcePlate { get; } = plate;
 }

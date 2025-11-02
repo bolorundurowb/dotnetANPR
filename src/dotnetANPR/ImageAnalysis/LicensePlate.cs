@@ -3,46 +3,38 @@ using System.Linq;
 using DotNetANPR.Config;
 using SkiaSharp;
 
-namespace DotNetANPR.ImageAnalysis
+namespace DotNetANPR.ImageAnalysis;
+
+public class LicensePlate(SKBitmap bitmap, AppSettings config) : Photo(bitmap)
 {
-    public class LicensePlate : Photo
+    private List<LicensePlateChar> _chars = new();
+    public PixelMap PixelMap { get; private set; }
+
+    public List<LicensePlateChar> GetChars() => _chars;
+
+    public new LicensePlate Clone() => new LicensePlate(GetBitmap().Copy(), config);
+
+    public void Normalize()
     {
-        private readonly AppSettings _config;
-        private List<LicensePlateChar> _chars;
-        public PixelMap PixelMap { get; private set; }
+        // ... (Conversion of PlateVerticalGraph logic to find main peak) ...
+        // ... (Bitmap is vertically cropped using ExtractSubset) ...
+        ClearBrightnessCache();
+    }
 
-        public LicensePlate(SKBitmap bitmap, AppSettings config) : base(bitmap)
-        {
-            _config = config;
-            _chars = new List<LicensePlateChar>();
-        }
+    public void Segment()
+    {
+        var numChars = config.PlateCandidates.NumberOfChars;
+        var minCharRatio = config.Heuristics.Char.MinCharWidthHeightRatio;
+        var maxCharRatio = config.Heuristics.Char.MaxCharWidthHeightRatio;
 
-        public List<LicensePlateChar> GetChars() => _chars;
-        
-        public new LicensePlate Clone() => new LicensePlate(GetBitmap().Copy(), _config);
+        PixelMap = new PixelMap(this);
 
-        public void Normalize()
-        {
-            // ... (Conversion of PlateVerticalGraph logic to find main peak) ...
-            // ... (Bitmap is vertically cropped using ExtractSubset) ...
-            ClearBrightnessCache();
-        }
-
-        public void Segment()
-        {
-            int numChars = _config.PlateCandidates.NumberOfChars;
-            double minCharRatio = _config.Heuristics.Char.MinCharWidthHeightRatio;
-            double maxCharRatio = _config.Heuristics.Char.MaxCharWidthHeightRatio;
-
-            PixelMap = new PixelMap(this);
-
-            _chars = PixelMap.Pieces
-                .Select(p => new { Piece = p, Ratio = (float)p.Width / p.Height })
-                .Where(p => p.Ratio >= minCharRatio && p.Ratio <= maxCharRatio)
-                .OrderBy(p => p.Piece.CenterX)
-                .Take(numChars)
-                .Select(p => new LicensePlateChar(p.Piece.CreatePhoto(this), p.Piece, _config))
-                .ToList();
-        }
+        _chars = PixelMap.Pieces
+            .Select(p => new { Piece = p, Ratio = (float)p.Width / p.Height })
+            .Where(p => p.Ratio >= minCharRatio && p.Ratio <= maxCharRatio)
+            .OrderBy(p => p.Piece.CenterX)
+            .Take(numChars)
+            .Select(p => new LicensePlateChar(p.Piece.CreatePhoto(this), p.Piece, config))
+            .ToList();
     }
 }

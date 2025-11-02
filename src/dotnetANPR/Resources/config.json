@@ -40,7 +40,7 @@
   },
   "recognition": {
     "syntaxAnalysisMode": 2,
-    "syntaxDescriptionFile": "./resources/syntax/syntax.json",
+    "syntaxDescriptionFile": "./resources/syntax.json",
     "classificationMethod": 0,
     "charNormalizedDimensionsX": 8,
     "charNormalizedDimensionsY": 13,

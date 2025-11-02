@@ -1,31 +1,73 @@
-{
-  "syntaxes": [
-    {
-      "name": "default",
-      "patterns": [
-        "0-9,A-Z",
-        "0-9,A-Z",
-        "0-9,A-Z",
-        "0-9,A-Z",
-        "0-9,A-Z",
-        "0-9,A-Z",
-        "0-9,A-Z",
-        "0-9,A-Z",
-        "0-9,A-Z",
-        "0-9,A-Z"
-      ]
-    },
-    {
-      "name": "us_tx",
-      "patterns": [
-        "A-Z",
-        "A-Z",
-        "A-Z",
-        "0-9",
-        "0-9",
-        "0-9",
-        "0-9"
-      ]
-    }
-  ]
-}
+[
+  {
+    "name": "germany",
+    "pattern": [
+      "abcdefghijklmno0pqrstuvwxyz",
+      "abcdefghijklmno0pqrstuvwxyz",
+      "abcdefghijklmno0pqrstuvwxyz",
+      "0123456789",
+      "0123456789",
+      "0123456789"
+    ]
+  },
+  {
+    "name": "slovensko_nova",
+    "pattern": [
+      "abcdefghijklmno0pqrstuvwxyz",
+      "abcdefghijklmno0pqrstuvwxyz",
+      "o0123456789",
+      "o0123456789",
+      "o0123456789",
+      "abcdefghijklmno0pqrstuvwxyz",
+      "abcdefghijklmno0pqrstuvwxyz"
+    ]
+  },
+  {
+    "name": "ceskoslovenska_novsia",
+    "pattern": [
+      "abcdefghijklmno0pqrstuvwxyz",
+      "abcdefghijklmno0pqrstuvwxyz",
+      "abcdefghijklmno0pqrstuvwxyz",
+      "o0123456789",
+      "o0123456789",
+      "o0123456789",
+      "o0123456789"
+    ]
+  },
+  {
+    "name": "ceskoslovenska_starsia",
+    "pattern": [
+      "abcdefghijklmno0pqrstuvwxyz",
+      "abcdefghijklmno0pqrstuvwxyz",
+      "o0123456789",
+      "o0123456789",
+      "o0123456789",
+      "o0123456789"
+    ]
+  },
+  {
+    "name": "ceska_nova",
+    "pattern": [
+      "o0123456789",
+      "cbkhltmepasujz",
+      "o0123456789",
+      "o0123456789",
+      "o0123456789",
+      "o0123456789",
+      "o0123456789"
+    ]
+  },
+  {
+    "name": "nigeria",
+    "pattern": [
+      "abcdefghijklmnopqrstuvwxyz",
+      "abcdefghijklmnopqrstuvwxyz",
+      "abcdefghijklmnopqrstuvwxyz",
+      "0123456789",
+      "0123456789",
+      "0123456789",
+      "abcdefghijklmnopqrstuvwxyz",
+      "abcdefghijklmnopqrstuvwxyz"
+    ]
+  }
+]

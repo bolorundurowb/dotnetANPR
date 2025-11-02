@@ -58,7 +58,7 @@ public class PixelMap
         Width = photo.Width;
         Height = photo.Height;
         _map = new int[Width, Height];
-        Pieces = new List<Piece>();
+        Pieces = [];
         FindPieces();
     }
 

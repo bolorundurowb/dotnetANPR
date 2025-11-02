@@ -37,7 +37,7 @@ public abstract class ProjectionGraph(Photo photo)
     {
         _distributor = new ProbabilityDistributor(length);
         YValues = new float[length];
-        Peaks = new List<Peak>();
+        Peaks = [];
     }
 
     public void Normalize()

@@ -10,12 +10,12 @@ namespace DotNetANPR.Intelligence;
 
 public class SyntaxParser
 {
-    private readonly PlateSyntax _syntax;
+    private readonly SyntaxDefinition[] _syntaxDefinitions;
 
     public SyntaxParser(AppSettings settings)
     {
         var jsonString = File.ReadAllText(settings.Recognition.SyntaxDescriptionFile);
-        _syntax = JsonSerializer.Deserialize<PlateSyntax>(jsonString, new JsonSerializerOptions
+        _syntaxDefinitions = JsonSerializer.Deserialize<SyntaxDefinition[]>(jsonString, new JsonSerializerOptions
         {
             PropertyNameCaseInsensitive = true
         });
@@ -23,11 +23,7 @@ public class SyntaxParser
 
     public RecognizedPlate Parse(List<RecognizedChar> chars, string syntaxName)
     {
-        var syntax = _syntax.Syntaxes.FirstOrDefault(s => s.Name == syntaxName);
-        if (syntax == null)
-        {
-            syntax = _syntax.Syntaxes.First(); // Fallback to default
-        }
+        var syntax = _syntaxDefinitions.FirstOrDefault(s => s.Name == syntaxName) ?? _syntaxDefinitions.First(); // Fallback to default
 
         var sb = new StringBuilder();
         double totalConfidence = 0;
@@ -38,13 +34,9 @@ public class SyntaxParser
             recognizedChar.Sort();
 
             // Find the best pattern that matches the syntax
-            var bestPattern = recognizedChar.Patterns.FirstOrDefault(p => syntax.IsCharAllowed(p.Character, i));
-
-            if (bestPattern == null)
-            {
-                // No pattern matched syntax, just take the best guess
-                bestPattern = recognizedChar.Patterns.First();
-            }
+            var bestPattern = recognizedChar.Patterns.FirstOrDefault(p => syntax.IsCharAllowed(p.Character, i)) ??
+                              // No pattern matched syntax, just take the best guess
+                              recognizedChar.Patterns.First();
 
             sb.Append(bestPattern.Character);
             totalConfidence += (1.0 - bestPattern.Similarity); // Similarity is error, so 1-S is confidence

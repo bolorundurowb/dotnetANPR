@@ -13,13 +13,13 @@ public class CarSnapshot : Photo
     public CarSnapshot(string filepath, AppSettings config) : base(filepath)
     {
         _config = config;
-        _bands = new List<LicensePlateBand>();
+        _bands = [];
     }
 
     public CarSnapshot(SKBitmap bitmap, AppSettings config) : base(bitmap)
     {
         _config = config;
-        _bands = new List<LicensePlateBand>();
+        _bands = [];
     }
 
     public List<LicensePlateBand> GetBands() => _bands;

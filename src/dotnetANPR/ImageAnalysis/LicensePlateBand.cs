@@ -6,7 +6,7 @@ namespace DotNetANPR.ImageAnalysis;
 
 public class LicensePlateBand(SKBitmap bitmap, AppSettings config) : Photo(bitmap)
 {
-    private readonly List<LicensePlate> _plates = new();
+    private readonly List<LicensePlate> _plates = [];
 
     public List<LicensePlate> GetPlates() => _plates;
 

@@ -27,7 +27,7 @@ public class PlateGraph : ProjectionGraph
             }
         }
         Normalize();
-        Spaces = new List<Peak>();
+        Spaces = [];
     }
 
     /// <summary>

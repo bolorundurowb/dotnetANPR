@@ -7,7 +7,7 @@ namespace DotNetANPR.ImageAnalysis;
 
 public class LicensePlate(SKBitmap bitmap, AppSettings config) : Photo(bitmap)
 {
-    private List<LicensePlateChar> _chars = new();
+    private List<LicensePlateChar> _chars = [];
     public PixelMap PixelMap { get; private set; }
 
     public List<LicensePlateChar> GetChars() => _chars;

@@ -1,50 +1,108 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Linq;
+using DotNetANPR.ImageAnalysis;
 
-namespace DotNetANPR.ImageAnalysis;
-
-public class PlateHorizontalGraph : ProjectionGraph
+namespace DotNetANPR.ImageAnalysis
 {
-    private static readonly int HorizontalDetectionType =
-        Configurator.Instance.Get<int>("platehorizontalgraph_detectionType");
-
-    public float Derivation(int index1, int index2) => YValues[index1] - YValues[index2];
-
-    public List<Peak> FindPeak() => HorizontalDetectionType == 1
-        ? FindPeakEdgeDetection()
-        : FindPeakDerivative();
-
-    public List<Peak> FindPeakDerivative()
+    /// <summary>
+    /// Replaces PlateHorizontalGraph.java.
+    /// An alternative horizontal projection graph for plates, with two detection types.
+    /// </summary>
+    public class PlateHorizontalGraph : ProjectionGraph
     {
-        var a = 2;
-        var b = YValues.Count - 1 - 2;
-        var maxVal = MaxValue();
-        while (-Derivation(a, a + 4) < maxVal * 0.2 && a < YValues.Count - 2 - 2 - 4)
-            a++;
+        private readonly int _detectionType;
 
-        while (Derivation(b - 4, b) < maxVal * 0.2 && b > a + 2)
-            b--;
+        public PlateHorizontalGraph(LicensePlate plate, int detectionType) : base(plate)
+        {
+            Init(plate.Width);
+            _detectionType = detectionType;
+            float[,] brightness = plate.GetBrightnessMatrix();
+            int width = plate.Width;
+            int height = plate.Height;
 
-        var outPeaks = new List<Peak> { new(a, b) };
-        Peaks = outPeaks;
-        return outPeaks;
-    }
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    _distributor.Add(x, 1 - brightness[x, y]);
+                }
+            }
+            Normalize();
+        }
 
-    public List<Peak> FindPeakEdgeDetection()
-    {
-        var average = AverageValue();
-        var a = 0;
-        var b = YValues.Count - 1;
-        while (YValues[a] < average)
-            a++;
+        public override void FindPeaks(double peakFootConstant, double peakDiffMultiplicationConstant, double relativeMinPeakSize)
+        {
+            if (_detectionType == 0)
+                FindPeaksStandard((float)peakFootConstant);
+            else
+                FindPeaksAlternative((float)peakFootConstant);
+        }
 
-        while (YValues[b] < average)
-            b--;
+        // Standard peak finding
+        private void FindPeaksStandard(float peakFoot)
+        {
+            bool onPeak = YValues[0] > peakFoot;
+            int peakLeft = onPeak ? 0 : -1;
 
-        a = Math.Max(a - 5, 0);
-        b = Math.Min(b + 5, YValues.Count);
-        var outPeaks = new List<Peak> { new(a, b) };
-        Peaks = outPeaks;
-        return outPeaks;
+            for (int x = 1; x < Length; x++)
+            {
+                if (onPeak)
+                {
+                    if (YValues[x] < peakFoot) // End of peak
+                    {
+                        int peakCenter = (x + peakLeft - 1) / 2;
+                        Peaks.Add(new Peak(peakLeft, peakCenter, x - 1, YValues[peakCenter]));
+                        onPeak = false;
+                        peakLeft = -1;
+                    }
+                }
+                else if (YValues[x] > peakFoot) // Start of peak
+                {
+                    onPeak = true;
+                    peakLeft = x;
+                }
+            }
+            
+            if (onPeak) // Handle peak at the end
+            {
+                int peakCenter = (Length - 1 + peakLeft) / 2;
+                Peaks.Add(new Peak(peakLeft, peakCenter, Length - 1, YValues[peakCenter]));
+            }
+            
+            Peaks = Peaks.OrderByDescending(p => p.Amplitude).ToList();
+        }
+
+        // Alternative peak finding (less strict)
+        private void FindPeaksAlternative(float peakFoot)
+        {
+            bool onPeak = YValues[0] > peakFoot;
+            int peakLeft = onPeak ? 0 : -1;
+
+            for (int x = 1; x < Length; x++)
+            {
+                if (YValues[x] > peakFoot)
+                {
+                    if (!onPeak)
+                    {
+                        peakLeft = x;
+                        onPeak = true;
+                    }
+                }
+                else if (onPeak)
+                {
+                    int peakCenter = (x + peakLeft - 1) / 2;
+                    Peaks.Add(new Peak(peakLeft, peakCenter, x - 1, YValues[peakCenter]));
+                    onPeak = false;
+                    peakLeft = -1;
+                }
+            }
+            
+            if (onPeak) // Handle peak at the end
+            {
+                int peakCenter = (Length - 1 + peakLeft) / 2;
+                Peaks.Add(new Peak(peakLeft, peakCenter, Length - 1, YValues[peakCenter]));
+            }
+
+            Peaks = Peaks.OrderByDescending(p => p.Amplitude).ToList();
+        }
     }
 }

@@ -18,6 +18,8 @@ namespace DotNetANPR.ImageAnalysis
         }
 
         public List<LicensePlateChar> GetChars() => _chars;
+        
+        public new LicensePlate Clone() => new LicensePlate(GetBitmap().Copy(), _config);
 
         public void Normalize()
         {

@@ -43,7 +43,7 @@ namespace DotNetANPR.ImageAnalysis
                 if (y + height > Height) height = Height - y;
 
                 var bandRect = SKRectI.Create(0, y, Width, height);
-                var bandBitmap = new SKBitmap(bandRect.Width, bandRect.Height, Info);
+                var bandBitmap = new SKBitmap(bandRect.Width, bandRect.Height, Info.ColorType, Info.AlphaType, Info.ColorSpace);
                 _bitmap.ExtractSubset(bandBitmap, bandRect);
                 _bands.Add(new LicensePlateBand(bandBitmap, _config));
             }

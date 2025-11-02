@@ -1,5 +1,6 @@
 ﻿// --- All derived graph classes follow this pattern ---
 
+using System;
 using System.Linq;
 
 namespace DotNetANPR.ImageAnalysis

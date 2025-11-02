@@ -1,78 +1,66 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using DotNetANPR.Configuration;
+﻿using System.Linq;
+using DotNetANPR.ImageAnalysis;
 
-namespace DotNetANPR.ImageAnalysis;
-
-public class BandGraph(Band handle) : ProjectionGraph
+namespace DotNetANPR.ImageAnalysis
 {
-    private static readonly double PeakFootConstant =
-        Configurator.Instance.Get<double>("bandgraph_peakfootconstant"); // 0.75
-
-    private static readonly double PeakDiffMultiplicationConstant =
-        Configurator.Instance.Get<double>("bandgraph_peakDiffMultiplicationConstant"); // 0.2
-
-    /**
-     * The Band to which this Graph is related.
-     */
-    private readonly Band _handle = handle;
-
-    public void FindPeaks(int count)
+    /// <summary>
+    /// Replaces BandGraph.java.
+    /// Finds vertical peaks in a LicensePlateBand, corresponding to potential plates.
+    /// </summary>
+    public class BandGraph : ProjectionGraph
     {
-        List<Peak> outPeaks = [];
-        for (var c = 0; c < count; c++)
+        public BandGraph(LicensePlateBand band) : base(band)
         {
-            var maxValue = 0.0f;
-            var maxIndex = 0;
-            for (var i = 0; i < YValues.Count; i++)
-                // left to right
-                if (AllowedInterval(outPeaks, i))
-                    if (YValues[i] >= maxValue)
+            Init(band.Width);
+            float[,] brightness = band.GetBrightnessMatrix();
+            int width = band.Width;
+            int height = band.Height;
+
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    // Projecting the vertical sum of dark pixels (1 - brightness)
+                    _distributor.Add(x, 1 - brightness[x, y]);
+                }
+            }
+            Normalize();
+        }
+
+        public override void FindPeaks(double peakFootConstant, double peakDiffMultiplicationConstant, double relativeMinPeakSize)
+        {
+            float average = YValues.Average();
+            float peakFoot = (float)((MaxValue - average)* peakFootConstant + average);
+            bool onPeak = YValues[0] > peakFoot;
+            int peakLeft = onPeak ? 0 : -1;
+
+            for (int x = 1; x < Length; x++)
+            {
+                if (onPeak)
+                {
+                    if (YValues[x] < peakFoot) // End of peak
                     {
-                        maxValue = YValues[i];
-                        maxIndex = i;
+                        int peakCenter = (x + peakLeft - 1) / 2;
+                        Peaks.Add(new Peak(peakLeft, peakCenter, x - 1, YValues[peakCenter]));
+                        onPeak = false;
+                        peakLeft = -1;
                     }
+                }
+                else if (YValues[x] > peakFoot) // Start of peak
+                {
+                    onPeak = true;
+                    peakLeft = x;
+                }
+            }
+            
+            // Handle peak at the end of the graph
+            if (onPeak)
+            {
+                int peakCenter = (Length - 1 + peakLeft) / 2;
+                Peaks.Add(new Peak(peakLeft, peakCenter, Length - 1, YValues[peakCenter]));
+            }
 
-            // we found the biggest peak, let's do the first cut
-            var leftIndex = IndexOfLeftPeakRel(maxIndex, PeakFootConstant);
-            var rightIndex = IndexOfRightPeakRel(maxIndex, PeakFootConstant);
-            var diff = rightIndex - leftIndex;
-            leftIndex -= (int)Math.Round(PeakDiffMultiplicationConstant * diff);
-            rightIndex += (int)Math.Round(PeakDiffMultiplicationConstant * diff);
-            outPeaks.Add(new Peak(Math.Max(0, leftIndex), maxIndex, Math.Min(YValues.Count - 1, rightIndex)));
+            Peaks = Peaks.OrderByDescending(p => p.Amplitude).ToList();
         }
-
-        // filter the candidates that don't correspond with plate proportions
-        List<Peak> outPeaksFiltered = [];
-        outPeaksFiltered.AddRange(outPeaks.Where(p => p.Diff > 2 * _handle.Height && p.Diff < 15 * _handle.Height));
-        outPeaksFiltered.Sort(new PeakComparator(YValues));
-        Peaks = outPeaksFiltered;
-    }
-
-    public int IndexOfLeftPeakAbs(int peak, double peakFootConstantAbs)
-    {
-        var index = peak;
-        for (var i = peak; i >= 0; i--)
-        {
-            index = i;
-            if (YValues[index] < peakFootConstantAbs)
-                break;
-        }
-
-        return Math.Max(0, index);
-    }
-
-    public int IndexOfRightPeakAbs(int peak, double peakFootConstantAbs)
-    {
-        var index = peak;
-        for (var i = peak; i < YValues.Count; i++)
-        {
-            index = i;
-            if (YValues[index] < peakFootConstantAbs)
-                break;
-        }
-
-        return Math.Min(YValues.Count, index);
     }
 }

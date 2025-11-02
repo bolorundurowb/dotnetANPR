@@ -1,35 +1,14 @@
-﻿using System.Collections.Generic;
-
-namespace DotNetANPR.Recognizer;
-
-public class RecognizedPattern(char chr, float cost)
+﻿namespace DotNetANPR.Recognizer
 {
-    public char Char { get; private set; } = chr;
-
-    public float Cost { get; private set; } = cost;
-}
-
-public class RecognizedPatternComparer(bool sortDesc) : IComparer<RecognizedPattern>
-{
-    public int Compare(RecognizedPattern x, RecognizedPattern y)
+    public class RecognizedPattern
     {
-        return sortDesc ? -1 * Compute() : Compute();
+        public char Character { get; }
+        public double Similarity { get; }
 
-        int Compute()
+        public RecognizedPattern(char character, double similarity)
         {
-            if (ReferenceEquals(x, y))
-                return 0;
-
-            if (ReferenceEquals(null, y))
-                return 1;
-
-            if (x.Cost < y.Cost)
-                return -1;
-
-            if (x.Cost > y.Cost)
-                return 1;
-
-            return 0;
+            Character = character;
+            Similarity = similarity;
         }
     }
 }

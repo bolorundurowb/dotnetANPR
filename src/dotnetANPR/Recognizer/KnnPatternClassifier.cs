@@ -1,85 +1,36 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using DotNetANPR.Configuration;
+using DotNetANPR.Config;
 using DotNetANPR.ImageAnalysis;
-using DotNetANPR.Utilities;
-using Microsoft.Extensions.Logging;
 
-namespace DotNetANPR.Recognizer;
-
-public class KnnPatternClassifier : CharacterRecognizer
+namespace DotNetANPR.Recognizer
 {
-    private static readonly ILogger<KnnPatternClassifier> Logger = Logging.GetLogger<KnnPatternClassifier>();
-
-    private readonly List<List<double>> _learnLists;
-
-    public KnnPatternClassifier()
+    public class KnnPatternClassificator : CharacterRecognizer, ICharacterRecognizer
     {
-        var path = Configurator.Instance.GetPath("char_learnAlphabetPath");
-        _learnLists = new List<List<double>>(36);
-        var filenames = Character.AlphabetList(path);
+        public KnnPatternClassificator(AppSettings settings) : base(settings) { }
 
-        foreach (var imgChar in filenames.Select(fileName => new Character(fileName)))
+        public RecognizedChar Recognize(LicensePlateChar chr)
         {
-            imgChar.Normalize();
-            _learnLists.Add(imgChar.ExtractFeatures());
+            var recognizedChar = new RecognizedChar();
+            float[] featureVector = chr.GetFeatureVector();
+
+            foreach (var (character, alphabetVector) in _alphabet)
+            {
+                double distance = GetEuclideanDistance(featureVector, alphabetVector);
+                recognizedChar.AddPattern(new RecognizedPattern(character, distance));
+            }
+            
+            recognizedChar.Sort();
+            return recognizedChar;
         }
 
-        // check vector elements
-        foreach (var _ in _learnLists.Where(learnList => learnList == null))
-            Logger.LogWarning("Alphabet in {} is not complete", path);
-    }
-
-    public override RecognizedCharacter Recognize(Character chr)
-    {
-        var features = chr.ExtractFeatures();
-        var recognized = new RecognizedCharacter();
-
-        for (var x = 0; x < _learnLists.Count; x++)
+        private double GetEuclideanDistance(float[] v1, float[] v2)
         {
-            var fx = SimplifiedEuclideanDistance(features, _learnLists[x]);
-            recognized.AddPattern(new RecognizedPattern(Alphabet[x], (float)fx));
+            double sum = 0;
+            for (int i = 0; i < v1.Length; i++)
+            {
+                sum += Math.Pow(v1[i] - v2[i], 2);
+            }
+            return Math.Sqrt(sum);
         }
-
-        recognized.Sort(false);
-        return recognized;
     }
-
-    #region Private Helpers
-
-    /// <summary>
-    /// Simple vector distance.
-    /// </summary>
-    /// <param name="vectorA">Vector A</param>
-    /// <param name="vectorB">Vector B</param>
-    /// <returns>Their simple distance</returns>
-    /// <remarks>
-    /// This method is deprecated. Use <see cref="SimplifiedEuclideanDistance(List{double}, List{double})"/> instead, which works better.
-    /// </remarks>
-    public double SimpleVectorDistance(List<double> vectorA, List<double> vectorB) =>
-        vectorA.Select((t, i) => Math.Abs(t - vectorB[i])).Sum();
-
-    /// <summary>
-    /// Calculates the Euclidean distance between two vectors.
-    /// Worked better than the simple vector distance.
-    /// </summary>
-    /// <param name="vectorA">Vector A</param>
-    /// <param name="vectorB">Vector B</param>
-    /// <returns>The Euclidean distance of A and B</returns>
-    public double CalculateEuclideanDistance(double[] vectorA, double[] vectorB)
-    {
-        // Calculate the Euclidean distance using the formula:
-        // sqrt(sum((a_i - b_i)^2))
-        var distance = vectorA.Select((t, i) => t - vectorB[i]).Sum(diff => diff * diff);
-        return Math.Sqrt(distance);
-    }
-
-    private double Difference(List<double> vectorA, List<double> vectorB) =>
-        vectorA.Select((t, x) => Math.Abs(t - vectorB[x])).Sum();
-
-    private static double SimplifiedEuclideanDistance(List<double> vectorA, List<double> vectorB) => vectorA
-        .Select((t, x) => Math.Abs(t - vectorB[x])).Sum(partialDiff => partialDiff * partialDiff);
-
-    #endregion
 }

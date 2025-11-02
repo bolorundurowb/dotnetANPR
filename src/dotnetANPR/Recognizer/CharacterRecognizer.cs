@@ -1,64 +1,37 @@
-﻿using DotNetANPR.ImageAnalysis;
+﻿using System.Collections.Generic;
+using System.IO;
+using DotNetANPR.Config;
+using DotNetANPR.ImageAnalysis;
 
-namespace DotNetANPR.Recognizer;
-
-public abstract class CharacterRecognizer
+namespace DotNetANPR.Recognizer
 {
-    public static char[] Alphabet =
-    [
-        '0',
-        '1',
-        '2',
-        '3',
-        '4',
-        '5',
-        '6',
-        '7',
-        '8',
-        '9',
-        'A',
-        'B',
-        'C',
-        'D',
-        'E',
-        'F',
-        'G',
-        'H',
-        'I',
-        'J',
-        'K',
-        'L',
-        'M',
-        'N',
-        'O',
-        'P',
-        'Q',
-        'R',
-        'S',
-        'T',
-        'U',
-        'V',
-        'W',
-        'X',
-        'Y',
-        'Z'
-    ];
+    public abstract class CharacterRecognizer
+    {
+        protected Dictionary<char, float[]> _alphabet;
+        protected AppSettings _settings;
 
-    public static readonly float[][] Features =
-    [
-        [0, 1, 0, 1], // 0
-        [1, 0, 1, 0], // 1
-        [0, 0, 1, 1], // 2
-        [1, 1, 0, 0], // 3
-        [0, 0, 0, 1], // 4
-        [1, 0, 0, 0], // 5
-        [1, 1, 1, 0], // 6
-        [0, 1, 1, 1], // 7
-        [0, 0, 1, 0], // 8
-        [0, 1, 0, 0], // 9
-        [1, 0, 1, 1], // 10
-        [1, 1, 0, 1]  // 11
-    ];
+        protected CharacterRecognizer(AppSettings settings)
+        {
+            _settings = settings;
+            LoadAlphabet();
+        }
 
-    public abstract RecognizedCharacter Recognize(Character character);
+        private void LoadAlphabet()
+        {
+            _alphabet = new Dictionary<char, float[]>();
+            string alphabetPath = _settings.Recognition.CharLearnAlphabetPath;
+            if (!Directory.Exists(alphabetPath))
+            {
+                throw new DirectoryNotFoundException($"Alphabet path not found: {alphabetPath}");
+            }
+
+            foreach (var file in Directory.GetFiles(alphabetPath, "*.jpg"))
+            {
+                char character = Path.GetFileNameWithoutExtension(file)[0];
+                using var photo = new Photo(file);
+                using var charPhoto = new LicensePlateChar(photo, null, _settings);
+                _alphabet.Add(character, charPhoto.GetFeatureVector());
+            }
+        }
+    }
 }

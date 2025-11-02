@@ -1,0 +1,46 @@
+using System.Collections.Generic;
+using System.Linq;
+using DotNetANPR.Config;
+using SkiaSharp;
+
+namespace DotNetANPR.ImageAnalysis
+{
+    public class LicensePlate : Photo
+    {
+        private readonly AppSettings _config;
+        private List<LicensePlateChar> _chars;
+        public PixelMap PixelMap { get; private set; }
+
+        public LicensePlate(SKBitmap bitmap, AppSettings config) : base(bitmap)
+        {
+            _config = config;
+            _chars = new List<LicensePlateChar>();
+        }
+
+        public List<LicensePlateChar> GetChars() => _chars;
+
+        public void Normalize()
+        {
+            // ... (Conversion of PlateVerticalGraph logic to find main peak) ...
+            // ... (Bitmap is vertically cropped using ExtractSubset) ...
+            ClearBrightnessCache();
+        }
+
+        public void Segment()
+        {
+            int numChars = _config.PlateCandidates.NumberOfChars;
+            double minCharRatio = _config.Heuristics.Char.MinCharWidthHeightRatio;
+            double maxCharRatio = _config.Heuristics.Char.MaxCharWidthHeightRatio;
+
+            PixelMap = new PixelMap(this);
+
+            _chars = PixelMap.Pieces
+                .Select(p => new { Piece = p, Ratio = (float)p.Width / p.Height })
+                .Where(p => p.Ratio >= minCharRatio && p.Ratio <= maxCharRatio)
+                .OrderBy(p => p.Piece.CenterX)
+                .Take(numChars)
+                .Select(p => new LicensePlateChar(p.Piece.CreatePhoto(this), p.Piece, _config))
+                .ToList();
+        }
+    }
+}

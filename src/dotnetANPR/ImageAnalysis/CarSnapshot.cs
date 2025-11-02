@@ -1,87 +1,52 @@
 ﻿using System.Collections.Generic;
-using System.Drawing;
-using DotNetANPR.Configuration;
-using DotNetANPR.Extensions;
+using System.Linq;
+using DotNetANPR.Config;
+using SkiaSharp;
 
-namespace DotNetANPR.ImageAnalysis;
-
-public class CarSnapshot(Bitmap image) : Photo(image)
+namespace DotNetANPR.ImageAnalysis
 {
-    private static readonly int DistributorMargins =
-        Configurator.Instance.Get<int>("carsnapshot_distributormargins");
-
-    private static readonly int CarSnapshotGraphRankFilter =
-        Configurator.Instance.Get<int>("carsnapshot_graphrankfilter");
-
-    private static readonly int NumberOfCandidates =
-        Configurator.Instance.Get<int>("intelligence_numberOfBands");
-
-    private static readonly ProbabilityDistributor Distributor =
-        new(0, 0, DistributorMargins, DistributorMargins);
-
-    private CarSnapshotGraph? _graphHandle;
-
-    public Bitmap RenderGraph()
+    public class CarSnapshot : Photo
     {
-        ComputeGraph();
-        return _graphHandle!.RenderVertically(100, Height);
-    }
+        private readonly AppSettings _config;
+        private readonly List<LicensePlateBand> _bands;
 
-    public List<Band> Bands()
-    {
-        List<Band> response = [];
-        var peaks = ComputeGraph();
-        foreach (var peak in peaks)
+        public CarSnapshot(string filepath, AppSettings config) : base(filepath)
         {
-            // Cut from the original image of the plate and save to a vector.
-            // ATTENTION: Cutting from original,
-            // we have to apply an inverse transformation to the coordinates calculated from imageCopy
-            response.Add(new Band(Image.SubImage(0, peak.Left, Image.Width, peak.Diff)));
+            _config = config;
+            _bands = new List<LicensePlateBand>();
         }
 
-        return response;
-    }
-
-    public Bitmap VerticalEdge(Bitmap bitmap)
-    {
-        float[,] data = {
-            { -1, 0, 1 },
-            { -1, 0, 1 },
-            { -1, 0, 1 },
-            { -1, 0, 1 }
-        };
-        return bitmap.Convolve(data);
-    }
-
-    public CarSnapshotGraph Histogram(Bitmap bitmap)
-    {
-        var graph = new CarSnapshotGraph();
-        for (var y = 0; y < bitmap.Height; y++)
+        public CarSnapshot(SKBitmap bitmap, AppSettings config) : base(bitmap)
         {
-            float counter = 0;
-            for (var x = 0; x < bitmap.Width; x++)
-                counter += GetBrightness(bitmap, x, y);
-
-            graph.AddPeak(counter);
+            _config = config;
+            _bands = new List<LicensePlateBand>();
         }
 
-        return graph;
-    }
+        public List<LicensePlateBand> GetBands() => _bands;
 
-    private List<Peak> ComputeGraph()
-    {
-        if (_graphHandle == null)
+        public void FindBands()
         {
-            var imageCopy = DuplicateBitmap(Image);
-            imageCopy = VerticalEdge(imageCopy);
-            Thresholding(imageCopy);
+            int graphRankFilter = _config.ImageAnalysis.CarSnapshotGraphRankFilter;
+            double peakFoot = _config.ImageAnalysis.CarSnapshotGraphPeakFootConstant;
+            double peakDiff = _config.ImageAnalysis.CarSnapshotGraphPeakDiffMultiplicationConstant;
+            int numBands = _config.PlateCandidates.NumberOfBands;
+            int margins = _config.ImageAnalysis.CarSnapshotDistributorMargins;
 
-            _graphHandle = Histogram(imageCopy);
-            _graphHandle.RankFilter(CarSnapshotGraphRankFilter);
-            _graphHandle.ApplyProbabilityDistributor(Distributor);
-            _graphHandle.FindPeaks(NumberOfCandidates); // sort by height
+            var graph = new CarSnapshotGraph(this, graphRankFilter);
+            graph.FindPeaks(peakFoot, peakDiff, 0);
+
+            foreach (var peak in graph.Peaks.Take(numBands))
+            {
+                int y = peak.Left - margins;
+                int height = peak.Right - peak.Left + 2 * margins;
+                if (y < 0) y = 0;
+                if (y + height > Height) height = Height - y;
+
+                var bandRect = SKRectI.Create(0, y, Width, height);
+                var bandBitmap = new SKBitmap(bandRect.Width, bandRect.Height, Info);
+                _bitmap.ExtractSubset(bandBitmap, bandRect);
+                _bands.Add(new LicensePlateBand(bandBitmap, _config));
+            }
         }
-
-        return _graphHandle.Peaks;
     }
 }

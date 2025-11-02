@@ -5,7 +5,7 @@ using DotNetANPR.Configuration;
 
 namespace DotNetANPR.ImageAnalysis;
 
-public class BandGraph(Band handle) : Graph
+public class BandGraph(Band handle) : ProjectionGraph
 {
     private static readonly double PeakFootConstant =
         Configurator.Instance.Get<double>("bandgraph_peakfootconstant"); // 0.75

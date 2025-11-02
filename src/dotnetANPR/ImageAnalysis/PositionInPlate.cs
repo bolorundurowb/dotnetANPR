@@ -1,8 +1,7 @@
-﻿namespace DotNetANPR.ImageAnalysis;
-
-public class PositionInPlate(int leftX, int rightX)
+﻿namespace DotNetANPR.ImageAnalysis
 {
-    public int LeftX { get; private set; } = leftX;
-
-    public int RightX { get; private set; } = rightX;
+    /// <summary>
+    /// Replaces PositionInPlate.java. A simple data record.
+    /// </summary>
+    public record PositionInPlate(int MinX, int MaxX, int MinY, int MaxY);
 }

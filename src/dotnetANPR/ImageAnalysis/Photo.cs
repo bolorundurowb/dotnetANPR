@@ -4,381 +4,253 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using DotNetANPR.Configuration;
 
+
+using SkiaSharp;
+using System;
+using System.IO;
+
+
 namespace DotNetANPR.ImageAnalysis;
-
-public class Photo(Bitmap image) : IDisposable, ICloneable
-{
-    public int Width => image.Width;
-
-    public int Height => image.Height;
-
-    public float Brightness => GetBrightness(image, Width / 2, Height / 2);
-
-    public float Saturation => GetSaturation(image, Width / 2, Height / 2);
-
-    public float Hue => GetHue(image, Width / 2, Height / 2);
-
-    public Bitmap Image
+    public class Photo : IDisposable
     {
-        get => image;
-        // TODO: fix this travesty
-        // protected set => image = value;
-        internal set => image = value;
-    }
+        protected SKBitmap _bitmap;
+        private float[,] _brightnessCache;
+        private bool _disposed = false;
 
-    public static void SetBrightness(Bitmap image, int x, int y, float value)
-    {
-        var brightness = (int)(value * 255);
-        image.SetPixel(x, y, Color.FromArgb(brightness, brightness, brightness));
-    }
+        public int Width => _bitmap.Width;
+        public int Height => _bitmap.Height;
+        public SKImageInfo Info => _bitmap.Info;
+        public int Square => Width * Height;
 
-    public static float GetBrightness(Bitmap image, int x, int y)
-    {
-        var color = image.GetPixel(x, y);
-        return Color.FromArgb(color.R, color.G, color.B).GetBrightness();
-    }
-
-    public static float GetSaturation(Bitmap image, int x, int y)
-    {
-        var color = image.GetPixel(x, y);
-        return Color.FromArgb(color.R, color.G, color.B).GetSaturation();
-    }
-
-    public static float GetHue(Bitmap image, int x, int y)
-    {
-        var color = image.GetPixel(x, y);
-        return Color.FromArgb(color.R, color.G, color.B).GetHue() / 360f;
-    }
-
-    public static Bitmap LinearResizeImage(Bitmap origin, int width, int height)
-    {
-        var resizedImage = new Bitmap(width, height);
-        using var graphics = Graphics.FromImage(resizedImage);
-        var xScale = (float)width / origin.Width;
-        var yScale = (float)height / origin.Height;
-
-        graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
-        graphics.ScaleTransform(xScale, yScale);
-        graphics.DrawImage(origin, new Rectangle(0, 0, origin.Width, origin.Height));
-        return resizedImage;
-    }
-
-    public static Bitmap DuplicateBitmap(Bitmap image)
-    {
-        var imageCopy = new Bitmap(image.Width, image.Height, PixelFormat.Format24bppRgb);
-        using var graphics = Graphics.FromImage(imageCopy);
-        graphics.DrawImage(image, 0, 0, image.Width, image.Height);
-
-        return imageCopy;
-    }
-
-    public static void Thresholding(Bitmap bitmap)
-    {
-        // Define the threshold array
-        var threshold = new byte[256];
-        for (var i = 0; i < 36; i++)
-            threshold[i] = 0;
-        for (var i = 36; i < 256; i++) 
-            threshold[i] = (byte)i;
-
-        // Lock the bitmap's bits
-        var rect = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
-        var bmpData = bitmap.LockBits(rect, ImageLockMode.ReadWrite, bitmap.PixelFormat);
-
-        // Get the address of the first line
-        var ptr = bmpData.Scan0;
-
-        // Declare an array to hold the bytes of the bitmap
-        var bytes = Math.Abs(bmpData.Stride) * bitmap.Height;
-        var rgbValues = new byte[bytes];
-
-        // Copy the RGB values into the array
-        System.Runtime.InteropServices.Marshal.Copy(ptr, rgbValues, 0, bytes);
-
-        // Apply the thresholding
-        for (var i = 0; i < rgbValues.Length; i++) 
-            rgbValues[i] = threshold[rgbValues[i]];
-
-        // Copy the RGB values back to the bitmap
-        System.Runtime.InteropServices.Marshal.Copy(rgbValues, 0, ptr, bytes);
-
-        // Unlock the bits
-        bitmap.UnlockBits(bmpData);
-    }
-
-    public static Bitmap ArrayToBitmap(float[,] array, int w, int h)
-    {
-        var bitmap = new Bitmap(w, h, PixelFormat.Format24bppRgb);
-        for (var x = 0; x < w; x++)
-        for (var y = 0; y < h; y++)
-            SetBrightness(bitmap, x, y, array[x, y]);
-        return bitmap;
-    }
-
-    public static Bitmap CreateBlankBitmap(Bitmap image) => CreateBlankBitmap(image.Width, image.Height);
-
-    public static Bitmap CreateBlankBitmap(int width, int height) => new(width, height, PixelFormat.Format24bppRgb);
-
-    public Bitmap GetBitmapWithAxes()
-    {
-        var widthWithAxes = image.Width + 40;
-        var heightWithAxes = image.Height + 40;
-
-        var axis = new Bitmap(widthWithAxes, heightWithAxes, PixelFormat.Format24bppRgb);
-        using var graphicAxis = Graphics.FromImage(axis);
-        // Set the background color to light gray
-        graphicAxis.Clear(Color.LightGray);
-
-        // Draw the image
-        graphicAxis.DrawImage(image, 35, 5, image.Width, image.Height);
-
-        // Draw the black border around the image
-        graphicAxis.DrawRectangle(Pens.Black, 35, 5, image.Width, image.Height);
-
-        // Draw the X axis labels and ticks
-        for (var ax = 0; ax < image.Width; ax += 50)
+        public Photo(string filepath)
         {
-            graphicAxis.DrawString(ax.ToString(), SystemFonts.DefaultFont, Brushes.Black, ax + 35,
-                axis.Height - 10);
-            graphicAxis.DrawLine(Pens.Black, ax + 35, image.Height + 5, ax + 35, image.Height + 15);
-        }
-
-        // Draw the Y axis labels and ticks
-        for (var ay = 0; ay < image.Height; ay += 50)
-        {
-            graphicAxis.DrawString(ay.ToString(), SystemFonts.DefaultFont, Brushes.Black, 3, ay + 15);
-            graphicAxis.DrawLine(Pens.Black, 25, ay + 5, 35, ay + 5);
-        }
-
-        return axis;
-    }
-
-    public void SetBrightness(int x, int y, int value)
-    {
-        var color = Color.FromArgb(value, value, value);
-        image.SetPixel(x, y, color);
-    }
-
-    public float GetBrightness(int x, int y) => GetBrightness(image, x, y);
-
-    public float GetSaturation(int x, int y) => GetSaturation(image, x, y);
-
-    public float GetHue(int x, int y) => GetHue(image, x, y);
-
-    public void Save(string path) { image.Save(path); }
-
-    public void NormalizeBrightness(float coef)
-    {
-        var stats = new Statistics(this);
-        for (var x = 0; x < Width; x++)
-        for (var y = 0; y < Height; y++)
-        {
-            var currentBrightness = GetBrightness(image, x, y);
-            var thresholdBrightness = stats.ThresholdBrightness(currentBrightness, coef);
-            SetBrightness(image, x, y, thresholdBrightness);
-        }
-    }
-
-    public Photo Duplicate() => new(DuplicateBitmap(image));
-
-    public object Clone() => Duplicate();
-
-    #region Filters
-
-    public void LinearResize(int width, int height) { image = LinearResizeImage(image, width, height); }
-
-    public void AverageResize(int width, int height) { image = AverageResizeImage(image, width, height); }
-
-    public Bitmap AverageResizeImage(Bitmap origin, int width, int height)
-    {
-        // TODO: Doesn't work well for characters of size similar to the target size
-        if (origin.Width < width || origin.Height < height)
-            // Average height doesn't play well with zooming in; if we are zooming in in direction x or y,
-            // use linear transformation
-            return LinearResizeImage(origin, width, height);
-
-        // Java traditionally makes images smaller with the bilinear method (linear mapping), which brings large
-        // information loss. Fourier transformation would be ideal, but it is too slow.
-        // Therefore we use the method of weighted average.
-        var resized = new Bitmap(width, height, PixelFormat.Format24bppRgb);
-        var xScale = (float)origin.Width / width;
-        var yScale = (float)origin.Height / height;
-
-        for (var x = 0; x < width; x++)
-        {
-            var x0Min = (int)(x * xScale);
-            var x0Max = (int)((x + 1) * xScale);
-            for (var y = 0; y < height; y++)
+            _bitmap = SKBitmap.Decode(filepath);
+            if (_bitmap == null)
             {
-                var y0Min = (int)(y * yScale);
-                var y0Max = (int)((y + 1) * yScale);
-
-                // Do a neighborhood average and save to resized image
-                float sum = 0;
-                var sumCount = 0;
-                for (var x0 = x0Min; x0 < x0Max; x0++)
-                for (var y0 = y0Min; y0 < y0Max; y0++)
-                {
-                    sum += GetBrightness(origin, x0, y0);
-                    sumCount++;
-                }
-
-                sum /= sumCount;
-                SetBrightness(resized, x, y, sum);
+                throw new IOException($"{{Error in image loader}} Couldn't read input file {filepath}");
+            }
+            
+            // Ensure 8888 color type for consistency
+            if (_bitmap.ColorType != SKColorType.Bgra8888)
+            {
+                var temp = _bitmap;
+                _bitmap = new SKBitmap(temp.Width, temp.Height, SKColorType.Bgra8888, SKAlphaType.Opaque);
+                using var canvas = new SKCanvas(_bitmap);
+                canvas.DrawBitmap(temp, 0, 0);
+                temp.Dispose();
             }
         }
 
-        return resized;
-    }
-
-    #endregion
-
-    public float[,] BitmapToArray(Bitmap image, int width, int height)
-    {
-        var array = new float[width, height];
-
-        for (var x = 0; x < width; x++)
-        for (var y = 0; y < height; y++)
-            array[x, y] = GetBrightness(image, x, y);
-
-        return array;
-    }
-
-    public float[,] BitmapToArrayWithBounds(Bitmap image, int width, int height)
-    {
-        var array = new float[width + 2, height + 2];
-
-        for (var x = 0; x < width; x++)
-        for (var y = 0; y < height; y++)
-            array[x + 1, y + 1] = GetBrightness(image, x, y);
-
-        // Clear the edges
-        for (var x = 0; x < width + 2; x++)
+        public Photo(SKBitmap bitmap)
         {
-            array[x, 0] = 1;
-            array[x, height + 1] = 1;
+            _bitmap = bitmap; // Takes ownership
         }
 
-        for (var y = 0; y < height + 2; y++)
+        public SKBitmap GetBitmap() => _bitmap;
+
+        public Photo Clone()
         {
-            array[0, y] = 1;
-            array[width + 1, y] = 1;
+            if (_disposed) throw new ObjectDisposedException(nameof(Photo));
+            return new Photo(_bitmap.Copy());
         }
 
-        return array;
-    }
-
-    public Bitmap SumBitmaps(Bitmap image1, Bitmap image2)
-    {
-        var outWidth = Math.Min(image1.Width, image2.Width);
-        var outHeight = Math.Min(image1.Height, image2.Height);
-
-        var outImage = new Bitmap(outWidth, outHeight, PixelFormat.Format24bppRgb);
-        for (var x = 0; x < outWidth; x++)
-        for (var y = 0; y < outHeight; y++)
+        public void SaveImage(string filepath)
         {
-            var brightness = Math.Min(1.0f, GetBrightness(image1, x, y) + GetBrightness(image2, x, y));
-            SetBrightness(outImage, x, y, brightness);
+            if (_disposed) throw new ObjectDisposedException(nameof(Photo));
+            
+            var format = Path.GetExtension(filepath).ToUpperInvariant() switch
+            {
+                ".JPG" or ".JPEG" => SKEncodedImageFormat.Jpeg,
+                ".PNG" => SKEncodedImageFormat.Png,
+                ".BMP" => SKEncodedImageFormat.Bmp,
+                _ => throw new IOException("Unsupported file format")
+            };
+
+            using var stream = File.OpenWrite(filepath);
+            _bitmap.Encode(stream, format, 90);
         }
 
-        return outImage;
-    }
+        // --- Optimized Pixel Access ---
 
-    public void PlainThresholding(Statistics stat)
-    {
-        var width = image.Width;
-        var height = image.Height;
-        for (var x = 0; x < width; x++)
-        for (var y = 0; y < height; y++)
+        /// <summary>
+        /// Lazily populates and returns a 2D array of brightness values (0-1).
+        /// This is a major optimization over the original.
+        /// </summary>
+        public float[,] GetBrightnessMatrix()
         {
-            var brightness = GetBrightness(image, x, y);
-            SetBrightness(image, x, y, stat.ThresholdBrightness(brightness, 1.0f));
-        }
-    }
+            if (_disposed) throw new ObjectDisposedException(nameof(Photo));
 
-    public int GetPixelColor(int x, int y) => image.GetPixel(x, y).ToArgb();
+            if (_brightnessCache != null)
+            {
+                return _brightnessCache;
+            }
 
-    public void AdaptiveThresholding()
-    {
-        var statistics = new Statistics(this);
-        var radius = Configurator.Instance.Get<int>("photo_adaptivethresholdingradius");
-        if (radius == 0)
-        {
-            PlainThresholding(statistics);
-            return;
-        }
-
-        var width = image.Width;
-        var height = image.Height;
-        var sourceArray = BitmapToArray(image, width, height);
-        var destinationArray = BitmapToArray(image, width, height);
-
-        for (var x = 0; x < width; x++)
-        for (var y = 0; y < height; y++)
-        {
-            // Compute neighborhood
-            var count = 0;
-            var neighborhood = 0.0f;
-            for (var ix = x - radius; ix <= x + radius; ix++)
-            for (var iy = y - radius; iy <= y + radius; iy++)
-                if (ix >= 0 && iy >= 0 && ix < width && iy < height)
+            _brightnessCache = new float[Width, Height];
+            for (int y = 0; y < Height; y++)
+            {
+                for (int x = 0; x < Width; x++)
                 {
-                    neighborhood += sourceArray[ix, iy];
-                    count++;
+                    _brightnessCache[x, y] = _bitmap.GetPixel(x, y).GetBrightness();
                 }
-
-            neighborhood /= count;
-            destinationArray[x, y] = destinationArray[x, y] < neighborhood ? 0f : 1f;
+            }
+            return _brightnessCache;
         }
 
-        image = ArrayToBitmap(destinationArray, width, height);
+        public float GetBrightness(int x, int y)
+        {
+            // Uses the fast cache
+            return GetBrightnessMatrix()[x, y];
+        }
+
+        public float GetSaturation(int x, int y)
+        {
+             if (_disposed) throw new ObjectDisposedException(nameof(Photo));
+            return _bitmap.GetPixel(x, y).GetSaturation();
+        }
+
+        public float GetHue(int x, int y)
+        {
+             if (_disposed) throw new ObjectDisposedException(nameof(Photo));
+            return _bitmap.GetPixel(x, y).GetHue();
+        }
+
+        public void SetBrightness(int x, int y, float value)
+        {
+             if (_disposed) throw new ObjectDisposedException(nameof(Photo));
+            _bitmap.SetPixel(x, y, ImageUtils.ToGrayscaleColor(value));
+            ClearBrightnessCache(); // Invalidate cache
+        }
+        
+        protected void ClearBrightnessCache()
+        {
+            _brightnessCache = null;
+        }
+
+        // --- Filters & Transforms ---
+
+        public void Resize(int width, int height, SKFilterQuality quality = SKFilterQuality.High)
+        {
+            if (_disposed) throw new ObjectDisposedException(nameof(Photo));
+            
+            var newInfo = new SKImageInfo(width, height, _bitmap.ColorType, _bitmap.AlphaType);
+            var newBitmap = _bitmap.Resize(newInfo, quality);
+            
+            _bitmap.Dispose();
+            _bitmap = newBitmap;
+            ClearBrightnessCache();
+        }
+
+        public void VerticalEdgeDetector()
+        {
+            if (_disposed) throw new ObjectDisposedException(nameof(Photo));
+            
+            float[] kernel = {
+                -1, 0, 1,
+                -2, 0, 2,
+                -1, 0, 1
+            };
+
+            var newBitmap = ImageUtils.Convolve(_bitmap, kernel, 3, 3);
+            _bitmap.Dispose();
+            _bitmap = newBitmap;
+            ClearBrightnessCache();
+        }
+
+        public void PlainThresholding()
+        {
+            if (_disposed) throw new ObjectDisposedException(nameof(Photo));
+            var stats = new Statistics(this); // Assumes Statistics class is converted
+            
+            for (int y = 0; y < Height; y++)
+            {
+                for (int x = 0; x < Width; x++)
+                {
+                    float brightness = _bitmap.GetPixel(x, y).GetBrightness();
+                    float thresholded = stats.ThresholdBrightness(brightness, 1.0f);
+                    _bitmap.SetPixel(x, y, ImageUtils.ToGrayscaleColor(thresholded));
+                }
+            }
+            ClearBrightnessCache();
+        }
+
+        public void AdaptiveThresholding(int radius)
+        {
+            if (_disposed) throw new ObjectDisposedException(nameof(Photo));
+            if (radius == 0)
+            {
+                PlainThresholding();
+                return;
+            }
+            
+            float[,] sourceMatrix = GetBrightnessMatrix(); // Optimized
+            var destBitmap = new SKBitmap(Info);
+
+            for (int y = 0; y < Height; y++)
+            {
+                for (int x = 0; x < Width; x++)
+                {
+                    float neighborhoodSum = 0;
+                    int count = 0;
+
+                    int yMin = Math.Max(0, y - radius);
+                    int yMax = Math.Min(Height - 1, y + radius);
+                    int xMin = Math.Max(0, x - radius);
+                    int xMax = Math.Min(Width - 1, x + radius);
+
+                    for (int iy = yMin; iy <= yMax; iy++)
+                    {
+                        for (int ix = xMin; ix <= xMax; ix++)
+                        {
+                            neighborhoodSum += sourceMatrix[ix, iy];
+                            count++;
+                        }
+                    }
+
+                    float neighborhoodAvg = neighborhoodSum / count;
+                    float pixelVal = sourceMatrix[x, y] < neighborhoodAvg ? 0f : 1f;
+                    destBitmap.SetPixel(x, y, ImageUtils.ToGrayscaleColor(pixelVal));
+                }
+            }
+            
+            _bitmap.Dispose();
+            _bitmap = destBitmap;
+            ClearBrightnessCache();
+        }
+
+        public HoughTransformation GetHoughTransformation()
+        {
+            if (_disposed) throw new ObjectDisposedException(nameof(Photo));
+            
+            var hough = new HoughTransformation(Width, Height);
+            float[,] brightnessMatrix = GetBrightnessMatrix(); // Optimized
+            
+            for (int y = 0; y < Height; y++)
+            {
+                for (int x = 0; x < Width; x++)
+                {
+                    hough.AddLine(x, y, brightnessMatrix[x, y]);
+                }
+            }
+            return hough;
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    _bitmap?.Dispose();
+                }
+                _bitmap = null;
+                _brightnessCache = null;
+                _disposed = true;
+            }
+        }
     }
-
-    public HoughTransformation GetHoughTransformation()
-    {
-        var hough = new HoughTransformation(Width, Height);
-        for (var x = 0; x < Width; x++)
-        for (var y = 0; y < Height; y++)
-            hough.AddLine(x, y, GetBrightness(x, y));
-
-        return hough;
-    }
-
-
-    public void Dispose() { image.Dispose(); }
-
-    #region Overrides
-
-    public override bool Equals(object? obj)
-    {
-        if (ReferenceEquals(this, obj))
-            return true;
-
-        if (obj is null || obj is not Photo)
-            return false;
-
-        var comparison = (Photo)obj;
-
-        if (comparison.Width != Width || comparison.Height != Height)
-            return false;
-
-        for (var i = 0; i < Width; i++)
-        for (var j = 0; j < Height; j++)
-            if (GetPixelColor(i, j) != comparison.GetPixelColor(i, j))
-                return false;
-
-        return true;
-    }
-
-    public override int GetHashCode()
-    {
-        long rgbSum = 0;
-        for (var i = 0; i < Width; i++)
-        for (var j = 0; j < Height; j++)
-            rgbSum += GetPixelColor(i, j);
-
-        return rgbSum.GetHashCode();
-    }
-
-    #endregion
-}

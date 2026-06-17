@@ -3,6 +3,7 @@ using System.IO;
 using DotNetANPR.Configuration;
 using DotNetANPR.ImageAnalysis;
 using DotNetANPR.Recognizer;
+using DotNetANPR.Utilities;
 using SkiaSharp;
 
 namespace DotNetANPR;

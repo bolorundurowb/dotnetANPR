@@ -1,6 +1,7 @@
 # dotNETANPR
 
-[![Build and Test](https://github.com/bolorundurowb/dotnetANPR/actions/workflows/build.yaml/badge.svg)](https://github.com/bolorundurowb/dotnetANPR/actions/workflows/build.yaml)
+[![Build and Test](https://github.com/bolorundurowb/dotnetANPR/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/bolorundurowb/dotnetANPR/actions/workflows/build-and-test.yml)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 
 ## About

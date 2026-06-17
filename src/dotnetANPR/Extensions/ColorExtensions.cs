@@ -1,11 +1,21 @@
-﻿using System;
-using System.Drawing;
+using System;
+using SkiaSharp;
 
 namespace DotNetANPR.Extensions;
 
+/// <summary>
+/// Extension methods for color conversions used in the ANPR system.
+/// </summary>
 internal static class ColorExtensions
 {
-    public static Color HsbToRgb(float hue, float saturation, float brightness)
+    /// <summary>
+    /// Converts HSB (Hue, Saturation, Brightness) values to an <see cref="SKColor"/>.
+    /// </summary>
+    /// <param name="hue">The hue component (0.0 to 1.0).</param>
+    /// <param name="saturation">The saturation component (0.0 to 1.0).</param>
+    /// <param name="brightness">The brightness component (0.0 to 1.0).</param>
+    /// <returns>The corresponding <see cref="SKColor"/>.</returns>
+    public static SKColor HsbToRgb(float hue, float saturation, float brightness)
     {
         // Clamp values to valid ranges
         hue = Math.Max(0.0f, Math.Min(1.0f, hue));
@@ -61,6 +71,6 @@ internal static class ColorExtensions
             }
         }
 
-        return Color.FromArgb(r, g, b);
+        return new SKColor((byte)r, (byte)g, (byte)b);
     }
 }

@@ -1,8 +1,11 @@
-﻿using System;
-using System.Drawing;
+using System;
+using SkiaSharp;
 
 namespace DotNetANPR.Extensions;
 
+/// <summary>
+/// Extension methods for <see cref="SKBitmap"/> providing convolution and sub-image extraction.
+/// </summary>
 internal static class BitmapExtensions
 {
     private static T Clamp<T>(T value, T min, T max) where T : IComparable
@@ -16,12 +19,20 @@ internal static class BitmapExtensions
         return value;
     }
 
-    public static Bitmap Convolve(this Bitmap image, float[,] kernel)
+    /// <summary>
+    /// Applies a convolution kernel to the bitmap and returns a new filtered bitmap.
+    /// </summary>
+    /// <param name="image">The source bitmap.</param>
+    /// <param name="kernel">The convolution kernel as a 2D float array.</param>
+    /// <returns>A new bitmap with the convolution applied.</returns>
+    public static SKBitmap Convolve(this SKBitmap image, float[,] kernel)
     {
-        var kernelSize = (int)Math.Sqrt(kernel.Length);
-        var kernelOffset = kernelSize / 2;
+        var kernelHeight = kernel.GetLength(0);
+        var kernelWidth = kernel.GetLength(1);
+        var kernelOffsetY = kernelHeight / 2;
+        var kernelOffsetX = kernelWidth / 2;
 
-        var result = new Bitmap(image.Width, image.Height);
+        var result = new SKBitmap(image.Width, image.Height, image.ColorType, image.AlphaType);
 
         for (var y = 0; y < image.Height; y++)
         {
@@ -29,34 +40,44 @@ internal static class BitmapExtensions
             {
                 float r = 0, g = 0, b = 0;
 
-                for (var ky = -kernelOffset; ky <= kernelOffset; ky++)
+                for (var ky = 0; ky < kernelHeight; ky++)
                 {
-                    for (var kx = -kernelOffset; kx <= kernelOffset; kx++)
+                    for (var kx = 0; kx < kernelWidth; kx++)
                     {
-                        var px = Clamp(x + kx, 0, image.Width - 1);
-                        var py = Clamp(y + ky, 0, image.Height - 1);
+                        var px = Clamp(x + kx - kernelOffsetX, 0, image.Width - 1);
+                        var py = Clamp(y + ky - kernelOffsetY, 0, image.Height - 1);
 
                         var pixel = image.GetPixel(px, py);
-                        r += pixel.R * kernel[ky + kernelOffset, kx + kernelOffset];
-                        g += pixel.G * kernel[ky + kernelOffset, kx + kernelOffset];
-                        b += pixel.B * kernel[ky + kernelOffset, kx + kernelOffset];
+                        r += pixel.Red * kernel[ky, kx];
+                        g += pixel.Green * kernel[ky, kx];
+                        b += pixel.Blue * kernel[ky, kx];
                     }
                 }
 
-                r = Clamp(r, 0, 255);
-                g = Clamp(g, 0, 255);
-                b = Clamp(b, 0, 255);
+                r = Clamp(r, 0f, 255f);
+                g = Clamp(g, 0f, 255f);
+                b = Clamp(b, 0f, 255f);
 
-                result.SetPixel(x, y, Color.FromArgb((int)r, (int)g, (int)b));
+                result.SetPixel(x, y, new SKColor((byte)r, (byte)g, (byte)b));
             }
         }
 
         return result;
     }
 
-    public static Bitmap SubImage(this Bitmap source, int x, int y, int width, int height)
+    /// <summary>
+    /// Extracts a rectangular sub-region from the bitmap.
+    /// </summary>
+    /// <param name="source">The source bitmap.</param>
+    /// <param name="x">The x-coordinate of the top-left corner.</param>
+    /// <param name="y">The y-coordinate of the top-left corner.</param>
+    /// <param name="width">The width of the sub-region.</param>
+    /// <param name="height">The height of the sub-region.</param>
+    /// <returns>A new bitmap containing the extracted sub-region.</returns>
+    public static SKBitmap SubImage(this SKBitmap source, int x, int y, int width, int height)
     {
-        var rect = new Rectangle(x, y, width, height);
-        return source.Clone(rect, source.PixelFormat);
+        var subset = new SKBitmap();
+        source.ExtractSubset(subset, SKRectI.Create(x, y, width, height));
+        return subset;
     }
 }

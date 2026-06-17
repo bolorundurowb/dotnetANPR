@@ -1,19 +1,22 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using DotNetANPR.Configuration;
 using DotNetANPR.ImageAnalysis;
-using DotNetANPR.Utilities;
-using Microsoft.Extensions.Logging;
-
 namespace DotNetANPR.Recognizer;
 
+/// <summary>
+/// K-nearest neighbor pattern classifier that recognizes characters by comparing their
+/// extracted feature vectors against pre-loaded alphabet templates using Euclidean distance.
+/// </summary>
 public class KnnPatternClassifier : CharacterRecognizer
 {
-    private static readonly ILogger<KnnPatternClassifier> Logger = Logging.GetLogger<KnnPatternClassifier>();
-
     private readonly List<List<double>> _learnLists;
 
+    /// <summary>
+    /// Initializes a new <see cref="KnnPatternClassifier"/> by loading alphabet images from the
+    /// configured directory and extracting feature vectors for each character template.
+    /// </summary>
     public KnnPatternClassifier()
     {
         var path = Configurator.Instance.GetPath("char_learnAlphabetPath");
@@ -26,11 +29,16 @@ public class KnnPatternClassifier : CharacterRecognizer
             _learnLists.Add(imgChar.ExtractFeatures());
         }
 
-        // check vector elements
-        foreach (var _ in _learnLists.Where(learnList => learnList == null))
-            Logger.LogWarning("Alphabet in {} is not complete", path);
     }
 
+    /// <summary>
+    /// Recognizes a character by computing the simplified Euclidean distance between
+    /// the character's feature vector and all stored alphabet templates.
+    /// </summary>
+    /// <param name="chr">The character to recognize.</param>
+    /// <returns>
+    /// A <see cref="RecognizedCharacter"/> with patterns sorted by ascending cost (distance).
+    /// </returns>
     public override RecognizedCharacter Recognize(Character chr)
     {
         var features = chr.ExtractFeatures();
@@ -49,37 +57,15 @@ public class KnnPatternClassifier : CharacterRecognizer
     #region Private Helpers
 
     /// <summary>
-    /// Simple vector distance.
+    /// Computes the squared Euclidean distance between two feature vectors.
+    /// This simplified version omits the final square root for performance.
     /// </summary>
-    /// <param name="vectorA">Vector A</param>
-    /// <param name="vectorB">Vector B</param>
-    /// <returns>Their simple distance</returns>
-    /// <remarks>
-    /// This method is deprecated. Use <see cref="SimplifiedEuclideanDistance(List{double}, List{double})"/> instead, which works better.
-    /// </remarks>
-    public double SimpleVectorDistance(List<double> vectorA, List<double> vectorB) =>
-        vectorA.Select((t, i) => Math.Abs(t - vectorB[i])).Sum();
-
-    /// <summary>
-    /// Calculates the Euclidean distance between two vectors.
-    /// Worked better than the simple vector distance.
-    /// </summary>
-    /// <param name="vectorA">Vector A</param>
-    /// <param name="vectorB">Vector B</param>
-    /// <returns>The Euclidean distance of A and B</returns>
-    public double CalculateEuclideanDistance(double[] vectorA, double[] vectorB)
-    {
-        // Calculate the Euclidean distance using the formula:
-        // sqrt(sum((a_i - b_i)^2))
-        var distance = vectorA.Select((t, i) => t - vectorB[i]).Sum(diff => diff * diff);
-        return Math.Sqrt(distance);
-    }
-
-    private double Difference(List<double> vectorA, List<double> vectorB) =>
-        vectorA.Select((t, x) => Math.Abs(t - vectorB[x])).Sum();
-
-    private static double SimplifiedEuclideanDistance(List<double> vectorA, List<double> vectorB) => vectorA
-        .Select((t, x) => Math.Abs(t - vectorB[x])).Sum(partialDiff => partialDiff * partialDiff);
+    /// <param name="vectorA">The first feature vector.</param>
+    /// <param name="vectorB">The second feature vector.</param>
+    /// <returns>The sum of squared element-wise differences.</returns>
+    private static double SimplifiedEuclideanDistance(List<double> vectorA, List<double> vectorB) =>
+        vectorA.Select((t, x) => Math.Abs(t - vectorB[x]))
+               .Sum(partialDiff => partialDiff * partialDiff);
 
     #endregion
 }

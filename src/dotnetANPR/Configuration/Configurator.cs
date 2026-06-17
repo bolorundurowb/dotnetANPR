@@ -1,20 +1,190 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
 using System.IO;
-using PropertyConfig;
+using System.Xml.Linq;
 
 namespace DotNetANPR.Configuration;
 
+/// <summary>
+/// Singleton configuration manager that stores all ANPR settings as key-value pairs.
+/// Replaces the Java Properties-based configuration with a simple dictionary-backed
+/// POCO that supports XML persistence compatible with Java Properties XML format.
+/// </summary>
 public sealed class Configurator
 {
-    private static Configurator? _configurator;
-    private readonly Properties _properties;
+    private static Configurator? _instance;
+    private static readonly object Lock = new();
 
-    private static readonly string FileName = "Resources/config.xml";
+    private readonly Dictionary<string, string> _properties = new(StringComparer.Ordinal);
+
+    /// <summary>
+    /// Gets the singleton instance of the <see cref="Configurator"/>.
+    /// On first access, loads defaults and attempts to load from the default config file.
+    /// </summary>
+    public static Configurator Instance
+    {
+        get
+        {
+            if (_instance is null)
+            {
+                lock (Lock)
+                {
+                    _instance ??= new Configurator();
+                }
+            }
+
+            return _instance;
+        }
+    }
 
     private Configurator()
     {
-        _properties = [];
+        SetDefaults();
 
+        var defaultPath = GetDefaultConfigPath();
+        if (File.Exists(defaultPath))
+        {
+            LoadFromXml(defaultPath);
+        }
+    }
+
+    /// <summary>
+    /// Creates a new <see cref="Configurator"/> with defaults, then loads overrides
+    /// from the specified XML file.
+    /// </summary>
+    /// <param name="filePath">Path to the XML configuration file.</param>
+    public Configurator(string filePath) : this()
+    {
+        if (File.Exists(filePath))
+        {
+            LoadFromXml(filePath);
+        }
+    }
+
+    /// <summary>
+    /// Gets the value associated with the specified configuration key, converted to
+    /// the requested type.
+    /// </summary>
+    /// <typeparam name="T">The target type (e.g. <see cref="int"/>, <see cref="double"/>, <see cref="string"/>).</typeparam>
+    /// <param name="name">The configuration key.</param>
+    /// <returns>The value converted to <typeparamref name="T"/>.</returns>
+    /// <exception cref="KeyNotFoundException">Thrown when <paramref name="name"/> is not found.</exception>
+    /// <exception cref="InvalidCastException">Thrown when the value cannot be converted.</exception>
+    public T Get<T>(string name)
+    {
+        if (!_properties.TryGetValue(name, out var rawValue))
+        {
+            throw new KeyNotFoundException($"Configuration key '{name}' not found.");
+        }
+
+        return (T)Convert.ChangeType(rawValue, typeof(T), System.Globalization.CultureInfo.InvariantCulture);
+    }
+
+    /// <summary>
+    /// Sets the value for the specified configuration key.
+    /// </summary>
+    /// <typeparam name="T">The type of the value.</typeparam>
+    /// <param name="name">The configuration key.</param>
+    /// <param name="value">The value to store.</param>
+    public void Set<T>(string name, T value)
+    {
+        _properties[name] = Convert.ToString(value, System.Globalization.CultureInfo.InvariantCulture) ?? string.Empty;
+    }
+
+    /// <summary>
+    /// Gets a file-system path value for the specified key, normalizing directory separators
+    /// for the current platform.
+    /// </summary>
+    /// <param name="name">The configuration key whose value is a path.</param>
+    /// <returns>The path with platform-appropriate directory separators.</returns>
+    public string GetPath(string name)
+    {
+        var rawValue = Get<string>(name);
+        return rawValue.Replace('/', Path.DirectorySeparatorChar)
+                       .Replace('\\', Path.DirectorySeparatorChar);
+    }
+
+    /// <summary>
+    /// Saves the current configuration to an XML file using a format compatible with
+    /// Java's <c>Properties.storeToXML</c>:
+    /// <code>
+    /// &lt;properties&gt;
+    ///   &lt;entry key="name"&gt;value&lt;/entry&gt;
+    /// &lt;/properties&gt;
+    /// </code>
+    /// </summary>
+    /// <param name="path">The file path to write to.</param>
+    public void SaveToXml(string path)
+    {
+        var root = new XElement("properties");
+        foreach (var kvp in _properties)
+        {
+            root.Add(new XElement("entry", new XAttribute("key", kvp.Key), kvp.Value));
+        }
+
+        var doc = new XDocument(
+            new XDeclaration("1.0", "UTF-8", null),
+            new XDocType("properties", null, "http://java.sun.com/dtd/properties.dtd", null),
+            root);
+
+        var dir = Path.GetDirectoryName(path);
+        if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
+        {
+            Directory.CreateDirectory(dir);
+        }
+
+        doc.Save(path);
+    }
+
+    /// <summary>
+    /// Saves the current configuration to the default config file location.
+    /// </summary>
+    public void Save() => SaveToXml(GetDefaultConfigPath());
+
+    /// <summary>
+    /// Loads configuration values from an XML file in Java Properties XML format.
+    /// Values from the file override any existing defaults.
+    /// </summary>
+    /// <param name="path">The file path to read from.</param>
+    public void LoadFromXml(string path)
+    {
+        if (!File.Exists(path))
+        {
+            return;
+        }
+
+        var doc = XDocument.Load(path);
+        var root = doc.Element("properties");
+        if (root is null)
+        {
+            return;
+        }
+
+        foreach (var entry in root.Elements("entry"))
+        {
+            var key = entry.Attribute("key")?.Value;
+            if (key is not null)
+            {
+                _properties[key] = entry.Value;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Resets the singleton instance. Useful for testing.
+    /// </summary>
+    public static void Reset()
+    {
+        lock (Lock)
+        {
+            _instance = null;
+        }
+    }
+
+    private static string GetDefaultConfigPath() => Path.Combine("Resources", "config.xml");
+
+    private void SetDefaults()
+    {
         // PHOTO
         Set("photo_adaptivethresholdingradius", 7); // 7 is recommended
 
@@ -26,11 +196,9 @@ public sealed class Configurator
         Set("carsnapshot_distributormargins", 25);
         Set("carsnapshot_graphrankfilter", 9);
 
-
         // CARSNAPSHOTGRAPH
         Set("carsnapshotgraph_peakfootconstant", 0.55); //0.55
         Set("carsnapshotgraph_peakDiffMultiplicationConstant", 0.1);
-
 
         Set("intelligence_skewdetection", 0);
 
@@ -90,35 +258,5 @@ public sealed class Configurator
         Set("neural_topology", 20);
 
         Set("reportgeneratorcss", "./Resources/ReportGenerator/style.css");
-    }
-
-    public Configurator(string filePath) : this() { LoadConfiguration(filePath); }
-
-    public static Configurator Instance => _configurator ??= new Configurator(FileName);
-
-    public string GetPath(string name)
-    {
-        var rawValue = Get<string>(name);
-        return rawValue.Replace('/', Path.DirectorySeparatorChar);
-    }
-
-    public T Get<T>(string name)
-    {
-        var rawValue = _properties[name];
-        return (T)Convert.ChangeType(rawValue, typeof(T));
-    }
-
-    public void Set<T>(string name, T value) => _properties[name] = value?.ToString();
-
-    public void Save(string outputFilePath) => _properties.StoreToXml(outputFilePath);
-
-    public void Save() => Save(FileName);
-
-    private void LoadConfiguration(string? filePath = null)
-    {
-        if (filePath == null)
-            _properties.LoadFromXml();
-        else
-            _properties.LoadFromXml(filePath);
     }
 }

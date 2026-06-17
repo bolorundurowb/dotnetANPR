@@ -11,7 +11,7 @@ namespace DotNetANPR.ImageAnalysis;
 public class PlateHorizontalGraph : Graph
 {
     private static readonly int HorizontalDetectionType =
-        Configurator.Instance.Get<int>("platehorizontalgraph_detectionType");
+        AnprConfig.Instance.PlateHorizontalGraph.DetectionType;
 
     /// <summary>
     /// Computes the derivation (difference) between two Y-values at the given indices.

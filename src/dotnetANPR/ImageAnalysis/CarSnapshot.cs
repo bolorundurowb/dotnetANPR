@@ -12,13 +12,13 @@ namespace DotNetANPR.ImageAnalysis;
 public class CarSnapshot : Photo
 {
     private static readonly int DistributorMargins =
-        Configurator.Instance.Get<int>("carsnapshot_distributormargins");
+        AnprConfig.Instance.CarSnapshot.DistributorMargins;
 
     private static readonly int CarSnapshotGraphRankFilter =
-        Configurator.Instance.Get<int>("carsnapshot_graphrankfilter");
+        AnprConfig.Instance.CarSnapshot.GraphRankFilter;
 
     private static readonly int NumberOfCandidates =
-        Configurator.Instance.Get<int>("intelligence_numberOfBands");
+        AnprConfig.Instance.Intelligence.NumberOfBands;
 
     private static readonly ProbabilityDistributor Distributor =
         new(0, 0, DistributorMargins, DistributorMargins);

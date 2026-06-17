@@ -16,7 +16,7 @@ public class Band(SKBitmap image) : Photo(image)
     private static readonly ProbabilityDistributor Distributor = new(0, 0, 25, 25);
 
     private static readonly int NumberOfCandidates =
-        Configurator.Instance.Get<int>("intelligence_numberOfPlates");
+        AnprConfig.Instance.Intelligence.NumberOfPlates;
 
     private BandGraph? _graphHandle;
 

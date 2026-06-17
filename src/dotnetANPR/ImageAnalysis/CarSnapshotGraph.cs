@@ -11,10 +11,10 @@ namespace DotNetANPR.ImageAnalysis;
 public class CarSnapshotGraph : Graph
 {
     private static readonly double PeakFootConstant =
-        Configurator.Instance.Get<double>("carsnapshotgraph_peakfootconstant"); // 0.55
+        AnprConfig.Instance.CarSnapshotGraph.PeakFootConstant;
 
     private static readonly double PeakDiffMultiplicationConstant =
-        Configurator.Instance.Get<double>("carsnapshotgraph_peakDiffMultiplicationConstant"); // 0.1
+        AnprConfig.Instance.CarSnapshotGraph.PeakDiffMultiplicationConstant;
 
     /// <summary>
     /// Finds the specified number of peaks in the histogram, sorted by peak intensity.

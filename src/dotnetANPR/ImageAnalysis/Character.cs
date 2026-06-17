@@ -226,7 +226,7 @@ public class Character : Photo
     /// <returns>A list of feature values for recognition.</returns>
     public List<double> ExtractFeatures()
     {
-        var featureExtractionMethod = Configurator.Instance.Get<int>("char_featuresExtractionMethod");
+        var featureExtractionMethod = AnprConfig.Instance.Character.FeaturesExtractionMethod;
         return featureExtractionMethod == 0 ? ExtractMapFeatures() : ExtractEdgeFeatures();
     }
 
@@ -254,13 +254,13 @@ public class Character : Photo
 
     private void NormalizeResizeOnly()
     {
-        var x = Configurator.Instance.Get<int>("char_normalizeddimensions_x");
-        var y = Configurator.Instance.Get<int>("char_normalizeddimensions_y");
+        var x = AnprConfig.Instance.Character.NormalizedWidth;
+        var y = AnprConfig.Instance.Character.NormalizedHeight;
 
         if (x == 0 || y == 0)
             return;
 
-        if (Configurator.Instance.Get<int>("char_resizeMethod") == 0)
+        if (AnprConfig.Instance.Character.ResizeMethod == 0)
             LinearResize(x, y);
         else
             AverageResize(x, y);

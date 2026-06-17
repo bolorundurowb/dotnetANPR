@@ -12,7 +12,7 @@ namespace DotNetANPR.ImageAnalysis;
 public class PlateVerticalGraph : Graph
 {
     private static readonly double PeakFootConstant =
-        Configurator.Instance.Get<double>("plateverticalgraph_peakfootconstant");
+        AnprConfig.Instance.PlateVerticalGraph.PeakFootConstant;
 
     /// <summary>
     /// Finds peaks representing the vertical extent of plate content.

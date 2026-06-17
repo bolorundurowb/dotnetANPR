@@ -11,9 +11,7 @@ const string helpText = """
 
         -help                          Display this help
         -recognize -i <snapshot>       Recognize a single snapshot
-        -recognize -i <snapshot> -o <dir>
-                                       Recognize and save HTML report
-        -newconfig -o <file>           Generate default config file
+        -newconfig -o <file>           Generate default config file (JSON)
         -newnetwork -i <learndir> -o <file>
                                        Train neural network and save
         -newalphabet -i <srcdir> -o <dstdir>
@@ -36,16 +34,8 @@ try
             break;
 
         case "-recognize" when args.Length >= 3 && args[1] == "-i":
-            if (args.Length >= 5 && args[3] == "-o")
-            {
-                var result = ANPR.Recognize(args[2], args[4]);
-                Console.WriteLine(result ?? "(no plate recognized)");
-            }
-            else
-            {
-                var result = ANPR.Recognize(args[2]);
-                Console.WriteLine(result ?? "(no plate recognized)");
-            }
+            var result = ANPR.Recognize(args[2]);
+            Console.WriteLine(result ?? "(no plate recognized)");
             break;
 
         case "-newconfig" when args.Length >= 3 && args[1] == "-o":

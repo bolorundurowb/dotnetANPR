@@ -19,7 +19,9 @@ public class KnnPatternClassifier : CharacterRecognizer
     /// </summary>
     public KnnPatternClassifier()
     {
-        var path = Configurator.Instance.GetPath("char_learnAlphabetPath");
+        var path = AnprConfig.Instance.Character.LearnAlphabetPath
+            .Replace('/', System.IO.Path.DirectorySeparatorChar)
+            .Replace('\\', System.IO.Path.DirectorySeparatorChar);
         _learnLists = new List<List<double>>(36);
         var filenames = Character.AlphabetList(path);
 

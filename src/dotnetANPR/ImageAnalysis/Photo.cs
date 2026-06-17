@@ -520,7 +520,7 @@ public class Photo(SKBitmap image) : IDisposable, ICloneable
     public void AdaptiveThresholding()
     {
         var statistics = new Statistics(this);
-        var radius = Configurator.Instance.Get<int>("photo_adaptivethresholdingradius");
+        var radius = AnprConfig.Instance.Photo.AdaptiveThresholdingRadius;
         if (radius == 0)
         {
             PlainThresholding(statistics);

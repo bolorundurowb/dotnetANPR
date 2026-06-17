@@ -14,8 +14,8 @@ namespace DotNetANPR.Recognizer;
 /// </summary>
 public class NeuralPatternClassifier : CharacterRecognizer
 {
-    private static readonly int NormalizeX = Configurator.Instance.Get<int>("char_normalizeddimensions_x");
-    private static readonly int NormalizeY = Configurator.Instance.Get<int>("char_normalizeddimensions_y");
+    private static readonly int NormalizeX = AnprConfig.Instance.Character.NormalizedWidth;
+    private static readonly int NormalizeY = AnprConfig.Instance.Character.NormalizedHeight;
 
     /// <summary>
     /// Gets or sets the underlying neural network used for classification.
@@ -37,23 +37,23 @@ public class NeuralPatternClassifier : CharacterRecognizer
     /// </param>
     public NeuralPatternClassifier(bool learn)
     {
-        var configurator = Configurator.Instance;
+        var config = AnprConfig.Instance;
         var dimensions = new List<int>();
 
         // Determine size of input layer according to chosen feature extraction method
-        var inputLayerSize = configurator.Get<int>("char_featuresExtractionMethod") == 0
+        var inputLayerSize = config.Character.FeaturesExtractionMethod == 0
             ? NormalizeX * NormalizeY
             : Features.Length * 4;
 
         // Construct new neural network with specified dimensions
         dimensions.Add(inputLayerSize);
-        dimensions.Add(configurator.Get<int>("neural_topology"));
+        dimensions.Add(config.NeuralNetwork.Topology);
         dimensions.Add(Alphabet.Length);
         NeuralNetwork = new NN.NeuralNetwork(dimensions);
 
         if (learn)
         {
-            var learnAlphabetPath = configurator.Get<string>("char_learnAlphabetPath");
+            var learnAlphabetPath = config.Character.LearnAlphabetPath;
             try
             {
                 LearnAlphabet(learnAlphabetPath);
@@ -66,7 +66,9 @@ public class NeuralPatternClassifier : CharacterRecognizer
         else
         {
             // Load pre-trained network from XML
-            var neuralNetPath = configurator.GetPath("char_neuralNetworkPath");
+            var neuralNetPath = config.Character.NeuralNetworkPath
+                .Replace('/', System.IO.Path.DirectorySeparatorChar)
+                .Replace('\\', System.IO.Path.DirectorySeparatorChar);
             NeuralNetwork = new NN.NeuralNetwork(neuralNetPath);
         }
     }
@@ -125,9 +127,9 @@ public class NeuralPatternClassifier : CharacterRecognizer
         }
 
         NeuralNetwork.Learn(train,
-            Configurator.Instance.Get<int>("neural_maxk"),
-            Configurator.Instance.Get<double>("neural_eps"),
-            Configurator.Instance.Get<double>("neural_lambda"),
-            Configurator.Instance.Get<double>("neural_micro"));
+            AnprConfig.Instance.NeuralNetwork.MaxK,
+            AnprConfig.Instance.NeuralNetwork.Eps,
+            AnprConfig.Instance.NeuralNetwork.Lambda,
+            AnprConfig.Instance.NeuralNetwork.Micro);
     }
 }

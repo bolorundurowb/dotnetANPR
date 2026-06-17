@@ -16,10 +16,10 @@ public class PlateGraph : Graph
     /// Smaller numbers have a tendency to cut characters, bigger to incorrectly merge them.
     /// </summary>
     private static readonly double _plategraphRelMinpeaksize =
-        Configurator.Instance.Get<double>("plategraph_rel_minpeaksize");
+        AnprConfig.Instance.PlateGraph.RelativeMinPeakSize;
 
     private static readonly double _peakFootConstant =
-        Configurator.Instance.Get<double>("plategraph_peakfootconstant");
+        AnprConfig.Instance.PlateGraph.PeakFootConstant;
 
     private readonly Plate _handle;
 

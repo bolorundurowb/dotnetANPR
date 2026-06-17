@@ -13,10 +13,10 @@ namespace DotNetANPR.ImageAnalysis;
 public class BandGraph(Band handle) : Graph
 {
     private static readonly double PeakFootConstant =
-        Configurator.Instance.Get<double>("bandgraph_peakfootconstant"); // 0.75
+        AnprConfig.Instance.BandGraph.PeakFootConstant;
 
     private static readonly double PeakDiffMultiplicationConstant =
-        Configurator.Instance.Get<double>("bandgraph_peakDiffMultiplicationConstant"); // 0.2
+        AnprConfig.Instance.BandGraph.PeakDiffMultiplicationConstant;
 
     /// <summary>
     /// The Band to which this Graph is related.

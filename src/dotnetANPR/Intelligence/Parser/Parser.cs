@@ -24,10 +24,12 @@ public class Parser
     public Parser()
     {
         _plateForms = new List<PlateForm>();
-        var fileName = Configurator.Instance.GetPath("intelligence_syntaxDescriptionFile");
+        var fileName = AnprConfig.Instance.Intelligence.SyntaxDescriptionFile
+            .Replace('/', System.IO.Path.DirectorySeparatorChar)
+            .Replace('\\', System.IO.Path.DirectorySeparatorChar);
 
         if (string.IsNullOrEmpty(fileName))
-            throw new IOException("Failed to get syntax description file from Configurator");
+            throw new IOException("Failed to get syntax description file from AnprConfig");
 
         try
         {

@@ -1,10 +1,15 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using DotNetANPR.Configuration;
 
 namespace DotNetANPR.ImageAnalysis;
 
+/// <summary>
+/// Graph subclass for analyzing horizontal bands within a car snapshot.
+/// Provides peak detection to identify candidate license plate regions.
+/// </summary>
+/// <param name="handle">The <see cref="Band"/> this graph is associated with.</param>
 public class BandGraph(Band handle) : Graph
 {
     private static readonly double PeakFootConstant =
@@ -13,11 +18,15 @@ public class BandGraph(Band handle) : Graph
     private static readonly double PeakDiffMultiplicationConstant =
         Configurator.Instance.Get<double>("bandgraph_peakDiffMultiplicationConstant"); // 0.2
 
-    /**
-     * The Band to which this Graph is related.
-     */
+    /// <summary>
+    /// The Band to which this Graph is related.
+    /// </summary>
     private readonly Band _handle = handle;
 
+    /// <summary>
+    /// Finds the specified number of peaks in the graph, filtering by plate proportion constraints.
+    /// </summary>
+    /// <param name="count">The maximum number of peaks to find.</param>
     public void FindPeaks(int count)
     {
         List<Peak> outPeaks = [];
@@ -26,7 +35,6 @@ public class BandGraph(Band handle) : Graph
             var maxValue = 0.0f;
             var maxIndex = 0;
             for (var i = 0; i < YValues.Count; i++)
-                // left to right
                 if (AllowedInterval(outPeaks, i))
                     if (YValues[i] >= maxValue)
                     {
@@ -34,7 +42,6 @@ public class BandGraph(Band handle) : Graph
                         maxIndex = i;
                     }
 
-            // we found the biggest peak, let's do the first cut
             var leftIndex = IndexOfLeftPeakRel(maxIndex, PeakFootConstant);
             var rightIndex = IndexOfRightPeakRel(maxIndex, PeakFootConstant);
             var diff = rightIndex - leftIndex;
@@ -43,13 +50,19 @@ public class BandGraph(Band handle) : Graph
             outPeaks.Add(new Peak(Math.Max(0, leftIndex), maxIndex, Math.Min(YValues.Count - 1, rightIndex)));
         }
 
-        // filter the candidates that don't correspond with plate proportions
+        // Filter candidates that don't match plate proportions
         List<Peak> outPeaksFiltered = [];
         outPeaksFiltered.AddRange(outPeaks.Where(p => p.Diff > 2 * _handle.Height && p.Diff < 15 * _handle.Height));
         outPeaksFiltered.Sort(new PeakComparator(YValues));
         Peaks = outPeaksFiltered;
     }
 
+    /// <summary>
+    /// Finds the index of the left boundary of a peak using an absolute threshold.
+    /// </summary>
+    /// <param name="peak">The index of the peak center.</param>
+    /// <param name="peakFootConstantAbs">The absolute threshold value.</param>
+    /// <returns>The index of the left boundary.</returns>
     public int IndexOfLeftPeakAbs(int peak, double peakFootConstantAbs)
     {
         var index = peak;
@@ -63,6 +76,12 @@ public class BandGraph(Band handle) : Graph
         return Math.Max(0, index);
     }
 
+    /// <summary>
+    /// Finds the index of the right boundary of a peak using an absolute threshold.
+    /// </summary>
+    /// <param name="peak">The index of the peak center.</param>
+    /// <param name="peakFootConstantAbs">The absolute threshold value.</param>
+    /// <returns>The index of the right boundary.</returns>
     public int IndexOfRightPeakAbs(int peak, double peakFootConstantAbs)
     {
         var index = peak;

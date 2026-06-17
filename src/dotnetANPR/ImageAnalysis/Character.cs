@@ -1,34 +1,96 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using DotNetANPR.Configuration;
 using DotNetANPR.Extensions;
 using DotNetANPR.Recognizer;
+using SkiaSharp;
 
 namespace DotNetANPR.ImageAnalysis;
 
+/// <summary>
+/// Represents a single character extracted from a license plate.
+/// Provides normalization, statistics computation, and feature extraction for recognition.
+/// </summary>
 public class Character : Photo
 {
+    /// <summary>
+    /// Indicates whether the character has been normalized.
+    /// </summary>
     public bool Normalized;
+
+    /// <summary>
+    /// The position of this character within the plate image.
+    /// </summary>
     public PositionInPlate? PositionInPlate;
 
-    public int FullWidth, FullHeight, PieceWidth, PieceHeight;
+    /// <summary>
+    /// The full width of the character before normalization.
+    /// </summary>
+    public int FullWidth;
 
+    /// <summary>
+    /// The full height of the character before normalization.
+    /// </summary>
+    public int FullHeight;
+
+    /// <summary>
+    /// The width of the best piece after connected component analysis.
+    /// </summary>
+    public int PieceWidth;
+
+    /// <summary>
+    /// The height of the best piece after connected component analysis.
+    /// </summary>
+    public int PieceHeight;
+
+    /// <summary>
+    /// The average brightness of the character in full color.
+    /// </summary>
     public float StatisticAverageBrightness;
+
+    /// <summary>
+    /// The minimum brightness of the character in full color.
+    /// </summary>
     public float StatisticMinimumBrightness;
+
+    /// <summary>
+    /// The maximum brightness of the character in full color.
+    /// </summary>
     public float StatisticMaximumBrightness;
+
+    /// <summary>
+    /// The contrast of the character, computed as average absolute deviation from mean brightness.
+    /// </summary>
     public float StatisticContrast;
+
+    /// <summary>
+    /// The average hue of the character in full color.
+    /// </summary>
     public float StatisticAverageHue;
+
+    /// <summary>
+    /// The average saturation of the character in full color.
+    /// </summary>
     public float StatisticAverageSaturation;
 
-    public readonly Bitmap ThresholdedImage;
+    /// <summary>
+    /// The thresholded (binary) version of this character image.
+    /// </summary>
+    public readonly SKBitmap ThresholdedImage;
 
+    /// <summary>
+    /// Creates a new <see cref="PixelMap"/> from this character's current image.
+    /// </summary>
     public PixelMap PixelMap => new(this);
 
-    public Character(string fileName) : base(new Bitmap(fileName))
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Character"/> class by loading an image from a file.
+    /// The loaded image is adaptively thresholded to produce the binary version.
+    /// </summary>
+    /// <param name="fileName">The path to the character image file.</param>
+    public Character(string fileName) : base(SKBitmap.Decode(fileName))
     {
         var origin = DuplicateBitmap(Image);
         AdaptiveThresholding();
@@ -38,9 +100,21 @@ public class Character : Photo
         Init();
     }
 
-    public Character(Bitmap image) : this(image, image, null) { }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Character"/> class from a bitmap.
+    /// The same bitmap is used as both the original and thresholded image.
+    /// </summary>
+    /// <param name="image">The character bitmap.</param>
+    public Character(SKBitmap image) : this(image, image, null) { }
 
-    public Character(Bitmap image, Bitmap thresholdedImage, PositionInPlate? positionInPlate) : base(image)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Character"/> class with separate original
+    /// and thresholded images, and an optional position within the plate.
+    /// </summary>
+    /// <param name="image">The original character bitmap.</param>
+    /// <param name="thresholdedImage">The thresholded (binary) character bitmap.</param>
+    /// <param name="positionInPlate">The position of this character within the plate, or null.</param>
+    public Character(SKBitmap image, SKBitmap thresholdedImage, PositionInPlate? positionInPlate) : base(image)
     {
         ThresholdedImage = thresholdedImage;
         PositionInPlate = positionInPlate;
@@ -48,6 +122,11 @@ public class Character : Photo
         Init();
     }
 
+    /// <summary>
+    /// Returns a list of file paths for all alphabet character images found in the specified directory.
+    /// </summary>
+    /// <param name="directory">The directory containing alphabet image files.</param>
+    /// <returns>A list of file paths to existing character images.</returns>
     public static List<string> AlphabetList(string directory)
     {
         const string alphaString = "0123456789abcdefghijklmnopqrstuvwxyz";
@@ -61,6 +140,10 @@ public class Character : Photo
         return filenames;
     }
 
+    /// <summary>
+    /// Normalizes this character by extracting the best connected component,
+    /// computing statistics, and resizing to standard dimensions.
+    /// </summary>
     public void Normalize()
     {
         if (Normalized)
@@ -78,7 +161,7 @@ public class Character : Photo
         ComputeStatisticHue(colorImage);
         ComputeStatisticSaturation(colorImage);
 
-        Image = bestPiece.Render() ?? new Bitmap(1, 1, PixelFormat.Format24bppRgb);
+        Image = bestPiece.Render() ?? new SKBitmap(1, 1);
 
         PieceWidth = Width;
         PieceHeight = Height;
@@ -86,12 +169,16 @@ public class Character : Photo
         Normalized = true;
     }
 
+    /// <summary>
+    /// Extracts edge-based features from the character image for recognition.
+    /// </summary>
+    /// <returns>A list of feature values.</returns>
     public List<double> ExtractEdgeFeatures()
     {
         var width = Image.Width;
         var height = Image.Height;
         var array = BitmapToArrayWithBounds(Image, width, height);
-        width += 2; // add edges
+        width += 2;
         height += 2;
         var features = CharacterRecognizer.Features;
         var output = new double[features.Length * 4];
@@ -108,10 +195,10 @@ public class Character : Photo
 
                     var bias = 0;
                     if (mx >= width / 2)
-                        bias += features.Length; // if we are in the right quadrant, move the bias by one class
+                        bias += features.Length;
 
                     if (my >= height / 2)
-                        bias += features.Length * 2; // if we are in the left quadrant, move the bias by two classes
+                        bias += features.Length * 2;
 
                     output[bias + f] += featureMatch < 0.05 ? 1 : 0;
                 }
@@ -119,6 +206,10 @@ public class Character : Photo
         return output.ToList();
     }
 
+    /// <summary>
+    /// Extracts pixel brightness map features from the character image for recognition.
+    /// </summary>
+    /// <returns>A list of brightness values for each pixel.</returns>
     public List<double> ExtractMapFeatures()
     {
         List<double> vectorInput = [];
@@ -129,6 +220,10 @@ public class Character : Photo
         return vectorInput;
     }
 
+    /// <summary>
+    /// Extracts features from the character image using the configured extraction method.
+    /// </summary>
+    /// <returns>A list of feature values for recognition.</returns>
     public List<double> ExtractFeatures()
     {
         var featureExtractionMethod = Configurator.Instance.Get<int>("char_featuresExtractionMethod");
@@ -149,7 +244,7 @@ public class Character : Photo
         return directoryName.Substring(directoryName.LastIndexOf('_'));
     }
 
-    private Bitmap BestPieceInFullColor(Bitmap bi, PixelMap.Piece piece)
+    private SKBitmap BestPieceInFullColor(SKBitmap bi, PixelMap.Piece piece)
     {
         if (piece.Width <= 0 || piece.Height <= 0)
             return bi;
@@ -159,7 +254,6 @@ public class Character : Photo
 
     private void NormalizeResizeOnly()
     {
-        // returns the same Char object
         var x = Configurator.Instance.Get<int>("char_normalizeddimensions_x");
         var y = Configurator.Instance.Get<int>("char_normalizeddimensions_y");
 
@@ -167,14 +261,14 @@ public class Character : Photo
             return;
 
         if (Configurator.Instance.Get<int>("char_resizeMethod") == 0)
-            LinearResize(x, y); // do a weighted average
+            LinearResize(x, y);
         else
             AverageResize(x, y);
 
         NormalizeBrightness(0.5f);
     }
 
-    private void ComputeStatisticContrast(Bitmap bi)
+    private void ComputeStatisticContrast(SKBitmap bi)
     {
         float sum = 0;
         var w = bi.Width;
@@ -186,7 +280,7 @@ public class Character : Photo
         StatisticContrast = sum / (w * h);
     }
 
-    private void ComputeStatisticBrightness(Bitmap bi)
+    private void ComputeStatisticBrightness(SKBitmap bi)
     {
         float sum = 0;
         var min = float.PositiveInfinity;
@@ -208,7 +302,7 @@ public class Character : Photo
         StatisticMaximumBrightness = max;
     }
 
-    private void ComputeStatisticHue(Bitmap bi)
+    private void ComputeStatisticHue(SKBitmap bi)
     {
         float sum = 0;
         var w = bi.Width;
@@ -220,7 +314,7 @@ public class Character : Photo
         StatisticAverageHue = sum / (w * h);
     }
 
-    private void ComputeStatisticSaturation(Bitmap bi)
+    private void ComputeStatisticSaturation(SKBitmap bi)
     {
         float sum = 0;
         var w = bi.Width;

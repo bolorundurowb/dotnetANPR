@@ -1,17 +1,29 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using DotNetANPR.Configuration;
 
 namespace DotNetANPR.ImageAnalysis;
 
+/// <summary>
+/// Graph subclass for vertical analysis of a license plate.
+/// Used to crop the top and bottom edges of the plate image by detecting
+/// the vertical extent of content.
+/// </summary>
 public class PlateVerticalGraph : Graph
 {
     private static readonly double PeakFootConstant =
         Configurator.Instance.Get<double>("plateverticalgraph_peakfootconstant");
 
+    /// <summary>
+    /// Finds peaks representing the vertical extent of plate content.
+    /// Values are first shifted by subtracting the minimum, then peaks are detected
+    /// and sorted by their center Y-value intensity.
+    /// </summary>
+    /// <param name="count">The maximum number of peaks to find.</param>
+    /// <returns>A sorted list of detected peaks.</returns>
     public List<Peak> FindPeak(int count)
     {
-        // lower the peak
+        // Lower the peak by subtracting the minimum value
         for (var i = 0; i < YValues.Count; i++)
             YValues[i] -= MinValue();
 
@@ -22,7 +34,6 @@ public class PlateVerticalGraph : Graph
             var maxIndex = 0;
 
             for (var i = 0; i < YValues.Count; i++)
-                // left to right
                 if (AllowedInterval(outPeaks, i))
                     if (YValues[i] >= maxValue)
                     {
@@ -30,9 +41,8 @@ public class PlateVerticalGraph : Graph
                         maxIndex = i;
                     }
 
-            // we found the biggest peak
             if (YValues[maxIndex] < 0.05 * MaxValue())
-                break; // 0.4
+                break;
 
             var leftIndex = IndexOfLeftPeakRel(maxIndex, PeakFootConstant);
             var rightIndex = IndexOfRightPeakRel(maxIndex, PeakFootConstant);

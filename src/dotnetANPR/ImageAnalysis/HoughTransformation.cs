@@ -1,38 +1,75 @@
-﻿using System;
-using System.Drawing;
-using System.Drawing.Imaging;
+using System;
 using DotNetANPR.Extensions;
+using SkiaSharp;
 
 namespace DotNetANPR.ImageAnalysis;
 
+/// <summary>
+/// Implements the Hough line transformation for detecting the dominant skew angle
+/// in a license plate image.
+/// </summary>
 public class HoughTransformation
 {
+    /// <summary>
+    /// Specifies whether to render the full visualization (with line overlay) or only the transform.
+    /// </summary>
     public enum RenderType
     {
+        /// <summary>
+        /// Render the full visualization including detected line overlay.
+        /// </summary>
         RenderAll = 1,
+
+        /// <summary>
+        /// Render only the Hough transform accumulator.
+        /// </summary>
         RenderTransformationOnly = 0
     }
 
+    /// <summary>
+    /// Specifies the color mode for rendering the Hough transform.
+    /// </summary>
     public enum ColorType
     {
+        /// <summary>
+        /// Render in black and white (grayscale).
+        /// </summary>
         BlackAndWhite = 0,
+
+        /// <summary>
+        /// Render using hue-based coloring.
+        /// </summary>
         Hue = 1
     }
 
     private readonly float[,] _bitmap;
-    private Point? _maxPoint;
+    private (int X, int Y)? _maxPoint;
     private readonly int _width;
     private readonly int _height;
     private float _angle;
     private float _dx;
     private float _dy;
 
+    /// <summary>
+    /// Gets the horizontal displacement of the detected line.
+    /// </summary>
     public float Dx => _dx;
 
+    /// <summary>
+    /// Gets the vertical displacement of the detected line.
+    /// </summary>
     public float Dy => _dy;
 
+    /// <summary>
+    /// Gets the angle of the detected line in degrees.
+    /// </summary>
     public float Angle => _angle;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="HoughTransformation"/> class with the given dimensions.
+    /// </summary>
+    /// <param name="width">The width of the Hough accumulator.</param>
+    /// <param name="height">The height of the Hough accumulator.</param>
     public HoughTransformation(int width, int height)
     {
         _maxPoint = null;
@@ -45,48 +82,48 @@ public class HoughTransformation
                 _bitmap[x, y] = 0;
     }
 
+    /// <summary>
+    /// Adds a line contribution to the Hough accumulator for the given point and brightness.
+    /// </summary>
+    /// <param name="x">The x-coordinate of the point.</param>
+    /// <param name="y">The y-coordinate of the point.</param>
+    /// <param name="brightness">The brightness value of the point.</param>
     public void AddLine(int x, int y, float brightness)
     {
-        // Normalize coordinates to -1..1 range
         var xf = 2f * x / _width - 1f;
         var yf = 2f * y / _height - 1f;
 
         for (var a = 0; a < _width; a++)
         {
-            // Normalize a to -1..1 range
             var af = 2f * a / _width - 1f;
-            // Calculate corresponding b value
             var bf = yf - af * xf;
-            // Normalize b back to 0..height-1 range
-            var b = (int)Math.Round((bf + 1f) * _height / 2f);
+            var b = (int)((bf + 1f) * _height / 2f);
 
-            if (b > 0 && b < _height - 1) _bitmap[a, b] += brightness;
+            if (b > 0 && b < _height - 1)
+                _bitmap[a, b] += brightness;
         }
     }
 
-    public Point GetMaxPoint()
+    /// <summary>
+    /// Gets the point in the accumulator with the maximum value.
+    /// </summary>
+    /// <returns>A tuple containing the (X, Y) coordinates of the maximum point.</returns>
+    public (int X, int Y) GetMaxPoint()
     {
-        if (!_maxPoint.HasValue)
-            _maxPoint = FindMaxPoint();
-
+        _maxPoint ??= FindMaxPoint();
         return _maxPoint.Value;
     }
 
-    private float GetAverageValue()
-    {
-        float sum = 0;
-        for (var x = 0; x < _width; x++)
-            for (var y = 0; y < _height; y++)
-                sum += _bitmap[x, y];
-
-        return sum / (_width * _height);
-    }
-
-    public Bitmap Render(RenderType renderType, ColorType colorType)
+    /// <summary>
+    /// Renders the Hough transform accumulator as a bitmap with optional line overlay.
+    /// </summary>
+    /// <param name="renderType">The render type (full or transform only).</param>
+    /// <param name="colorType">The color mode (black-and-white or hue).</param>
+    /// <returns>A bitmap visualization of the Hough transform.</returns>
+    public SKBitmap Render(RenderType renderType, ColorType colorType)
     {
         var average = GetAverageValue();
-        var output = new Bitmap(_width, _height, PixelFormat.Format24bppRgb);
-        var g = Graphics.FromImage(output);
+        var output = new SKBitmap(_width, _height, SKColorType.Bgra8888, SKAlphaType.Opaque);
 
         for (var x = 0; x < _width; x++)
             for (var y = 0; y < _height; y++)
@@ -94,21 +131,20 @@ public class HoughTransformation
                 var value = (int)(255 * _bitmap[x, y] / average / 3);
                 value = Math.Max(0, Math.Min(value, 255));
 
-                output.SetPixel(x, y,
-                    colorType == ColorType.BlackAndWhite
-                        ? Color.FromArgb(value, value, value)
-                        : ColorExtensions.HsbToRgb(0.67f - (float)value / 255 * 2 / 3, 1.0f, 1.0f));
+                if (colorType == ColorType.BlackAndWhite)
+                {
+                    output.SetPixel(x, y, new SKColor((byte)value, (byte)value, (byte)value));
+                }
+                else
+                {
+                    output.SetPixel(x, y, ColorExtensions.HsbToRgb(0.67f - (float)value / 255 * 2 / 3, 1.0f, 1.0f));
+                }
             }
 
         var maximumPoint = FindMaxPoint();
-        g.DrawImage(output, 0, 0);
-        g.Dispose();
+        _maxPoint = maximumPoint;
 
-        g = Graphics.FromImage(output);
-        g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-        g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
-
-        g.FillEllipse(Brushes.Orange, maximumPoint.X - 5, maximumPoint.Y - 5, 10, 10);
+        using var canvas = new SKCanvas(output);
 
         var a = 2 * (float)maximumPoint.X / _width - 1;
         var b = 2 * (float)maximumPoint.Y / _height - 1;
@@ -124,16 +160,44 @@ public class HoughTransformation
 
         if (renderType == RenderType.RenderAll)
         {
-            g.DrawLine(Pens.Orange, 0, _height / 2 - _dy / 2 - 1, _width, _height / 2 + _dy / 2 - 1);
-            g.DrawLine(Pens.Orange, 0, _height / 2 - _dy / 2, _width, _height / 2 + _dy / 2);
-            g.DrawLine(Pens.Orange, 0, _height / 2 - _dy / 2 + 1, _width, _height / 2 + _dy / 2 + 1);
+            using var orangePaint = new SKPaint
+            {
+                Color = SKColors.Orange,
+                Style = SKPaintStyle.Stroke,
+                StrokeWidth = 1,
+                IsAntialias = true
+            };
+            using var orangeFillPaint = new SKPaint
+            {
+                Color = SKColors.Orange,
+                Style = SKPaintStyle.Fill,
+                IsAntialias = true
+            };
+
+            canvas.DrawOval(maximumPoint.X - 5, maximumPoint.Y - 5, 10, 10, orangeFillPaint);
+            canvas.DrawLine(0, _height / 2 - (int)_dy / 2 - 1, _width, _height / 2 + (int)_dy / 2 - 1,
+                orangePaint);
+            canvas.DrawLine(0, _height / 2 - (int)_dy / 2, _width, _height / 2 + (int)_dy / 2, orangePaint);
+            canvas.DrawLine(0, _height / 2 - (int)_dy / 2 + 1, _width, _height / 2 + (int)_dy / 2 + 1,
+                orangePaint);
         }
 
-        g.Dispose();
         return output;
     }
 
-    private Point FindMaxPoint()
+    #region Private Helpers
+
+    private float GetAverageValue()
+    {
+        float sum = 0;
+        for (var x = 0; x < _width; x++)
+            for (var y = 0; y < _height; y++)
+                sum += _bitmap[x, y];
+
+        return sum / (_width * _height);
+    }
+
+    private (int X, int Y) FindMaxPoint()
     {
         float max = 0;
         int maxX = 0, maxY = 0;
@@ -141,15 +205,16 @@ public class HoughTransformation
             for (var y = 0; y < _height; y++)
             {
                 var curr = _bitmap[x, y];
-
-                if (!(curr >= max))
-                    continue;
-
-                maxX = x;
-                maxY = y;
-                max = curr;
+                if (curr >= max)
+                {
+                    maxX = x;
+                    maxY = y;
+                    max = curr;
+                }
             }
 
-        return new Point(maxX, maxY);
+        return (maxX, maxY);
     }
+
+    #endregion
 }

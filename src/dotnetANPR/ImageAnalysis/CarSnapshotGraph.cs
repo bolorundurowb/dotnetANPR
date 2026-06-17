@@ -1,9 +1,13 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using DotNetANPR.Configuration;
 
 namespace DotNetANPR.ImageAnalysis;
 
+/// <summary>
+/// Graph subclass for analyzing car snapshot images.
+/// Finds horizontal bands by detecting peaks in the vertical brightness histogram.
+/// </summary>
 public class CarSnapshotGraph : Graph
 {
     private static readonly double PeakFootConstant =
@@ -12,6 +16,10 @@ public class CarSnapshotGraph : Graph
     private static readonly double PeakDiffMultiplicationConstant =
         Configurator.Instance.Get<double>("carsnapshotgraph_peakDiffMultiplicationConstant"); // 0.1
 
+    /// <summary>
+    /// Finds the specified number of peaks in the histogram, sorted by peak intensity.
+    /// </summary>
+    /// <param name="count">The maximum number of peaks to find.</param>
     public void FindPeaks(int count)
     {
         List<Peak> outPeaks = [];
@@ -20,7 +28,6 @@ public class CarSnapshotGraph : Graph
             var maxValue = 0.0f;
             var maxIndex = 0;
             for (var i = 0; i < YValues.Count; i++)
-                // left to right
                 if (AllowedInterval(outPeaks, i))
                     if (YValues[i] >= maxValue)
                     {
@@ -28,7 +35,6 @@ public class CarSnapshotGraph : Graph
                         maxIndex = i;
                     }
 
-            // we found the biggest peak
             var leftIndex = IndexOfLeftPeakRel(maxIndex, PeakFootConstant);
             var rightIndex = IndexOfRightPeakRel(maxIndex, PeakFootConstant);
             var diff = rightIndex - leftIndex;

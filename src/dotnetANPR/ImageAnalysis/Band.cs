@@ -1,12 +1,17 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.Drawing;
 using DotNetANPR.Configuration;
 using DotNetANPR.Extensions;
+using SkiaSharp;
 
 namespace DotNetANPR.ImageAnalysis;
 
-public class Band(Bitmap image) : Photo(image)
+/// <summary>
+/// Represents a horizontal band extracted from a car snapshot image.
+/// Contains methods for edge detection, histogram computation, and plate extraction.
+/// </summary>
+/// <param name="image">The bitmap representing this band.</param>
+public class Band(SKBitmap image) : Photo(image)
 {
     private static readonly ProbabilityDistributor Distributor = new(0, 0, 25, 25);
 
@@ -15,42 +20,36 @@ public class Band(Bitmap image) : Photo(image)
 
     private BandGraph? _graphHandle;
 
-    public Bitmap RenderGraph()
+    /// <summary>
+    /// Renders the band's histogram graph as a horizontal bitmap.
+    /// </summary>
+    /// <returns>A bitmap of the rendered graph.</returns>
+    public SKBitmap RenderGraph()
     {
         ComputeGraph();
         return _graphHandle!.RenderHorizontally(Width, 100);
     }
 
-    private List<Peak> ComputeGraph()
-    {
-        if (_graphHandle == null)
-        {
-            var image = DuplicateBitmap(Image);
-            FullEdgeDetector(image);
-
-            _graphHandle = Histogram(image);
-            _graphHandle.RankFilter(Image.Height);
-            _graphHandle.ApplyProbabilityDistributor(Distributor);
-            _graphHandle.FindPeaks(NumberOfCandidates);
-        }
-
-        return _graphHandle.Peaks;
-    }
-
+    /// <summary>
+    /// Extracts candidate license plates from this band.
+    /// </summary>
+    /// <returns>A list of <see cref="Plate"/> objects extracted from this band.</returns>
     public List<Plate> Plates()
     {
         List<Plate> response = [];
         var peaks = ComputeGraph();
         foreach (var peak in peaks)
-            // Cut from the original image of the plate and save to a vector.
-            // ATTENTION: Cutting from original,
-            // we have to apply an inverse transformation to the coordinates calculated from imageCopy
             response.Add(new Plate(Image.SubImage(peak.Left, 0, peak.Diff, Image.Height)));
 
         return response;
     }
 
-    public BandGraph Histogram(Bitmap bitmap)
+    /// <summary>
+    /// Computes a vertical brightness histogram for the given bitmap.
+    /// </summary>
+    /// <param name="bitmap">The source bitmap.</param>
+    /// <returns>A <see cref="BandGraph"/> containing the histogram data.</returns>
+    public BandGraph Histogram(SKBitmap bitmap)
     {
         var graph = new BandGraph(this);
         for (var x = 0; x < bitmap.Width; x++)
@@ -65,7 +64,12 @@ public class Band(Bitmap image) : Photo(image)
         return graph;
     }
 
-    public static void FullEdgeDetector(Bitmap source)
+    /// <summary>
+    /// Applies a full (vertical + horizontal) Sobel edge detector to the source bitmap in-place.
+    /// The combined edge magnitude is written back into the source.
+    /// </summary>
+    /// <param name="source">The bitmap to apply edge detection to.</param>
+    public static void FullEdgeDetector(SKBitmap source)
     {
         float[,] verticalMatrix =
         {
@@ -81,13 +85,9 @@ public class Band(Bitmap image) : Photo(image)
             { 1, 2, 1 }
         };
 
-        // Apply vertical edge detection
         var i1 = source.Convolve(verticalMatrix);
-
-        // Apply horizontal edge detection
         var i2 = source.Convolve(horizontalMatrix);
 
-        // Combine edge detection results
         var width = source.Width;
         var height = source.Height;
 
@@ -98,5 +98,21 @@ public class Band(Bitmap image) : Photo(image)
                 sum += GetBrightness(i2, x, y);
                 SetBrightness(source, x, y, Math.Min(1f, sum));
             }
+    }
+
+    private List<Peak> ComputeGraph()
+    {
+        if (_graphHandle == null)
+        {
+            var imageCopy = DuplicateBitmap(Image);
+            FullEdgeDetector(imageCopy);
+
+            _graphHandle = Histogram(imageCopy);
+            _graphHandle.RankFilter(Image.Height);
+            _graphHandle.ApplyProbabilityDistributor(Distributor);
+            _graphHandle.FindPeaks(NumberOfCandidates);
+        }
+
+        return _graphHandle.Peaks;
     }
 }

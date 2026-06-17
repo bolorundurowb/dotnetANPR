@@ -1,15 +1,20 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using DotNetANPR.Configuration;
 
 namespace DotNetANPR.ImageAnalysis;
 
+/// <summary>
+/// Graph subclass for character segmentation within a license plate.
+/// Detects spaces between characters to determine character boundaries.
+/// </summary>
 public class PlateGraph : Graph
 {
-    /**
-    * 0.75: Smaller numbers have a tendency to cut characters, bigger have a tendency to incorrectly merge them.
-    */
+    /// <summary>
+    /// Minimum relative peak size for a valid space detection.
+    /// Smaller numbers have a tendency to cut characters, bigger to incorrectly merge them.
+    /// </summary>
     private static readonly double _plategraphRelMinpeaksize =
         Configurator.Instance.Get<double>("plategraph_rel_minpeaksize");
 
@@ -18,16 +23,18 @@ public class PlateGraph : Graph
 
     private readonly Plate _handle;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PlateGraph"/> class.
+    /// </summary>
+    /// <param name="plate">The <see cref="Plate"/> this graph is associated with.</param>
     public PlateGraph(Plate plate) { _handle = plate; }
 
-    // Find peaks in the PlateGraph.
-    //
-    // Graph changes before segmentation:
-    // 1. Get the average value and maxval
-    // 2. Change the minval; diffVal = average - (maxval - average) = 2average - maxval, val -= diffVal
-    //
-    // @param count number of peaks
-    // @return a List of Peaks
+    /// <summary>
+    /// Finds character peaks by first detecting spaces, then deriving character positions
+    /// from the gaps between spaces.
+    /// </summary>
+    /// <param name="count">The maximum number of space candidates to consider.</param>
+    /// <returns>A list of peaks representing character positions.</returns>
     public List<Peak> FindPeaks(int count)
     {
         List<Peak> spacesTemp = [];
@@ -42,7 +49,6 @@ public class PlateGraph : Graph
             var maxIndex = 0;
             for (var i = 0; i < YValues.Count; i++)
             {
-                // left to right
                 if (AllowedInterval(spacesTemp, i))
                 {
                     if (!(YValues[i] >= maxValue))
@@ -53,29 +59,26 @@ public class PlateGraph : Graph
                 }
             }
 
-            // we found the biggest peak
             if (YValues[maxIndex] < _plategraphRelMinpeaksize * MaxValue())
                 break;
 
-            // width of the detected space
             var leftIndex = IndexOfLeftPeakRel(maxIndex, _peakFootConstant);
             var rightIndex = IndexOfRightPeakRel(maxIndex, _peakFootConstant);
             spacesTemp.Add(new Peak(Math.Max(0, leftIndex), maxIndex, Math.Min(YValues.Count - 1, rightIndex)));
         }
 
-        // we need to filter candidates that don't have the right proportions
+        // Filter candidates that don't have the right proportions
         var spaces = spacesTemp.Where(p => p.Diff < _handle.Height).ToList();
 
-        // List<Peak> spaces contains spaces, sort them left to right
+        // Sort spaces left to right
         spaces.Sort(new SpaceComparator());
         List<Peak> peaks = [];
-        // + + +++ +++ + + +++ + + + + + + + + + + + ++ + + + ++ +++ +++ | | 1 | 2 .... | +--> 1. local minimum
-        // count the char to the left of the space
+
+        // Count the char to the left of the first space
         if (spaces.Count != 0)
         {
-            // detect the first local minimum on the graph
             var leftIndex = 0;
-            var first = new Peak(leftIndex /* 0 */, spaces[0].Center);
+            var first = new Peak(leftIndex, spaces[0].Center);
             if (first.Diff > 0)
                 peaks.Add(first);
         }
@@ -87,7 +90,7 @@ public class PlateGraph : Graph
             peaks.Add(new Peak(left, right));
         }
 
-        // character to the right of last space
+        // Character to the right of last space
         if (spaces.Count != 0)
         {
             var last = new Peak(spaces[spaces.Count - 1].Center, YValues.Count - 1);

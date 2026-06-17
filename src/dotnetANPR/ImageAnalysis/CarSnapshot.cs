@@ -1,11 +1,15 @@
-﻿using System.Collections.Generic;
-using System.Drawing;
+using System.Collections.Generic;
 using DotNetANPR.Configuration;
 using DotNetANPR.Extensions;
+using SkiaSharp;
 
 namespace DotNetANPR.ImageAnalysis;
 
-public class CarSnapshot(Bitmap image) : Photo(image)
+/// <summary>
+/// Represents a snapshot image of a car. Entry point for the ANPR pipeline.
+/// Provides vertical edge detection, thresholding, histogram analysis, and band extraction.
+/// </summary>
+public class CarSnapshot : Photo
 {
     private static readonly int DistributorMargins =
         Configurator.Instance.Get<int>("carsnapshot_distributormargins");
@@ -21,30 +25,51 @@ public class CarSnapshot(Bitmap image) : Photo(image)
 
     private CarSnapshotGraph? _graphHandle;
 
-    public Bitmap RenderGraph()
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CarSnapshot"/> class from a bitmap.
+    /// </summary>
+    /// <param name="image">The car snapshot bitmap.</param>
+    public CarSnapshot(SKBitmap image) : base(image) { }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CarSnapshot"/> class by loading an image from a file.
+    /// </summary>
+    /// <param name="filePath">The path to the image file.</param>
+    public CarSnapshot(string filePath) : base(SKBitmap.Decode(filePath)) { }
+
+    /// <summary>
+    /// Renders the car snapshot's histogram graph as a vertical bitmap.
+    /// </summary>
+    /// <returns>A bitmap of the rendered graph.</returns>
+    public SKBitmap RenderGraph()
     {
         ComputeGraph();
         return _graphHandle!.RenderVertically(100, Height);
     }
 
+    /// <summary>
+    /// Extracts candidate horizontal bands from this car snapshot.
+    /// </summary>
+    /// <returns>A list of <see cref="Band"/> objects representing candidate plate regions.</returns>
     public List<Band> Bands()
     {
         List<Band> response = [];
         var peaks = ComputeGraph();
         foreach (var peak in peaks)
-        {
-            // Cut from the original image of the plate and save to a vector.
-            // ATTENTION: Cutting from original,
-            // we have to apply an inverse transformation to the coordinates calculated from imageCopy
             response.Add(new Band(Image.SubImage(0, peak.Left, Image.Width, peak.Diff)));
-        }
 
         return response;
     }
 
-    public Bitmap VerticalEdge(Bitmap bitmap)
+    /// <summary>
+    /// Applies a vertical edge detection filter to the given bitmap.
+    /// </summary>
+    /// <param name="bitmap">The source bitmap.</param>
+    /// <returns>A new bitmap with vertical edges detected.</returns>
+    public SKBitmap VerticalEdge(SKBitmap bitmap)
     {
-        float[,] data = {
+        float[,] data =
+        {
             { -1, 0, 1 },
             { -1, 0, 1 },
             { -1, 0, 1 },
@@ -53,7 +78,12 @@ public class CarSnapshot(Bitmap image) : Photo(image)
         return bitmap.Convolve(data);
     }
 
-    public CarSnapshotGraph Histogram(Bitmap bitmap)
+    /// <summary>
+    /// Computes a horizontal brightness histogram of the given bitmap.
+    /// </summary>
+    /// <param name="bitmap">The source bitmap.</param>
+    /// <returns>A <see cref="CarSnapshotGraph"/> containing the histogram data.</returns>
+    public CarSnapshotGraph Histogram(SKBitmap bitmap)
     {
         var graph = new CarSnapshotGraph();
         for (var y = 0; y < bitmap.Height; y++)
@@ -79,7 +109,7 @@ public class CarSnapshot(Bitmap image) : Photo(image)
             _graphHandle = Histogram(imageCopy);
             _graphHandle.RankFilter(CarSnapshotGraphRankFilter);
             _graphHandle.ApplyProbabilityDistributor(Distributor);
-            _graphHandle.FindPeaks(NumberOfCandidates); // sort by height
+            _graphHandle.FindPeaks(NumberOfCandidates);
         }
 
         return _graphHandle.Peaks;

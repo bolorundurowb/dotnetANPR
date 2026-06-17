@@ -25,18 +25,18 @@ public abstract class CharacterRecognizer
     /// </summary>
     public static readonly float[][] Features =
     {
-        new[] { 0, 1, 0, 1 }, // 0
-        new[] { 1, 0, 1, 0 }, // 1
-        new[] { 0, 0, 1, 1 }, // 2
-        new[] { 1, 1, 0, 0 }, // 3
-        new[] { 0, 0, 0, 1 }, // 4
-        new[] { 1, 0, 0, 0 }, // 5
-        new[] { 1, 1, 1, 0 }, // 6
-        new[] { 0, 1, 1, 1 }, // 7
-        new[] { 0, 0, 1, 0 }, // 8
-        new[] { 0, 1, 0, 0 }, // 9
-        new[] { 1, 0, 1, 1 }, // 10
-        new[] { 1, 1, 0, 1 }  // 11
+        new[] { 0f, 1f, 0f, 1f }, // 0
+        new[] { 1f, 0f, 1f, 0f }, // 1
+        new[] { 0f, 0f, 1f, 1f }, // 2
+        new[] { 1f, 1f, 0f, 0f }, // 3
+        new[] { 0f, 0f, 0f, 1f }, // 4
+        new[] { 1f, 0f, 0f, 0f }, // 5
+        new[] { 1f, 1f, 1f, 0f }, // 6
+        new[] { 0f, 1f, 1f, 1f }, // 7
+        new[] { 0f, 0f, 1f, 0f }, // 8
+        new[] { 0f, 1f, 0f, 0f }, // 9
+        new[] { 1f, 0f, 1f, 1f }, // 10
+        new[] { 1f, 1f, 0f, 1f }  // 11
     };
 
     /// <summary>

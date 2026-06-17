@@ -108,15 +108,12 @@ public class Intelligence
 
                 foreach (var chr in chars)
                 {
-                    var ok = true;
-
                     float widthHeightRatio = chr.PieceWidth;
                     widthHeightRatio /= chr.PieceHeight;
 
                     if (widthHeightRatio < config.Intelligence.MinCharWidthHeightRatio
                         || widthHeightRatio > config.Intelligence.MaxCharWidthHeightRatio)
                     {
-                        ok = false;
                         continue;
                     }
 
@@ -127,7 +124,6 @@ public class Intelligence
                     if ((chr.PositionInPlate.LeftX < 2 || chr.PositionInPlate.RightX > plate.Width - 1)
                         && widthHeightRatio < 0.12)
                     {
-                        ok = false;
                         continue;
                     }
 

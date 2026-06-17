@@ -78,9 +78,9 @@ public class RecognizedCharacter
         using var textPaint = new SKPaint
         {
             Color = SKColors.Black,
-            IsAntialias = true,
-            TextSize = 10
+            IsAntialias = true
         };
+        using var font = new SKFont(SKTypeface.Default, 10);
 
         using var bluePaint = new SKPaint
         {
@@ -96,7 +96,7 @@ public class RecognizedCharacter
         for (var ay = 0; ay <= 100; ay += 10)
         {
             var y = 15 + (int)((100 - ay) / 100.0f * (height - 20));
-            canvas.DrawText(ay.ToString(), 3, y + 11, textPaint);
+            canvas.DrawText(ay.ToString(), 3, y + 11, SKTextAlign.Left, font, textPaint);
             canvas.DrawLine(25, y + 5, 35, y + 5, blackPaint);
         }
 
@@ -110,7 +110,7 @@ public class RecognizedCharacter
             var top = height - (int)(_patterns[i].Cost * (height - 20));
 
             canvas.DrawRect(left, top, colWidth - 2, height - top, bluePaint);
-            canvas.DrawText(_patterns[i].Char + " ", left + 2, top - 8, textPaint);
+            canvas.DrawText(_patterns[i].Char + " ", left + 2, top - 8, SKTextAlign.Left, font, textPaint);
         }
 
         return histogram;

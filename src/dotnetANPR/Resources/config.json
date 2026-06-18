@@ -1,0 +1,65 @@
+{
+  "photo": {
+    "adaptiveThresholdingRadius": 7
+  },
+  "bandGraph": {
+    "peakFootConstant": 0.55,
+    "peakDiffMultiplicationConstant": 0.2
+  },
+  "carSnapshot": {
+    "distributorMargins": 25,
+    "graphRankFilter": 9
+  },
+  "carSnapshotGraph": {
+    "peakFootConstant": 0.55,
+    "peakDiffMultiplicationConstant": 0.1
+  },
+  "character": {
+    "normalizedWidth": 8,
+    "normalizedHeight": 13,
+    "resizeMethod": 1,
+    "featuresExtractionMethod": 0,
+    "neuralNetworkPath": "Resources/neuralnetworks/network_avgres_813_map.xml",
+    "learnAlphabetPath": "Resources/alphabets/alphabet_8x13"
+  },
+  "plateGraph": {
+    "peakFootConstant": 0.7,
+    "relativeMinPeakSize": 0.86
+  },
+  "plateHorizontalGraph": {
+    "peakFootConstant": 0.05,
+    "detectionType": 1
+  },
+  "plateVerticalGraph": {
+    "peakFootConstant": 0.42
+  },
+  "intelligence": {
+    "classificationMethod": 0,
+    "numberOfBands": 3,
+    "numberOfPlates": 3,
+    "numberOfChars": 20,
+    "minimumChars": 5,
+    "maximumChars": 15,
+    "skewDetection": 0,
+    "syntaxAnalysis": 2,
+    "syntaxDescriptionFile": "Resources/syntax.xml",
+    "maxCharWidthDispersion": 0.5,
+    "minPlateWidthHeightRatio": 0.5,
+    "maxPlateWidthHeightRatio": 15.0,
+    "minCharWidthHeightRatio": 0.1,
+    "maxCharWidthHeightRatio": 0.92,
+    "maxBrightnessCostDispersion": 0.161,
+    "maxContrastCostDispersion": 0.1,
+    "maxHueCostDispersion": 0.145,
+    "maxSaturationCostDispersion": 0.24,
+    "maxHeightCostDispersion": 0.2,
+    "maxSimilarityCostDispersion": 100.0
+  },
+  "neuralNetwork": {
+    "maxK": 8000,
+    "eps": 0.07,
+    "lambda": 0.05,
+    "micro": 0.5,
+    "topology": 20
+  }
+}

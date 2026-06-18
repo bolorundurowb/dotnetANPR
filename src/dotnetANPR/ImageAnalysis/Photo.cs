@@ -212,8 +212,16 @@ public class Photo(SKBitmap image) : IDisposable, ICloneable
     /// <param name="width">The width of the bitmap.</param>
     /// <param name="height">The height of the bitmap.</param>
     /// <returns>A new blank bitmap.</returns>
-    public static SKBitmap CreateBlankBitmap(int width, int height) =>
-        new(width, height, SKColorType.Bgra8888, SKAlphaType.Opaque);
+    public static SKBitmap CreateBlankBitmap(int width, int height)
+    {
+        var bitmap = new SKBitmap(width, height, SKColorType.Bgra8888, SKAlphaType.Opaque);
+        using (var canvas = new SKCanvas(bitmap))
+        {
+            canvas.Clear(SKColors.Black);
+        }
+
+        return bitmap;
+    }
 
     /// <summary>
     /// Returns a new bitmap with the image drawn on a light gray background with labeled axes.

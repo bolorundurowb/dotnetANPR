@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using DotNetANPR.Configuration;
 using DotNetANPR.ImageAnalysis;
+using DotNetANPR.Utilities;
 namespace DotNetANPR.Recognizer;
 
 /// <summary>
@@ -19,18 +21,18 @@ public class KnnPatternClassifier : CharacterRecognizer
     /// </summary>
     public KnnPatternClassifier()
     {
-        var path = AnprConfig.Instance.Character.LearnAlphabetPath
-            .Replace('/', System.IO.Path.DirectorySeparatorChar)
-            .Replace('\\', System.IO.Path.DirectorySeparatorChar);
+        var path = AnprConfig.Instance.Character.LearnAlphabetPath;
         _learnLists = new List<List<double>>(36);
         var filenames = Character.AlphabetList(path);
 
-        foreach (var imgChar in filenames.Select(fileName => new Character(fileName)))
+        foreach (var fileName in filenames)
         {
+            var stream = ResourceHelper.OpenStream(fileName)
+                ?? throw new FileNotFoundException("Alphabet resource not found", fileName);
+            using var imgChar = new Character(stream);
             imgChar.Normalize();
             _learnLists.Add(imgChar.ExtractFeatures());
         }
-
     }
 
     /// <summary>

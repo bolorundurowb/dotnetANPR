@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Xml.Linq;
 namespace DotNetANPR.NeuralNetwork;
 
@@ -36,9 +37,16 @@ public class NeuralNetwork
     /// from an XML file.
     /// </summary>
     /// <param name="path">The file path to the XML network definition.</param>
-    public NeuralNetwork(string path)
+    public NeuralNetwork(string path) : this(File.OpenRead(path)) { }
+
+    /// <summary>
+    /// Initializes a new <see cref="NeuralNetwork"/> by loading a previously saved topology
+    /// from an XML stream.
+    /// </summary>
+    /// <param name="stream">The stream containing the XML network definition.</param>
+    public NeuralNetwork(Stream stream)
     {
-        LoadFromXml(path);
+        LoadFromXml(stream);
         _randomGenerator = new Random();
     }
 
@@ -146,18 +154,9 @@ public class NeuralNetwork
 
     #region Private Helpers
 
-    private void LoadFromXml(string path)
+    private void LoadFromXml(Stream stream)
     {
-        XDocument doc;
-        try
-        {
-            doc = XDocument.Load(path);
-        }
-        catch (Exception)
-        {
-            throw;
-        }
-
+        var doc = XDocument.Load(stream);
         var nodeNeuralNetwork = doc.Root;
         if (nodeNeuralNetwork?.Name.LocalName != "neuralNetwork")
         {

@@ -1,4 +1,5 @@
 <Solution>
   <Project Path="dotnetANPR.CLI/dotnetANPR.CLI.csproj" />
   <Project Path="dotnetANPR/dotnetANPR.csproj" />
+  <Project Path="dotnetANPR.Tests/dotnetANPR.Tests.csproj" />
 </Solution>

@@ -1,6 +1,7 @@
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using DotNetANPR.Utilities;
 
 namespace DotNetANPR.Configuration;
 
@@ -27,10 +28,9 @@ public sealed class AnprConfig
                     if (_instance is null)
                     {
                         _instance = new AnprConfig();
-                        var defaultPath = Path.Combine("Resources", "config.json");
-                        if (File.Exists(defaultPath))
+                        var json = ResourceHelper.ReadText("Resources/config.json");
+                        if (!string.IsNullOrEmpty(json))
                         {
-                            var json = File.ReadAllText(defaultPath);
                             var loaded = JsonSerializer.Deserialize<AnprConfig>(json);
                             if (loaded is not null)
                                 _instance = loaded;

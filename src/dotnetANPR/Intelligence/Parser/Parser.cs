@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 using DotNetANPR.Configuration;
+using DotNetANPR.Utilities;
 namespace DotNetANPR.Intelligence.Parser;
 
 /// <summary>
@@ -24,32 +25,26 @@ public class Parser
     public Parser()
     {
         _plateForms = new List<PlateForm>();
-        var fileName = AnprConfig.Instance.Intelligence.SyntaxDescriptionFile
-            .Replace('/', System.IO.Path.DirectorySeparatorChar)
-            .Replace('\\', System.IO.Path.DirectorySeparatorChar);
+        var fileName = AnprConfig.Instance.Intelligence.SyntaxDescriptionFile;
 
         if (string.IsNullOrEmpty(fileName))
             throw new IOException("Failed to get syntax description file from AnprConfig");
 
-        try
-        {
-            _plateForms = LoadFromXml(fileName);
-        }
-        catch (Exception)
-        {
-            throw;
-        }
+        using var stream = ResourceHelper.OpenStream(fileName)
+            ?? throw new IOException("Failed to load syntax description resource: " + fileName);
+
+        _plateForms = LoadFromXml(stream);
     }
 
     /// <summary>
-    /// Loads plate format templates from the specified XML file.
+    /// Loads plate format templates from the specified XML stream.
     /// </summary>
-    /// <param name="fileName">The path to the syntax XML file.</param>
+    /// <param name="stream">The stream containing the syntax XML.</param>
     /// <returns>A list of parsed <see cref="PlateForm"/> templates.</returns>
-    public List<PlateForm> LoadFromXml(string fileName)
+    public List<PlateForm> LoadFromXml(Stream stream)
     {
         var plateForms = new List<PlateForm>();
-        var doc = XDocument.Load(fileName);
+        var doc = XDocument.Load(stream);
         var root = doc.Root;
 
         if (root is null)

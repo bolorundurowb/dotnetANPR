@@ -5,6 +5,7 @@ using System.Linq;
 using DotNetANPR.Configuration;
 using DotNetANPR.Extensions;
 using DotNetANPR.Recognizer;
+using DotNetANPR.Utilities;
 using SkiaSharp;
 
 namespace DotNetANPR.ImageAnalysis;
@@ -90,15 +91,14 @@ public class Character : Photo
     /// The loaded image is adaptively thresholded to produce the binary version.
     /// </summary>
     /// <param name="fileName">The path to the character image file.</param>
-    public Character(string fileName) : base(SKBitmap.Decode(fileName))
-    {
-        var origin = DuplicateBitmap(Image);
-        AdaptiveThresholding();
-        ThresholdedImage = Image;
-        Image = origin;
+    public Character(string fileName) : this(SKBitmap.Decode(fileName), applyThresholding: true) { }
 
-        Init();
-    }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Character"/> class by loading an image from a stream.
+    /// The loaded image is adaptively thresholded to produce the binary version.
+    /// </summary>
+    /// <param name="stream">The stream containing the character image.</param>
+    public Character(Stream stream) : this(SKBitmap.Decode(stream), applyThresholding: true) { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Character"/> class from a bitmap.
@@ -122,22 +122,48 @@ public class Character : Photo
         Init();
     }
 
+    private Character(SKBitmap image, bool applyThresholding) : base(image)
+    {
+        if (applyThresholding)
+        {
+            var origin = DuplicateBitmap(Image);
+            AdaptiveThresholding();
+            ThresholdedImage = Image;
+            Image = origin;
+        }
+        else
+        {
+            ThresholdedImage = image;
+        }
+
+        Init();
+    }
+
     /// <summary>
-    /// Returns a list of file paths for all alphabet character images found in the specified directory.
+    /// Returns a list of paths for all alphabet character images found in the specified directory
+    /// or embedded resource prefix.
     /// </summary>
-    /// <param name="directory">The directory containing alphabet image files.</param>
-    /// <returns>A list of file paths to existing character images.</returns>
+    /// <param name="directory">The directory or logical resource path containing alphabet image files.</param>
+    /// <returns>A list of paths to existing character images.</returns>
     public static List<string> AlphabetList(string directory)
     {
         const string alphaString = "0123456789abcdefghijklmnopqrstuvwxyz";
         var suffix = Suffix(directory);
-        directory = directory.TrimEnd('/');
-        List<string> filenames = [];
-        filenames.AddRange(alphaString
-            .Select(t => Path.Combine(directory, t + suffix + ".jpg"))
-            .Where(File.Exists));
+        directory = directory.TrimEnd('/', '\\');
 
-        return filenames;
+        var candidates = alphaString
+            .Select(t => directory + "/" + t + suffix + ".jpg")
+            .ToList();
+
+        // Prefer embedded resources; fall back to the file system if none are embedded.
+        var embedded = candidates.Where(ResourceHelper.Exists).ToList();
+        if (embedded.Count != 0)
+            return embedded;
+
+        return candidates
+            .Select(p => p.Replace('/', Path.DirectorySeparatorChar))
+            .Where(File.Exists)
+            .ToList();
     }
 
     /// <summary>

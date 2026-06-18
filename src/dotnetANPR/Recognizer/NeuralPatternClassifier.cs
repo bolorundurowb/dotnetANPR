@@ -1,8 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using DotNetANPR.Configuration;
 using DotNetANPR.ImageAnalysis;
+using DotNetANPR.Utilities;
 using NN = DotNetANPR.NeuralNetwork;
 
 namespace DotNetANPR.Recognizer;
@@ -65,11 +67,11 @@ public class NeuralPatternClassifier : CharacterRecognizer
         }
         else
         {
-            // Load pre-trained network from XML
-            var neuralNetPath = config.Character.NeuralNetworkPath
-                .Replace('/', System.IO.Path.DirectorySeparatorChar)
-                .Replace('\\', System.IO.Path.DirectorySeparatorChar);
-            NeuralNetwork = new NN.NeuralNetwork(neuralNetPath);
+            // Load pre-trained network from embedded resource
+            var neuralNetPath = config.Character.NeuralNetworkPath;
+            var stream = ResourceHelper.OpenStream(neuralNetPath)
+                ?? throw new IOException("Failed to load neural network resource: " + neuralNetPath);
+            NeuralNetwork = new NN.NeuralNetwork(stream);
         }
     }
 
@@ -121,7 +123,9 @@ public class NeuralPatternClassifier : CharacterRecognizer
 
         foreach (var fileName in fileList)
         {
-            var imgChar = new Character(fileName);
+            var stream = ResourceHelper.OpenStream(fileName)
+                ?? throw new FileNotFoundException("Alphabet resource not found", fileName);
+            using var imgChar = new Character(stream);
             imgChar.Normalize();
             train.AddIOPair(CreateNewPair(Path.GetFileName(fileName).ToUpper()[0], imgChar));
         }

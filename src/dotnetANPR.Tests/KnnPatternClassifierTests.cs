@@ -1,6 +1,7 @@
 using System.Linq;
 using DotNetANPR.Configuration;
 using DotNetANPR.Recognizer;
+using OmniAssert;
 using Xunit;
 
 namespace DotNetANPR.Tests;
@@ -17,7 +18,7 @@ public class KnnPatternClassifierTests
     {
         var classifier = new KnnPatternClassifier();
 
-        Assert.NotNull(classifier);
+        classifier.Verify().NotToBeNull();
     }
 
     [Fact]
@@ -28,9 +29,8 @@ public class KnnPatternClassifierTests
         using var character = LoadEmbeddedCharacter('a');
         var result = classifier.Recognize(character);
 
-        Assert.True(result.IsSorted);
-        Assert.NotNull(result.Patterns);
-        Assert.Equal(36, result.Patterns.Count);
+        result.IsSorted.Verify().ToBeTrue();
+        result.Patterns!.Verify().ToHaveCount(36);
     }
 
     private static ImageAnalysis.Character LoadEmbeddedCharacter(char label)

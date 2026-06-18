@@ -2,6 +2,7 @@ using System.IO;
 using System.Linq;
 using DotNetANPR.ImageAnalysis;
 using DotNetANPR.Utilities;
+using OmniAssert;
 using Xunit;
 
 namespace DotNetANPR.Tests;
@@ -13,8 +14,8 @@ public class CharacterTests
     {
         var list = Character.AlphabetList("Resources/alphabets/alphabet_8x13");
 
-        Assert.NotEmpty(list);
-        Assert.All(list, path => Assert.True(ResourceHelper.Exists(path)));
+        list.Verify().NotToBeEmpty();
+        list.Verify().AllSatisfy(path => ResourceHelper.Exists(path));
     }
 
     [Fact]
@@ -30,7 +31,7 @@ public class CharacterTests
 
             var list = Character.AlphabetList(tempDir);
 
-            Assert.Equal(2, list.Count);
+            list.Verify().ToHaveCount(2);
         }
         finally
         {
@@ -43,10 +44,10 @@ public class CharacterTests
     {
         using var stream = ResourceHelper.OpenStream("Resources/alphabets/alphabet_8x13/a_8x13.jpg");
 
-        Assert.NotNull(stream);
-        using var character = new Character(stream);
+        stream.Verify().NotToBeNull();
+        using var character = new Character(stream!);
 
-        Assert.True(character.Width > 0);
-        Assert.True(character.Height > 0);
+        character.Width.Verify().ToBeGreaterThan(0);
+        character.Height.Verify().ToBeGreaterThan(0);
     }
 }

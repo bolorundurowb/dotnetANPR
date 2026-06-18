@@ -1,5 +1,6 @@
 using System.Text.Json;
 using DotNetANPR.Configuration;
+using OmniAssert;
 using Xunit;
 
 namespace DotNetANPR.Tests;
@@ -16,12 +17,12 @@ public class AnprConfigTests
     {
         var config = AnprConfig.Instance;
 
-        Assert.Equal(7, config.Photo.AdaptiveThresholdingRadius);
-        Assert.Equal(8, config.Character.NormalizedWidth);
-        Assert.Equal(13, config.Character.NormalizedHeight);
-        Assert.Equal(0, config.Intelligence.ClassificationMethod);
-        Assert.Equal(3, config.Intelligence.NumberOfBands);
-        Assert.Equal(8000, config.NeuralNetwork.MaxK);
+        config.Photo.AdaptiveThresholdingRadius.Verify().ToBe(7);
+        config.Character.NormalizedWidth.Verify().ToBe(8);
+        config.Character.NormalizedHeight.Verify().ToBe(13);
+        config.Intelligence.ClassificationMethod.Verify().ToBe(0);
+        config.Intelligence.NumberOfBands.Verify().ToBe(3);
+        config.NeuralNetwork.MaxK.Verify().ToBe(8000);
     }
 
     [Fact]
@@ -29,8 +30,8 @@ public class AnprConfigTests
     {
         var config = AnprConfig.Instance;
 
-        Assert.Equal("Resources/syntax.xml", config.Intelligence.SyntaxDescriptionFile);
-        Assert.Equal("Resources/neuralnetworks/network_avgres_813_map.xml", config.Character.NeuralNetworkPath);
+        config.Intelligence.SyntaxDescriptionFile.Verify().ToBe("Resources/syntax.xml");
+        config.Character.NeuralNetworkPath.Verify().ToBe("Resources/neuralnetworks/network_avgres_813_map.xml");
     }
 
     [Fact]
@@ -48,8 +49,8 @@ public class AnprConfigTests
         {
             var config = AnprConfig.Load(tempFile);
 
-            Assert.Equal(99, config.Photo.AdaptiveThresholdingRadius);
-            Assert.Same(config, AnprConfig.Instance);
+            config.Photo.AdaptiveThresholdingRadius.Verify().ToBe(99);
+            config.Verify().ToBe(AnprConfig.Instance);
         }
         finally
         {
@@ -64,6 +65,6 @@ public class AnprConfigTests
         AnprConfig.Reset();
         var second = AnprConfig.Instance;
 
-        Assert.NotSame(first, second);
+        ReferenceEquals(first, second).Verify().ToBeFalse();
     }
 }

@@ -1,4 +1,5 @@
 using DotNetANPR.Recognizer;
+using OmniAssert;
 using Xunit;
 
 namespace DotNetANPR.Tests;
@@ -11,8 +12,8 @@ public class RecognizedCharacterTests
         var rc = new RecognizedCharacter();
         rc.AddPattern(new RecognizedPattern('A', 0.5f));
 
-        Assert.Null(rc.Patterns);
-        Assert.False(rc.IsSorted);
+        (rc.Patterns == null).Verify().ToBeTrue();
+        rc.IsSorted.Verify().ToBeFalse();
     }
 
     [Fact]
@@ -25,11 +26,11 @@ public class RecognizedCharacterTests
 
         rc.Sort(false);
 
-        Assert.True(rc.IsSorted);
-        Assert.NotNull(rc.Patterns);
-        Assert.Equal('A', rc.Patterns[0].Char);
-        Assert.Equal('B', rc.Patterns[1].Char);
-        Assert.Equal('C', rc.Patterns[2].Char);
+        rc.IsSorted.Verify().ToBeTrue();
+        (rc.Patterns != null).Verify().ToBeTrue();
+        rc.Patterns![0].Char.Verify().ToBe('A');
+        rc.Patterns[1].Char.Verify().ToBe('B');
+        rc.Patterns[2].Char.Verify().ToBe('C');
     }
 
     [Fact]
@@ -41,8 +42,8 @@ public class RecognizedCharacterTests
 
         var pattern = rc.Pattern(0);
 
-        Assert.NotNull(pattern);
-        Assert.Equal('X', pattern.Char);
+        pattern.Verify().NotToBeNull();
+        pattern!.Char.Verify().ToBe('X');
     }
 
     [Fact]
@@ -52,6 +53,6 @@ public class RecognizedCharacterTests
         rc.AddPattern(new RecognizedPattern('X', 0.2f));
         rc.Sort(false);
 
-        Assert.Null(rc.Pattern(5));
+        rc.Pattern(5).Verify().ToBeNull();
     }
 }

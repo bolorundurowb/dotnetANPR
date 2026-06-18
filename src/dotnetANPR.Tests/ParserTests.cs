@@ -4,6 +4,7 @@ using DotNetANPR.Intelligence;
 using DotNetANPR.Intelligence.Parser;
 using DotNetANPR.Recognizer;
 using DotNetANPR.Utilities;
+using OmniAssert;
 using Xunit;
 
 namespace DotNetANPR.Tests;
@@ -22,7 +23,7 @@ public class ParserTests
 
         var plateForms = parser.LoadFromXml(ResourceHelper.OpenStream("Resources/syntax.xml")!);
 
-        Assert.NotEmpty(plateForms);
+        plateForms.Verify().NotToBeEmpty();
     }
 
     [Fact]
@@ -36,7 +37,7 @@ public class ParserTests
 
         var result = parser.Parse(plate, SyntaxAnalysisMode.DoNotParse);
 
-        Assert.Equal("AB1", result);
+        result.Verify().ToBe("AB1");
     }
 
     private static Recognizer.RecognizedCharacter CreateRecognizedCharacter(char chr)

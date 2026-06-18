@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using DotNetANPR.Utilities;
+using OmniAssert;
 using Xunit;
 using NN = DotNetANPR.NeuralNetwork;
 
@@ -12,10 +13,10 @@ public class NeuralNetworkTests
     {
         var network = new NN.NeuralNetwork(new List<int> { 2, 3, 1 });
 
-        Assert.Equal(3, network.Layers.Count);
-        Assert.Equal(2, network.Layers[0].Neurons.Count);
-        Assert.Equal(3, network.Layers[1].Neurons.Count);
-        Assert.Single(network.Layers[2].Neurons);
+        network.Layers.Count.Verify().ToBe(3);
+        network.Layers[0].Neurons.Count.Verify().ToBe(2);
+        network.Layers[1].Neurons.Count.Verify().ToBe(3);
+        network.Layers[2].Neurons.Verify().ToHaveCount(1);
     }
 
     [Fact]
@@ -25,8 +26,8 @@ public class NeuralNetworkTests
 
         var output = network.Test(new List<double> { 0.5, 0.5 });
 
-        Assert.Single(output);
-        Assert.InRange(output[0], 0, 1);
+        output.Verify().ToHaveCount(1);
+        output[0].Verify().ToBeInRange(0, 1);
     }
 
     [Fact]
@@ -34,9 +35,9 @@ public class NeuralNetworkTests
     {
         using var stream = ResourceHelper.OpenStream("Resources/neuralnetworks/network_avgres_813_map.xml");
 
-        Assert.NotNull(stream);
-        var network = new NN.NeuralNetwork(stream);
+        stream.Verify().NotToBeNull();
+        var network = new NN.NeuralNetwork(stream!);
 
-        Assert.NotEmpty(network.Layers);
+        network.Layers.Verify().NotToBeEmpty();
     }
 }

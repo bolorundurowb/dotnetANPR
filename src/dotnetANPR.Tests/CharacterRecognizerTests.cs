@@ -1,4 +1,5 @@
 using DotNetANPR.Recognizer;
+using OmniAssert;
 using Xunit;
 
 namespace DotNetANPR.Tests;
@@ -10,11 +11,11 @@ public class CharacterRecognizerTests
     {
         var alphabet = CharacterRecognizer.Alphabet;
 
-        Assert.Equal(36, alphabet.Length);
-        Assert.Equal('0', alphabet[0]);
-        Assert.Equal('9', alphabet[9]);
-        Assert.Equal('A', alphabet[10]);
-        Assert.Equal('Z', alphabet[35]);
+        alphabet.Length.Verify().ToBe(36);
+        alphabet[0].Verify().ToBe('0');
+        alphabet[9].Verify().ToBe('9');
+        alphabet[10].Verify().ToBe('A');
+        alphabet[35].Verify().ToBe('Z');
     }
 
     [Fact]
@@ -22,8 +23,8 @@ public class CharacterRecognizerTests
     {
         var features = CharacterRecognizer.Features;
 
-        Assert.Equal(12, features.Length);
-        Assert.All(features, f => Assert.Equal(4, f.Length));
-        Assert.All(features, f => Assert.All(f, v => Assert.True(v == 0f || v == 1f)));
+        features.Length.Verify().ToBe(12);
+        features.Verify().AllSatisfy(f => f.Length == 4);
+        features.Verify().AllSatisfy(f => f.All(v => v == 0f || v == 1f));
     }
 }

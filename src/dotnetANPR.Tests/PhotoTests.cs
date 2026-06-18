@@ -1,4 +1,5 @@
 using DotNetANPR.ImageAnalysis;
+using OmniAssert;
 using SkiaSharp;
 using Xunit;
 
@@ -14,7 +15,7 @@ public class PhotoTests
 
         var brightness = Photo.GetBrightness(bitmap, 0, 0);
 
-        Assert.Equal(0, brightness, precision: 3);
+        brightness.Verify().ToBeApproximately(0f, 0.001f);
     }
 
     [Fact]
@@ -25,7 +26,7 @@ public class PhotoTests
 
         var brightness = Photo.GetBrightness(bitmap, 0, 0);
 
-        Assert.Equal(1, brightness, precision: 3);
+        brightness.Verify().ToBeApproximately(1f, 0.001f);
     }
 
     [Fact]
@@ -33,9 +34,9 @@ public class PhotoTests
     {
         using var bitmap = Photo.CreateBlankBitmap(10, 10);
 
-        Assert.Equal(10, bitmap.Width);
-        Assert.Equal(10, bitmap.Height);
-        Assert.Equal(SKColors.Black, bitmap.GetPixel(0, 0));
+        bitmap.Width.Verify().ToBe(10);
+        bitmap.Height.Verify().ToBe(10);
+        bitmap.GetPixel(0, 0).Verify().ToBe(SKColors.Black);
     }
 
     [Fact]
@@ -44,8 +45,8 @@ public class PhotoTests
         using var original = new SKBitmap(100, 50);
         using var resized = Photo.LinearResizeImage(original, 50, 25);
 
-        Assert.Equal(50, resized.Width);
-        Assert.Equal(25, resized.Height);
+        resized.Width.Verify().ToBe(50);
+        resized.Height.Verify().ToBe(25);
     }
 
     [Fact]
@@ -54,7 +55,7 @@ public class PhotoTests
         using var original = new SKBitmap(10, 10);
         using var copy = Photo.DuplicateBitmap(original);
 
-        Assert.Equal(original.Width, copy.Width);
-        Assert.Equal(original.Height, copy.Height);
+        copy.Width.Verify().ToBe(original.Width);
+        copy.Height.Verify().ToBe(original.Height);
     }
 }

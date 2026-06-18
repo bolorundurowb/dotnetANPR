@@ -1,5 +1,6 @@
 using System.Linq;
 using DotNetANPR.Utilities;
+using OmniAssert;
 using Xunit;
 
 namespace DotNetANPR.Tests;
@@ -12,13 +13,13 @@ public class ResourceHelperTests
     [InlineData("Resources/neuralnetworks/network_avgres_813_map.xml")]
     public void Exists_ReturnsTrue_ForEmbeddedResources(string path)
     {
-        Assert.True(ResourceHelper.Exists(path));
+        ResourceHelper.Exists(path).Verify().ToBeTrue();
     }
 
     [Fact]
     public void Exists_ReturnsFalse_ForMissingResource()
     {
-        Assert.False(ResourceHelper.Exists("Resources/does-not-exist.txt"));
+        ResourceHelper.Exists("Resources/does-not-exist.txt").Verify().ToBeFalse();
     }
 
     [Fact]
@@ -26,8 +27,8 @@ public class ResourceHelperTests
     {
         using var stream = ResourceHelper.OpenStream("Resources/config.json");
 
-        Assert.NotNull(stream);
-        Assert.True(stream.Length > 0);
+        stream.Verify().NotToBeNull();
+        stream!.Length.Verify().ToBeGreaterThan(0);
     }
 
     [Fact]
@@ -35,21 +36,21 @@ public class ResourceHelperTests
     {
         var text = ResourceHelper.ReadText("Resources/config.json");
 
-        Assert.NotNull(text);
-        Assert.Contains("\"photo\"", text);
+        text.Verify().NotToBeNull();
+        text!.Verify().ToContain("\"photo\"");
     }
 
     [Fact]
     public void Enumerate_ReturnsAlphabetImages_ForEmbeddedAlphabet()
     {
         var allNames = typeof(ResourceHelper).Assembly.GetManifestResourceNames();
-        Assert.Contains(allNames, n => n.Contains("alphabet_8x13"));
+        allNames.Verify().ToContain(n => n.Contains("alphabet_8x13"));
 
         var images = ResourceHelper.Enumerate("Resources/alphabets/alphabet_8x13", ".jpg");
 
-        Assert.NotEmpty(images);
-        Assert.Contains(images, i => i.EndsWith("a_8x13.jpg"));
-        Assert.Contains(images, i => i.EndsWith("0_8x13.jpg"));
+        images.Verify().NotToBeEmpty();
+        images.Verify().ToContain(i => i.EndsWith("a_8x13.jpg"));
+        images.Verify().ToContain(i => i.EndsWith("0_8x13.jpg"));
     }
 
     [Fact]
@@ -57,6 +58,6 @@ public class ResourceHelperTests
     {
         var images = ResourceHelper.Enumerate(Path.GetTempPath(), ".not-a-real-extension");
 
-        Assert.Empty(images);
+        images.Verify().ToBeEmpty();
     }
 }

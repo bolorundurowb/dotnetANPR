@@ -43,7 +43,7 @@ public class PlateGraph : Graph
             for (var i = 0; i < YValues.Count; i++)
             {
                 // left to right
-                if (AllowedInterval(spacesTemp, i))
+                if (IsOutsideAllPeaks(spacesTemp, i))
                 {
                     if (!(YValues[i] >= maxValue))
                         continue;

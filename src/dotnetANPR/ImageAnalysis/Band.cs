@@ -16,12 +16,6 @@ public class Band(Bitmap image) : Photo(image)
 
     private BandGraph? _graphHandle;
 
-    public Bitmap RenderGraph()
-    {
-        ComputeGraph();
-        return _graphHandle!.RenderHorizontally(Width, 100);
-    }
-
     private List<Peak> ComputeGraph(StageWriter? writer = null)
     {
         if (_graphHandle == null)

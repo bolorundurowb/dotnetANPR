@@ -16,7 +16,7 @@ public class Plate : Photo, ICloneable
     private static readonly int HorizontalDetectionType =
         Configurator.Instance.Get<int>("platehorizontalgraph_detectionType");
 
-    private Plate? _plateCopy; // TODO refactor: remove this variable completely
+    private Plate? _plateCopy;
     private PlateGraph? _graphHandle;
 
     public Plate(Bitmap image, bool isCopy = false) : base(image)
@@ -33,12 +33,6 @@ public class Plate : Photo, ICloneable
     }
 
     public new object Clone() => new Plate(DuplicateBitmap(Image));
-
-    public Bitmap RenderGraph()
-    {
-        ComputeGraph();
-        return _graphHandle!.RenderHorizontally(Width, 100);
-    }
 
     public List<Character> Characters()
     {

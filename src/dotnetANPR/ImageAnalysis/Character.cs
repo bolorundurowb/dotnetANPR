@@ -70,13 +70,32 @@ public class Character : Photo
         Image = ThresholdedImage;
         var pixelMap = PixelMap;
         var bestPiece = pixelMap.BestPiece();
-        colorImage = BestPieceInFullColor(colorImage, bestPiece);
+
+        // Crop to the best piece region if it has valid dimensions
+        Bitmap statsImage;
+        bool ownStatsImage;
+        if (bestPiece.Width > 0 && bestPiece.Height > 0)
+        {
+            statsImage = colorImage.SubImage(
+                bestPiece.MostLeftPoint, bestPiece.MostTopPoint,
+                bestPiece.Width, bestPiece.Height);
+            ownStatsImage = true;
+        }
+        else
+        {
+            statsImage = colorImage;
+            ownStatsImage = false;
+        }
 
         // Compute statistics
-        ComputeStatisticBrightness(colorImage);
-        ComputeStatisticContrast(colorImage);
-        ComputeStatisticHue(colorImage);
-        ComputeStatisticSaturation(colorImage);
+        ComputeStatisticBrightness(statsImage);
+        ComputeStatisticContrast(statsImage);
+        ComputeStatisticHue(statsImage);
+        ComputeStatisticSaturation(statsImage);
+
+        if (ownStatsImage)
+            statsImage.Dispose();
+        colorImage.Dispose();
 
         Image = bestPiece.Render() ?? new Bitmap(1, 1, PixelFormat.Format24bppRgb);
 
@@ -147,14 +166,6 @@ public class Character : Photo
     {
         directoryName = directoryName.TrimEnd('/');
         return directoryName.Substring(directoryName.LastIndexOf('_'));
-    }
-
-    private Bitmap BestPieceInFullColor(Bitmap bi, PixelMap.Piece piece)
-    {
-        if (piece.Width <= 0 || piece.Height <= 0)
-            return bi;
-
-        return bi.SubImage(piece.MostLeftPoint, piece.MostTopPoint, piece.Width, piece.Height);
     }
 
     private void NormalizeResizeOnly()

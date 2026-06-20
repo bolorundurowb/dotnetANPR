@@ -67,8 +67,10 @@ public class CarSnapshot(Bitmap image) : Photo(image)
     {
         if (_graphHandle == null)
         {
-            var imageCopy = DuplicateBitmap(Image);
-            imageCopy = VerticalEdge(imageCopy);
+            var raw = DuplicateBitmap(Image);
+            var imageCopy = VerticalEdge(raw); // Convolve returns a new Bitmap
+            raw.Dispose();                     // release the DuplicateBitmap
+
             Thresholding(imageCopy);
             writer?.Write("vertical-rank-filter", imageCopy);
 
@@ -76,6 +78,7 @@ public class CarSnapshot(Bitmap image) : Photo(image)
             _graphHandle.RankFilter(CarSnapshotGraphRankFilter);
             _graphHandle.ApplyProbabilityDistributor(Distributor);
             _graphHandle.FindPeaks(NumberOfCandidates); // sort by height
+            imageCopy.Dispose(); // histogram is built; release the working bitmap
         }
 
         return _graphHandle.Peaks;

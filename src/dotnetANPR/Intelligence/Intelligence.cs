@@ -40,14 +40,20 @@ public class Intelligence
                 // Skew detection runs when either configured or dumping stages
                 if (skewDetectionMode != 0 || stageWriter != null)
                 {
-                    var notNormalizedCopy = (Plate)plate.Clone();
-                    notNormalizedCopy.Image = notNormalizedCopy.HorizontalEdgeDetector(notNormalizedCopy.Image);
-                    var hough = notNormalizedCopy.GetHoughTransformation();
+                    // HorizontalEdgeDetector reads plate.Image and returns a new Bitmap —
+                    // no need to clone the whole Plate (which would also duplicate _plateCopy).
+                    using var edgeBitmap = plate.HorizontalEdgeDetector(plate.Image);
+
+                    // Build the Hough transform directly from the edge bitmap
+                    var hough = new HoughTransformation(edgeBitmap.Width, edgeBitmap.Height);
+                    for (var hx = 0; hx < edgeBitmap.Width; hx++)
+                        for (var hy = 0; hy < edgeBitmap.Height; hy++)
+                            hough.AddLine(hx, hy, Photo.GetBrightness(edgeBitmap, hx, hy));
 
                     if (stageWriter != null)
                     {
-                        stageWriter.Write("skew-horizontal-edge", notNormalizedCopy.Image);
-                        var renderedHoughTransform = hough.Render(HoughTransformation.RenderType.RenderAll,
+                        stageWriter.Write("skew-horizontal-edge", edgeBitmap);
+                        using var renderedHoughTransform = hough.Render(HoughTransformation.RenderType.RenderAll,
                             HoughTransformation.ColorType.BlackAndWhite);
                         stageWriter.Write("hough-transform", renderedHoughTransform);
                     }

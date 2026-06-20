@@ -1,6 +1,6 @@
-﻿using System.Linq;
+using System.Linq;
 
-namespace DotNetANPR.Intelligence.Parser;
+namespace dotnetANPR.Intelligence.Parser;
 
 public class Position(string data)
 {

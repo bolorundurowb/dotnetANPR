@@ -1,6 +1,6 @@
-﻿using DotNetANPR.ImageAnalysis;
+using dotnetANPR.ImageAnalysis;
 
-namespace DotNetANPR.Recognizer;
+namespace dotnetANPR.Recognizer;
 
 public abstract class CharacterRecognizer
 {

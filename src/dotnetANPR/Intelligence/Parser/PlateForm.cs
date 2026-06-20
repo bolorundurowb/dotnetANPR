@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
-namespace DotNetANPR.Intelligence.Parser;
+namespace dotnetANPR.Intelligence.Parser;
 
 public class PlateForm(string name)
 {

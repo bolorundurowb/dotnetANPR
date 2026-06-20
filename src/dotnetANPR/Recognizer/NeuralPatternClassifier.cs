@@ -1,13 +1,13 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using DotNetANPR.Configuration;
-using DotNetANPR.ImageAnalysis;
-using DotNetANPR.Utilities;
+using dotnetANPR.Configuration;
+using dotnetANPR.ImageAnalysis;
+using dotnetANPR.Utilities;
 using Microsoft.Extensions.Logging;
-using NN = DotNetANPR.NeuralNetwork;
+using NN = dotnetANPR.NeuralNetwork;
 
-namespace DotNetANPR.Recognizer;
+namespace dotnetANPR.Recognizer;
 
 public class NeuralPatternClassifier : CharacterRecognizer
 {

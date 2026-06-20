@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Text;
-using DotNetANPR.Configuration;
+using dotnetANPR.Configuration;
 
-namespace DotNetANPR.Utilities;
+namespace dotnetANPR.Utilities;
 
 public class ReportGenerator
 {

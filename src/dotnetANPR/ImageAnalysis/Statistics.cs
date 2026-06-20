@@ -1,6 +1,6 @@
-﻿using System;
+using System;
 
-namespace DotNetANPR.ImageAnalysis;
+namespace dotnetANPR.ImageAnalysis;
 
 public class Statistics
 {

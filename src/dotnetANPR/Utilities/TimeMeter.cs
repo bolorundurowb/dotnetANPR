@@ -1,6 +1,6 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 
-namespace DotNetANPR.Utilities;
+namespace dotnetANPR.Utilities;
 
 public class TimeMeter
 {

@@ -1,6 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 
-namespace DotNetANPR.Utilities;
+namespace dotnetANPR.Utilities;
 
 public static class Logging
 {

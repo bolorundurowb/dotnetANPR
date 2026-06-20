@@ -1,7 +1,7 @@
-﻿using System;
+using System;
 using System.Drawing;
 
-namespace DotNetANPR.Extensions;
+namespace dotnetANPR.Extensions;
 
 internal static class BitmapExtensions
 {

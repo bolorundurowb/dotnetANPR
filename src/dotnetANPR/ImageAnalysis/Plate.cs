@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using DotNetANPR.Configuration;
-using DotNetANPR.Extensions;
+using dotnetANPR.Configuration;
+using dotnetANPR.Extensions;
 
-namespace DotNetANPR.ImageAnalysis;
+namespace dotnetANPR.ImageAnalysis;
 
 public class Plate : Photo, ICloneable
 {

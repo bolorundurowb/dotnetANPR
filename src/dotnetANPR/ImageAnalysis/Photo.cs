@@ -2,6 +2,7 @@ using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
+using System.Runtime.InteropServices;
 using dotnetANPR.Configuration;
 
 namespace dotnetANPR.ImageAnalysis;
@@ -91,14 +92,14 @@ public class Photo(Bitmap image) : IDisposable, ICloneable
         var rgbValues = new byte[bytes];
 
         // Copy the RGB values into the array
-        System.Runtime.InteropServices.Marshal.Copy(ptr, rgbValues, 0, bytes);
+        Marshal.Copy(ptr, rgbValues, 0, bytes);
 
         // Apply the thresholding
-        for (var i = 0; i < rgbValues.Length; i++) 
+        for (var i = 0; i < rgbValues.Length; i++)
             rgbValues[i] = threshold[rgbValues[i]];
 
         // Copy the RGB values back to the bitmap
-        System.Runtime.InteropServices.Marshal.Copy(rgbValues, 0, ptr, bytes);
+        Marshal.Copy(rgbValues, 0, ptr, bytes);
 
         // Unlock the bits
         bitmap.UnlockBits(bmpData);
@@ -107,9 +108,23 @@ public class Photo(Bitmap image) : IDisposable, ICloneable
     public static Bitmap ArrayToBitmap(float[,] array, int w, int h)
     {
         var bitmap = new Bitmap(w, h, PixelFormat.Format24bppRgb);
-        for (var x = 0; x < w; x++)
+        var rect = new Rectangle(0, 0, w, h);
+        var bmpData = bitmap.LockBits(rect, ImageLockMode.WriteOnly, PixelFormat.Format24bppRgb);
+        var stride = bmpData.Stride;
+        var pixelBytes = new byte[stride * h];
+
         for (var y = 0; y < h; y++)
-            SetBrightness(bitmap, x, y, array[x, y]);
+            for (var x = 0; x < w; x++)
+            {
+                var b = (byte)(array[x, y] * 255);
+                var offset = y * stride + x * 3;
+                pixelBytes[offset]     = b; // B
+                pixelBytes[offset + 1] = b; // G
+                pixelBytes[offset + 2] = b; // R
+            }
+
+        Marshal.Copy(pixelBytes, 0, bmpData.Scan0, pixelBytes.Length);
+        bitmap.UnlockBits(bmpData);
         return bitmap;
     }
 
@@ -149,9 +164,19 @@ public class Photo(Bitmap image) : IDisposable, ICloneable
 
     #region Filters
 
-    public void LinearResize(int width, int height) { image = LinearResizeImage(image, width, height); }
+    public void LinearResize(int width, int height)
+    {
+        var newImage = LinearResizeImage(image, width, height);
+        image.Dispose();
+        image = newImage;
+    }
 
-    public void AverageResize(int width, int height) { image = AverageResizeImage(image, width, height); }
+    public void AverageResize(int width, int height)
+    {
+        var newImage = AverageResizeImage(image, width, height);
+        image.Dispose();
+        image = newImage;
+    }
 
     public Bitmap AverageResizeImage(Bitmap origin, int width, int height)
     {
@@ -275,7 +300,7 @@ public class Photo(Bitmap image) : IDisposable, ICloneable
         var width = image.Width;
         var height = image.Height;
         var sourceArray = BitmapToArray(image, width, height);
-        var destinationArray = BitmapToArray(image, width, height);
+        var destinationArray = new float[width, height]; // starts all-zero; filled below
 
         for (var x = 0; x < width; x++)
         for (var y = 0; y < height; y++)
@@ -292,7 +317,7 @@ public class Photo(Bitmap image) : IDisposable, ICloneable
                 }
 
             neighborhood /= count;
-            destinationArray[x, y] = destinationArray[x, y] < neighborhood ? 0f : 1f;
+            destinationArray[x, y] = sourceArray[x, y] < neighborhood ? 0f : 1f;
         }
 
         image = ArrayToBitmap(destinationArray, width, height);

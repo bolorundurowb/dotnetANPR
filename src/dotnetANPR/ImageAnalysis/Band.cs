@@ -28,6 +28,7 @@ public class Band(Bitmap image) : Photo(image)
             _graphHandle.RankFilter(Image.Height);
             _graphHandle.ApplyProbabilityDistributor(Distributor);
             _graphHandle.FindPeaks(NumberOfCandidates);
+            image.Dispose(); // histogram is built; release the working bitmap
         }
 
         return _graphHandle.Peaks;
@@ -94,5 +95,8 @@ public class Band(Bitmap image) : Photo(image)
                 sum += GetBrightness(i2, x, y);
                 SetBrightness(source, x, y, Math.Min(1f, sum));
             }
+
+        i1.Dispose();
+        i2.Dispose();
     }
 }

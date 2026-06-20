@@ -57,24 +57,48 @@ public class Plate : Photo, ICloneable
 
     public void Normalize(StageWriter? writer = null)
     {
-        var clone1 = (Plate)Clone();
-        clone1.Image = clone1.VerticalEdgeDetector(clone1.Image);
-        writer?.Write("plate-vertical-edge", clone1.Image);
+        // Vertical edge — create a temporary Bitmap for edge detection only (no Plate clone needed)
+        var verticalEdgeBitmap = VerticalEdgeDetector(Image);
+        writer?.Write("plate-vertical-edge", verticalEdgeBitmap);
 
-        var vertical = clone1.HistogramYaxis(clone1.Image);
+        var vertical = HistogramYaxis(verticalEdgeBitmap);
+        verticalEdgeBitmap.Dispose();
+
+        var oldImage = Image;
         Image = CutTopBottom(Image, vertical);
-        _plateCopy!.Image = CutTopBottom(_plateCopy.Image, vertical);
+        oldImage.Dispose();
+
+        var oldPlateCopyImage = _plateCopy!.Image;
+        _plateCopy.Image = CutTopBottom(_plateCopy.Image, vertical);
+        oldPlateCopyImage.Dispose();
         writer?.Write("plate-cut-top-bottom", Image);
 
-        var clone2 = (Plate)Clone();
+        // Horizontal edge — similarly avoid cloning the Plate
+        Bitmap horizontalEdgeBitmap;
+        bool disposeHorizontalEdge;
         if (HorizontalDetectionType == 1)
-            clone2.Image = clone2.HorizontalEdgeDetector(clone2.Image);
+        {
+            horizontalEdgeBitmap = HorizontalEdgeDetector(Image);
+            disposeHorizontalEdge = true;
+        }
+        else
+        {
+            horizontalEdgeBitmap = Image; // borrow reference; no ownership transfer
+            disposeHorizontalEdge = false;
+        }
+        writer?.Write("plate-horizontal-edge", horizontalEdgeBitmap);
 
-        writer?.Write("plate-horizontal-edge", clone2.Image);
+        var horizontal = HistogramXAxis(horizontalEdgeBitmap);
+        if (disposeHorizontalEdge)
+            horizontalEdgeBitmap.Dispose();
 
-        var horizontal = clone1.HistogramXAxis(clone2.Image);
+        oldImage = Image;
         Image = CutLeftRight(Image, horizontal);
+        oldImage.Dispose();
+
+        oldPlateCopyImage = _plateCopy.Image;
         _plateCopy.Image = CutLeftRight(_plateCopy.Image, horizontal);
+        oldPlateCopyImage.Dispose();
         writer?.Write("plate-normalized", Image);
     }
 

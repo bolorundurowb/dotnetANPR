@@ -8,7 +8,7 @@ namespace dotnetANPR.ImageAnalysis;
 
 public class PixelMap
 {
-    private static bool[,] _matrix = null!;
+    private bool[,] _matrix = null!;
     private Piece? _bestPiece;
     private int _width;
     private int _height;
@@ -28,7 +28,7 @@ public class PixelMap
     public Piece BestPiece()
     {
         ReduceOtherPieces();
-        return _bestPiece ?? [];
+        return _bestPiece ?? new Piece(_matrix);
     }
 
     public PixelMap Skeletonize()
@@ -277,7 +277,7 @@ public class PixelMap
 
     private Piece CreatePiece(PointSet unsorted)
     {
-        Piece piece = [];
+        var piece = new Piece(_matrix);
         PointSet stack = [];
         stack.Push(unsorted.Last());
         while (stack.Any())
@@ -362,6 +362,13 @@ public class PixelMap
 
     public class Piece : PointSet
     {
+        private readonly bool[,] _matrix;
+
+        public Piece(bool[,] matrix)
+        {
+            _matrix = matrix;
+        }
+
         public int MostLeftPoint { get; set; }
 
         public int MostRightPoint { get; set; }

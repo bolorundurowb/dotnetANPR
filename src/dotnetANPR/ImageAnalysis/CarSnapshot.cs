@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using dotnetANPR.Configuration;
 using dotnetANPR.Extensions;
+using dotnetANPR.Utilities;
 
 namespace dotnetANPR.ImageAnalysis;
 
@@ -27,10 +28,10 @@ public class CarSnapshot(Bitmap image) : Photo(image)
         return _graphHandle!.RenderVertically(100, Height);
     }
 
-    public List<Band> Bands()
+    public List<Band> Bands(StageWriter? writer = null)
     {
         List<Band> response = [];
-        var peaks = ComputeGraph();
+        var peaks = ComputeGraph(writer);
         foreach (var peak in peaks)
         {
             // Cut from the original image of the plate and save to a vector.
@@ -68,13 +69,14 @@ public class CarSnapshot(Bitmap image) : Photo(image)
         return graph;
     }
 
-    private List<Peak> ComputeGraph()
+    private List<Peak> ComputeGraph(StageWriter? writer = null)
     {
         if (_graphHandle == null)
         {
             var imageCopy = DuplicateBitmap(Image);
             imageCopy = VerticalEdge(imageCopy);
             Thresholding(imageCopy);
+            writer?.Write("vertical-rank-filter", imageCopy);
 
             _graphHandle = Histogram(imageCopy);
             _graphHandle.RankFilter(CarSnapshotGraphRankFilter);

@@ -89,7 +89,6 @@ public sealed class Configurator
         Set("neural_micro", 0.5);   // micro
         Set("neural_topology", 20);
 
-        Set("reportgeneratorcss", "./Resources/ReportGenerator/style.css");
     }
 
     public Configurator(string filePath) : this() { LoadConfiguration(filePath); }

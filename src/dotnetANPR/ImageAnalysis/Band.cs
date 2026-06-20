@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using dotnetANPR.Configuration;
 using dotnetANPR.Extensions;
+using dotnetANPR.Utilities;
 
 namespace dotnetANPR.ImageAnalysis;
 
@@ -21,12 +22,13 @@ public class Band(Bitmap image) : Photo(image)
         return _graphHandle!.RenderHorizontally(Width, 100);
     }
 
-    private List<Peak> ComputeGraph()
+    private List<Peak> ComputeGraph(StageWriter? writer = null)
     {
         if (_graphHandle == null)
         {
             var image = DuplicateBitmap(Image);
             FullEdgeDetector(image);
+            writer?.Write("horizontal-rank-filter", image);
 
             _graphHandle = Histogram(image);
             _graphHandle.RankFilter(Image.Height);
@@ -37,10 +39,10 @@ public class Band(Bitmap image) : Photo(image)
         return _graphHandle.Peaks;
     }
 
-    public List<Plate> Plates()
+    public List<Plate> Plates(StageWriter? writer = null)
     {
         List<Plate> response = [];
-        var peaks = ComputeGraph();
+        var peaks = ComputeGraph(writer);
         foreach (var peak in peaks)
             // Cut from the original image of the plate and save to a vector.
             // ATTENTION: Cutting from original,

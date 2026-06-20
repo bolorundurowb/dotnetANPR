@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using dotnetANPR.Configuration;
 using dotnetANPR.Extensions;
+using dotnetANPR.Utilities;
 
 namespace dotnetANPR.ImageAnalysis;
 
@@ -60,21 +61,27 @@ public class Plate : Photo, ICloneable
         return characters;
     }
 
-    public void Normalize()
+    public void Normalize(StageWriter? writer = null)
     {
         var clone1 = (Plate)Clone();
         clone1.Image = clone1.VerticalEdgeDetector(clone1.Image);
+        writer?.Write("plate-vertical-edge", clone1.Image);
+
         var vertical = clone1.HistogramYaxis(clone1.Image);
         Image = CutTopBottom(Image, vertical);
         _plateCopy!.Image = CutTopBottom(_plateCopy.Image, vertical);
-        var clone2 = (Plate)Clone();
+        writer?.Write("plate-cut-top-bottom", Image);
 
+        var clone2 = (Plate)Clone();
         if (HorizontalDetectionType == 1)
             clone2.Image = clone2.HorizontalEdgeDetector(clone2.Image);
+
+        writer?.Write("plate-horizontal-edge", clone2.Image);
 
         var horizontal = clone1.HistogramXAxis(clone2.Image);
         Image = CutLeftRight(Image, horizontal);
         _plateCopy.Image = CutLeftRight(_plateCopy.Image, horizontal);
+        writer?.Write("plate-normalized", Image);
     }
 
     public PlateGraph Histogram(Bitmap bi)

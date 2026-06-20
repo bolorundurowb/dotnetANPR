@@ -29,26 +29,35 @@ public class ANPR
         }
     }
 
-    public static string? Recognize(string imagePath, string? reportPath = null)
+    /// <summary>
+    /// Recognises the licence plate in <paramref name="imagePath"/>.
+    /// </summary>
+    /// <param name="imagePath">Path to the source image.</param>
+    /// <param name="dumpDir">
+    /// Optional directory to dump intermediate processing stages as sequentially-numbered JPEGs.
+    /// The directory is created if it does not exist.
+    /// </param>
+    public static string? Recognize(string imagePath, string? dumpDir = null)
     {
         if (!File.Exists(imagePath))
             throw new ArgumentException("Invalid image path: " + imagePath, nameof(imagePath));
 
-        return Recognize(new Bitmap(imagePath), reportPath);
+        return Recognize(new Bitmap(imagePath), dumpDir);
     }
 
-    public static string? Recognize(Stream imageStream, string? reportPath = null) =>
-        Recognize(new Bitmap(imageStream), reportPath);
+    /// <inheritdoc cref="Recognize(string, string?)"/>
+    public static string? Recognize(Stream imageStream, string? dumpDir = null) =>
+        Recognize(new Bitmap(imageStream), dumpDir);
 
-    public static string? Recognize(Bitmap image, string? reportPath = null)
+    /// <inheritdoc cref="Recognize(string, string?)"/>
+    public static string? Recognize(Bitmap image, string? dumpDir = null)
     {
-        if (reportPath is not null && string.IsNullOrWhiteSpace(reportPath))
-            throw new ArgumentException("Invalid report path: " + reportPath, nameof(reportPath));
+        if (dumpDir is not null && string.IsNullOrWhiteSpace(dumpDir))
+            throw new ArgumentException("Invalid dump directory: " + dumpDir, nameof(dumpDir));
 
-        // load snapshot arg[2] and generate report into arg[4]
-        var reportGenerator = reportPath == null ? null : new ReportGenerator(reportPath);
+        var stageWriter = dumpDir == null ? null : new StageWriter(dumpDir);
         var intelligence = new Intelligence.Intelligence();
-        return intelligence.Recognize(new CarSnapshot(image), reportGenerator);
+        return intelligence.Recognize(new CarSnapshot(image), stageWriter);
     }
 
     /// <summary>
@@ -59,7 +68,6 @@ public class ANPR
 
     public static void TrainNetworkAndExport(string outputFilePath)
     {
-        // learn new neural network and save it into args[2]
         if (File.Exists(outputFilePath))
             throw new IOException("Destination file already exists.");
 

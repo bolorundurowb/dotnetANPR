@@ -118,9 +118,6 @@ public class Parser
         switch (syntaxAnalysisMode)
         {
             case SyntaxAnalysisMode.DoNotParse:
-                // TODO: figure out how to avoid this
-                // Main.rg.insertText(
-                //     $" result : {recognizedPlate} --> <font size=15>{recognizedPlate}</font><hr><br>");
                 return recognizedPlate.ToString();
             case SyntaxAnalysisMode.OnlyEqualLength:
                 UnFlagAll();

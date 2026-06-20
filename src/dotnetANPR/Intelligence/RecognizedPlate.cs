@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Text;
-using DotNetANPR.Recognizer;
+using dotnetANPR.Recognizer;
 
-namespace DotNetANPR.Intelligence;
+namespace dotnetANPR.Intelligence;
 
 public class RecognizedPlate
 {

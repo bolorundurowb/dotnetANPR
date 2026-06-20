@@ -1,4 +1,4 @@
-﻿namespace DotNetANPR.NeuralNetwork;
+namespace dotnetANPR.NeuralNetwork;
 
 public class NeuralInput(double weight, Neuron neuron)
 {

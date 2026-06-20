@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
-using DotNetANPR.Configuration;
+using dotnetANPR.Configuration;
 
-namespace DotNetANPR.ImageAnalysis;
+namespace dotnetANPR.ImageAnalysis;
 
 public class Photo(Bitmap image) : IDisposable, ICloneable
 {

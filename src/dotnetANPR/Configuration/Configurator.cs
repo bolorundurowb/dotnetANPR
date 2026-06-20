@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using System.IO;
 using PropertyConfig;
 
-namespace DotNetANPR.Configuration;
+namespace dotnetANPR.Configuration;
 
 public sealed class Configurator
 {

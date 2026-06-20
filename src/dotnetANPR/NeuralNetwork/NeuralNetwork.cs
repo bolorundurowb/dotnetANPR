@@ -1,12 +1,12 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml;
-using DotNetANPR.Utilities;
+using dotnetANPR.Utilities;
 using Microsoft.Extensions.Logging;
 
-namespace DotNetANPR.NeuralNetwork;
+namespace dotnetANPR.NeuralNetwork;
 
 public class NeuralNetwork
 {

@@ -1,14 +1,14 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
-using DotNetANPR.Configuration;
-using DotNetANPR.Extensions;
-using DotNetANPR.Recognizer;
+using dotnetANPR.Configuration;
+using dotnetANPR.Extensions;
+using dotnetANPR.Recognizer;
 
-namespace DotNetANPR.ImageAnalysis;
+namespace dotnetANPR.ImageAnalysis;
 
 public class Character : Photo
 {

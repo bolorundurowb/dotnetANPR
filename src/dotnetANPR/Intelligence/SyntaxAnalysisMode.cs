@@ -1,4 +1,4 @@
-﻿namespace DotNetANPR.Intelligence;
+namespace dotnetANPR.Intelligence;
 
 public enum SyntaxAnalysisMode
 {

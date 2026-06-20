@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 
-namespace DotNetANPR.Recognizer;
+namespace dotnetANPR.Recognizer;
 
 public class RecognizedCharacter
 {

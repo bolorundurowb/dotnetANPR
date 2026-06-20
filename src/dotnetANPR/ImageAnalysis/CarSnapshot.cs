@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Drawing;
-using DotNetANPR.Configuration;
-using DotNetANPR.Extensions;
+using dotnetANPR.Configuration;
+using dotnetANPR.Extensions;
 
-namespace DotNetANPR.ImageAnalysis;
+namespace dotnetANPR.ImageAnalysis;
 
 public class CarSnapshot(Bitmap image) : Photo(image)
 {

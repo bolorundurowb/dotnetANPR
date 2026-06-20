@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using DotNetANPR.Configuration;
+using dotnetANPR.Configuration;
 
-namespace DotNetANPR.ImageAnalysis;
+namespace dotnetANPR.ImageAnalysis;
 
 public class PlateHorizontalGraph : Graph
 {

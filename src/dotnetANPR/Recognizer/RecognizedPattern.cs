@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
-namespace DotNetANPR.Recognizer;
+namespace dotnetANPR.Recognizer;
 
 public class RecognizedPattern(char chr, float cost)
 {

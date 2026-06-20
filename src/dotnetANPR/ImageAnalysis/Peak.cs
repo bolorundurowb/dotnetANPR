@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
-namespace DotNetANPR.ImageAnalysis;
+namespace dotnetANPR.ImageAnalysis;
 
 public class Peak(int left, int center, int right)
 {

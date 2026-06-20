@@ -1,12 +1,12 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using DotNetANPR.Configuration;
-using DotNetANPR.ImageAnalysis;
-using DotNetANPR.Utilities;
+using dotnetANPR.Configuration;
+using dotnetANPR.ImageAnalysis;
+using dotnetANPR.Utilities;
 using Microsoft.Extensions.Logging;
 
-namespace DotNetANPR.Recognizer;
+namespace dotnetANPR.Recognizer;
 
 public class KnnPatternClassifier : CharacterRecognizer
 {

@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
-namespace DotNetANPR.NeuralNetwork;
+namespace dotnetANPR.NeuralNetwork;
 
 public class NeuralLayer
 {

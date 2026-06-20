@@ -1,13 +1,13 @@
-﻿using System;
+using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using DotNetANPR.Configuration;
-using DotNetANPR.ImageAnalysis;
-using DotNetANPR.Recognizer;
-using DotNetANPR.Utilities;
-using PS = DotNetANPR.Intelligence.Parser;
+using dotnetANPR.Configuration;
+using dotnetANPR.ImageAnalysis;
+using dotnetANPR.Recognizer;
+using dotnetANPR.Utilities;
+using PS = dotnetANPR.Intelligence.Parser;
 
-namespace DotNetANPR.Intelligence;
+namespace dotnetANPR.Intelligence;
 
 public class Intelligence
 {

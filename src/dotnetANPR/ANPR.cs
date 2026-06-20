@@ -1,13 +1,13 @@
-﻿using System;
+using System;
 using System.Drawing;
 using System.IO;
-using DotNetANPR.Configuration;
-using DotNetANPR.ImageAnalysis;
-using DotNetANPR.Recognizer;
-using DotNetANPR.Utilities;
+using dotnetANPR.Configuration;
+using dotnetANPR.ImageAnalysis;
+using dotnetANPR.Recognizer;
+using dotnetANPR.Utilities;
 using Microsoft.Extensions.Logging;
 
-namespace DotNetANPR;
+namespace dotnetANPR;
 
 public class ANPR
 {

@@ -1,13 +1,13 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml;
-using DotNetANPR.Configuration;
-using DotNetANPR.Utilities;
+using dotnetANPR.Configuration;
+using dotnetANPR.Utilities;
 using Microsoft.Extensions.Logging;
 
-namespace DotNetANPR.Intelligence.Parser;
+namespace dotnetANPR.Intelligence.Parser;
 
 public class Parser
 {

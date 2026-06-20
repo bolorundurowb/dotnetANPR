@@ -1,9 +1,9 @@
-﻿using System;
+using System;
 using System.Drawing;
 using System.Drawing.Imaging;
-using DotNetANPR.Extensions;
+using dotnetANPR.Extensions;
 
-namespace DotNetANPR.ImageAnalysis;
+namespace dotnetANPR.ImageAnalysis;
 
 public class HoughTransformation
 {

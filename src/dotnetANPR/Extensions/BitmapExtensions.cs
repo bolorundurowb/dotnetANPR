@@ -1,5 +1,7 @@
 using System;
 using System.Drawing;
+using System.Drawing.Imaging;
+using System.Runtime.InteropServices;
 
 namespace dotnetANPR.Extensions;
 
@@ -20,36 +22,53 @@ internal static class BitmapExtensions
     {
         var kernelSize = (int)Math.Sqrt(kernel.Length);
         var kernelOffset = kernelSize / 2;
+        var width = image.Width;
+        var height = image.Height;
 
-        var result = new Bitmap(image.Width, image.Height);
+        var result = new Bitmap(width, height, PixelFormat.Format24bppRgb);
+        var rect = new Rectangle(0, 0, width, height);
 
-        for (var y = 0; y < image.Height; y++)
+        // Lock source as 24bppRgb (GDI+ converts if needed); lock dest for writing
+        var srcData = image.LockBits(rect, ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
+        var dstData = result.LockBits(rect, ImageLockMode.WriteOnly, PixelFormat.Format24bppRgb);
+
+        var stride = srcData.Stride; // same for both since both are 24bppRgb
+        var srcBytes = new byte[Math.Abs(stride) * height];
+        var dstBytes = new byte[Math.Abs(stride) * height];
+
+        Marshal.Copy(srcData.Scan0, srcBytes, 0, srcBytes.Length);
+
+        for (var y = 0; y < height; y++)
         {
-            for (var x = 0; x < image.Width; x++)
+            for (var x = 0; x < width; x++)
             {
-                float r = 0, g = 0, b = 0;
+                float sumR = 0, sumG = 0, sumB = 0;
 
                 for (var ky = -kernelOffset; ky <= kernelOffset; ky++)
                 {
                     for (var kx = -kernelOffset; kx <= kernelOffset; kx++)
                     {
-                        var px = Clamp(x + kx, 0, image.Width - 1);
-                        var py = Clamp(y + ky, 0, image.Height - 1);
+                        var px = Clamp(x + kx, 0, width - 1);
+                        var py = Clamp(y + ky, 0, height - 1);
+                        var kv = kernel[ky + kernelOffset, kx + kernelOffset];
+                        var srcIdx = py * stride + px * 3;
 
-                        var pixel = image.GetPixel(px, py);
-                        r += pixel.R * kernel[ky + kernelOffset, kx + kernelOffset];
-                        g += pixel.G * kernel[ky + kernelOffset, kx + kernelOffset];
-                        b += pixel.B * kernel[ky + kernelOffset, kx + kernelOffset];
+                        sumB += srcBytes[srcIdx]     * kv; // B
+                        sumG += srcBytes[srcIdx + 1] * kv; // G
+                        sumR += srcBytes[srcIdx + 2] * kv; // R
                     }
                 }
 
-                r = Clamp(r, 0, 255);
-                g = Clamp(g, 0, 255);
-                b = Clamp(b, 0, 255);
-
-                result.SetPixel(x, y, Color.FromArgb((int)r, (int)g, (int)b));
+                var dstIdx = y * stride + x * 3;
+                dstBytes[dstIdx]     = (byte)Clamp((int)sumB, 0, 255); // B
+                dstBytes[dstIdx + 1] = (byte)Clamp((int)sumG, 0, 255); // G
+                dstBytes[dstIdx + 2] = (byte)Clamp((int)sumR, 0, 255); // R
             }
         }
+
+        Marshal.Copy(dstBytes, 0, dstData.Scan0, dstBytes.Length);
+        image.UnlockBits(srcData);
+        result.UnlockBits(dstData);
 
         return result;
     }

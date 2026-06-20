@@ -21,8 +21,6 @@ public class Photo(Bitmap image) : IDisposable, ICloneable
     public Bitmap Image
     {
         get => image;
-        // TODO: fix this travesty
-        // protected set => image = value;
         internal set => image = value;
     }
 
@@ -118,40 +116,6 @@ public class Photo(Bitmap image) : IDisposable, ICloneable
     public static Bitmap CreateBlankBitmap(Bitmap image) => CreateBlankBitmap(image.Width, image.Height);
 
     public static Bitmap CreateBlankBitmap(int width, int height) => new(width, height, PixelFormat.Format24bppRgb);
-
-    public Bitmap GetBitmapWithAxes()
-    {
-        var widthWithAxes = image.Width + 40;
-        var heightWithAxes = image.Height + 40;
-
-        var axis = new Bitmap(widthWithAxes, heightWithAxes, PixelFormat.Format24bppRgb);
-        using var graphicAxis = Graphics.FromImage(axis);
-        // Set the background color to light gray
-        graphicAxis.Clear(Color.LightGray);
-
-        // Draw the image
-        graphicAxis.DrawImage(image, 35, 5, image.Width, image.Height);
-
-        // Draw the black border around the image
-        graphicAxis.DrawRectangle(Pens.Black, 35, 5, image.Width, image.Height);
-
-        // Draw the X axis labels and ticks
-        for (var ax = 0; ax < image.Width; ax += 50)
-        {
-            graphicAxis.DrawString(ax.ToString(), SystemFonts.DefaultFont, Brushes.Black, ax + 35,
-                axis.Height - 10);
-            graphicAxis.DrawLine(Pens.Black, ax + 35, image.Height + 5, ax + 35, image.Height + 15);
-        }
-
-        // Draw the Y axis labels and ticks
-        for (var ay = 0; ay < image.Height; ay += 50)
-        {
-            graphicAxis.DrawString(ay.ToString(), SystemFonts.DefaultFont, Brushes.Black, 3, ay + 15);
-            graphicAxis.DrawLine(Pens.Black, 25, ay + 5, 35, ay + 5);
-        }
-
-        return axis;
-    }
 
     public void SetBrightness(int x, int y, int value)
     {

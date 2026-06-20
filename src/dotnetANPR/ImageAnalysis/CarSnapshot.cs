@@ -22,12 +22,6 @@ public class CarSnapshot(Bitmap image) : Photo(image)
 
     private CarSnapshotGraph? _graphHandle;
 
-    public Bitmap RenderGraph()
-    {
-        ComputeGraph();
-        return _graphHandle!.RenderVertically(100, Height);
-    }
-
     public List<Band> Bands(StageWriter? writer = null)
     {
         List<Band> response = [];

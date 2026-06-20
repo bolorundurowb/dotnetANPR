@@ -23,7 +23,7 @@ public class PlateVerticalGraph : Graph
 
             for (var i = 0; i < YValues.Count; i++)
                 // left to right
-                if (AllowedInterval(outPeaks, i))
+                if (IsOutsideAllPeaks(outPeaks, i))
                     if (YValues[i] >= maxValue)
                     {
                         maxValue = YValues[i];

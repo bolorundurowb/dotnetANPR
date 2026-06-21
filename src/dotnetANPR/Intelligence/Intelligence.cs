@@ -1,6 +1,5 @@
 using System;
-using System.Drawing;
-using System.Drawing.Drawing2D;
+using SkiaSharp;
 using dotnetANPR.Configuration;
 using dotnetANPR.ImageAnalysis;
 using dotnetANPR.Recognizer;
@@ -60,16 +59,25 @@ public class Intelligence
 
                     if (skewDetectionMode != 0)
                     {
-                        var shearFactor = -(double)hough.Dy / hough.Dx;
-                        var shearTransform = new Matrix();
-                        shearTransform.Shear(0, (float)shearFactor);
+                        var shearFactor = -(float)hough.Dy / hough.Dx;
 
-                        var core = new Bitmap(plate.Image.Width, plate.Image.Height);
-                        using (var g = Graphics.FromImage(core))
+                        // Create a shear transform using SkiaSharp
+                        var shearTransform = SKMatrix.CreateIdentity();
+                        // Shear matrix: [1, shearY, 0, shearX, 1, 0, 0, 0, 1]
+                        // For horizontal shear: multiply y-coordinate by shearFactor
+                        shearTransform = SKMatrix.CreateSkew(0, shearFactor);
+
+                        var core = new SKBitmap(plate.Image.Width, plate.Image.Height);
+                        using var canvas = new SKCanvas(core);
+
+                        using var paint = new SKPaint
                         {
-                            g.Transform = shearTransform;
-                            g.DrawImage(plate.Image, new Point(0, 0));
-                        }
+                            FilterQuality = SKFilterQuality.High,
+                            IsAntialias = true
+                        };
+
+                        canvas.SetMatrix(shearTransform);
+                        canvas.DrawBitmap(plate.Image, 0, 0, paint);
 
                         localPlate = new Plate(core);
                         stageWriter?.Write("skew-corrected", localPlate.Image);

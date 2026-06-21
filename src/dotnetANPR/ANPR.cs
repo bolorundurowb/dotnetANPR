@@ -1,7 +1,8 @@
 using System;
-using System.Drawing;
 using System.IO;
+using SkiaSharp;
 using dotnetANPR.Configuration;
+using dotnetANPR.Extensions;
 using dotnetANPR.ImageAnalysis;
 using dotnetANPR.Recognizer;
 using dotnetANPR.Utilities;
@@ -42,15 +43,19 @@ public class ANPR
         if (!File.Exists(imagePath))
             throw new ArgumentException("Invalid image path: " + imagePath, nameof(imagePath));
 
-        return Recognize(new Bitmap(imagePath), dumpDir);
+        return Recognize(SkiaSharpAdapter.LoadBitmap(imagePath), dumpDir);
     }
 
     /// <inheritdoc cref="Recognize(string, string?)"/>
-    public static string? Recognize(Stream imageStream, string? dumpDir = null) =>
-        Recognize(new Bitmap(imageStream), dumpDir);
+    public static string? Recognize(Stream imageStream, string? dumpDir = null)
+    {
+        using var skData = SKData.Create(imageStream);
+        var image = SKBitmap.Decode(skData);
+        return Recognize(image, dumpDir);
+    }
 
     /// <inheritdoc cref="Recognize(string, string?)"/>
-    public static string? Recognize(Bitmap image, string? dumpDir = null)
+    public static string? Recognize(SKBitmap image, string? dumpDir = null)
     {
         if (dumpDir is not null && string.IsNullOrWhiteSpace(dumpDir))
             throw new ArgumentException("Invalid dump directory: " + dumpDir, nameof(dumpDir));

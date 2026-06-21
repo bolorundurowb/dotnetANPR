@@ -3,47 +3,36 @@ using System.Collections.Generic;
 using System.Linq;
 using dotnetANPR.Configuration;
 using dotnetANPR.ImageAnalysis;
-using dotnetANPR.Utilities;
 using Microsoft.Extensions.Logging;
 
 namespace dotnetANPR.Recognizer;
 
-/// <summary>
-/// Character recognition using k-Nearest Neighbour (KNN) pattern matching.
-/// Compares extracted character features against a learned alphabet using simplified Euclidean distance.
-/// </summary>
-public class KnnPatternClassifier : CharacterRecognizer
+internal sealed class KnnPatternClassifier : CharacterRecognizer
 {
-    private static readonly ILogger<KnnPatternClassifier> Logger = Logging.GetLogger<KnnPatternClassifier>();
-
     private readonly List<List<double>> _learnLists;
+    private readonly ILogger _logger;
 
-    /// <summary>
-    /// Initialises the classifier by loading and normalising the alphabet images from the configured path.
-    /// </summary>
-    public KnnPatternClassifier()
+    public KnnPatternClassifier(AnprSettings settings, ILogger logger)
     {
-        var path = Configurator.Instance.GetPath("char_learnAlphabetPath");
+        _logger = logger;
+        var path = settings.CharLearnAlphabetPath;
         _learnLists = new List<List<double>>(36);
         var filenames = Character.AlphabetList(path);
 
-        foreach (var imgChar in filenames.Select(fileName => new Character(fileName)))
+        foreach (var fileName in filenames)
         {
-            imgChar.Normalize();
-            _learnLists.Add(imgChar.ExtractFeatures());
+            using var imgChar = new Character(fileName, settings);
+            imgChar.Normalize(settings);
+            _learnLists.Add(imgChar.ExtractFeatures(settings));
         }
 
-        // check vector elements
         foreach (var _ in _learnLists.Where(learnList => learnList == null))
-            Logger.LogWarning("Alphabet in {} is not complete", path);
+            _logger.LogWarning("Alphabet in {Path} is not complete", path);
     }
 
-    /// <summary>
-    /// Recognises a character by computing Euclidean distances against all learned alphabet patterns.
-    /// </summary>
-    public override RecognizedCharacter Recognize(Character chr)
+    public override RecognizedCharacter Recognize(Character chr, AnprSettings settings)
     {
-        var features = chr.ExtractFeatures();
+        var features = chr.ExtractFeatures(settings);
         var recognized = new RecognizedCharacter();
 
         for (var x = 0; x < _learnLists.Count; x++)

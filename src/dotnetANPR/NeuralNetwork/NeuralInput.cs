@@ -1,6 +1,6 @@
 namespace dotnetANPR.NeuralNetwork;
 
-public class NeuralInput(double weight, Neuron neuron)
+internal class NeuralInput(double weight, Neuron neuron)
 {
     public double Weight { get; set; } = weight;
 

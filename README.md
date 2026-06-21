@@ -81,21 +81,33 @@ Recognition requires alphabet training images at the path configured by `char_le
 
 ```csharp
 using dotnetANPR;
+using Microsoft.Extensions.Logging;
+
+using var loggerFactory = LoggerFactory.Create(b => b.AddConsole());
+var engine = new AnprEngine(new AnprOptions { LoggerFactory = loggerFactory });
 
 // Recognise from a file path
-string? plate = ANPR.Recognize("car.jpg");
-Console.WriteLine(plate ?? "No plate found");
+var result = engine.Recognize("car.jpg");
+if (result.Success)
+    Console.WriteLine($"Plate: {result.Text} (confidence {result.Confidence:F2}, {result.Duration.TotalMilliseconds:F0} ms)");
+
+// Recognise with diagnostics and optional skew correction
+result = engine.Recognize("car.jpg", new RecognitionOptions
+{
+    DumpStagesDirectory = "./stages",
+    EnableSkewCorrection = true,
+});
 
 // Recognise from a stream
 using var stream = File.OpenRead("car.jpg");
-plate = ANPR.Recognize(stream);
+result = engine.Recognize(stream);
 
-// Recognise from a SkiaSharp bitmap
+// Recognise from a SkiaSharp bitmap (caller owns the bitmap by default)
 using var bitmap = SKBitmap.Decode("car.jpg");
-plate = ANPR.Recognize(bitmap);
+result = engine.Recognize(bitmap);
 ```
 
-`Recognize` returns the plate text as a string, or `null` when no valid plate is detected. An invalid image path throws `ArgumentException`.
+`Recognize` returns a `RecognitionResult` with `Text` (null when no plate was found), `Confidence`, `Duration`, and optional `Candidates` diagnostics. An invalid image path throws `ArgumentException`.
 
 ### Command-line tool
 
@@ -141,18 +153,21 @@ flowchart LR
 
 ## API reference
 
-The static `ANPR` class is the main entry point. XML documentation is provided on all public types and members.
+The `AnprEngine` class is the main entry point. XML documentation is provided on all public types and members.
 
-| Method                                                | Description                                                          |
-|-------------------------------------------------------|----------------------------------------------------------------------|
-| `Recognize(string imagePath, string? dumpDir)`        | Recognise a plate from a file path                                   |
-| `Recognize(Stream imageStream, string? dumpDir)`      | Recognise a plate from a stream                                      |
-| `Recognize(SKBitmap image, string? dumpDir)`          | Recognise a plate from a SkiaSharp bitmap                            |
-| `ExportDefaultConfig(string outputFilePath)`          | Export the built-in default configuration to XML                     |
-| `TrainNetworkAndExport(string outputFilePath)`        | Train a neural network on the configured alphabet and export it      |
-| `NormalizeAlphabets(string sourceDir, string dstDir)` | Normalise raw alphabet character images to the configured dimensions |
+| Method | Description |
+|--------|-------------|
+| `Recognize(string imagePath, RecognitionOptions?)` | Recognise a plate from a file path |
+| `Recognize(Stream imageStream, RecognitionOptions?)` | Recognise a plate from a stream |
+| `Recognize(SKBitmap image, RecognitionOptions?)` | Recognise a plate from a SkiaSharp bitmap |
+| `RecognizeAsync(...)` | Async variants of the above |
+| `ExportDefaultConfig(string outputFilePath)` | Export built-in default configuration to XML |
+| `TrainNetworkAndExport(string outputFilePath)` | Train a neural network on the configured alphabet and export it |
+| `NormalizeAlphabets(string sourceDir, string dstDir)` | Normalise raw alphabet character images |
 
-Advanced use: instantiate `dotnetANPR.Intelligence.Intelligence` directly for lower-level control over `CarSnapshot` analysis and optional `StageWriter` output.
+`RecognitionResult` exposes `Text`, `Confidence`, `Duration`, `Success`, and optional `Candidates` (per-plate diagnostics).
+
+Advanced diagnostics are available via `RecognitionResult.Candidates` rather than direct access to internal pipeline types.
 
 ## Configuration
 
@@ -161,7 +176,8 @@ Pipeline behaviour is controlled by `Resources/config.xml`. Parameters are loade
 To start from the defaults and customise:
 
 ```csharp
-ANPR.ExportDefaultConfig("my-config.xml");
+var engine = new AnprEngine(new AnprOptions());
+engine.ExportDefaultConfig("my-config.xml");
 // Edit my-config.xml, then place it at Resources/config.xml or adjust loading as needed
 ```
 
@@ -315,7 +331,7 @@ Each `<char>` element represents one position in the plate. The `content` attrib
 ```
 src/
 ├── dotnetANPR/           # Core library (netstandard2.0)
-│   ├── ANPR.cs           # Public entry point
+│   ├── AnprEngine.cs     # Public entry point
 │   ├── Configuration/    # XML config loader
 │   ├── ImageAnalysis/    # Plate/character segmentation
 │   ├── Intelligence/     # Recognition orchestration & syntax parser

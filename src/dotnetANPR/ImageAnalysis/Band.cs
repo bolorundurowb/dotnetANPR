@@ -1,55 +1,52 @@
 using System;
 using System.Collections.Generic;
 using SkiaSharp;
-using dotnetANPR.Configuration;
 using dotnetANPR.Extensions;
+using dotnetANPR.Pipeline;
 using dotnetANPR.Utilities;
 
 namespace dotnetANPR.ImageAnalysis;
 
-public class Band(SKBitmap image) : Photo(image)
+internal sealed class Band : Photo
 {
-    private static readonly ProbabilityDistributor Distributor = new(0, 0, 25, 25);
-
-    private static readonly int NumberOfCandidates =
-        Configurator.Instance.Get<int>("intelligence_numberOfPlates");
-
+    private readonly PipelineContext _context;
     private BandGraph? _graphHandle;
 
-    private List<Peak> ComputeGraph(StageWriter? writer = null)
+    public Band(SKBitmap image, PipelineContext context) : base(image) => _context = context;
+
+    private List<Peak> ComputeGraph()
     {
         if (_graphHandle == null)
         {
+            var settings = _context.Settings;
+            var distributor = new ProbabilityDistributor(0, 0, 25, 25);
             var image = DuplicateBitmap(Image);
             FullEdgeDetector(image);
-            writer?.Write("horizontal-rank-filter", image);
+            _context.StageWriter?.Write("horizontal-rank-filter", image);
 
             _graphHandle = Histogram(image);
             _graphHandle.RankFilter(Image.Height);
-            _graphHandle.ApplyProbabilityDistributor(Distributor);
-            _graphHandle.FindPeaks(NumberOfCandidates);
-            image.Dispose(); // histogram is built; release the working bitmap
+            _graphHandle.ApplyProbabilityDistributor(distributor);
+            _graphHandle.FindPeaks(settings.IntelligenceNumberOfPlates);
+            image.Dispose();
         }
 
         return _graphHandle.Peaks;
     }
 
-    public List<Plate> Plates(StageWriter? writer = null)
+    public List<Plate> Plates()
     {
         List<Plate> response = [];
-        var peaks = ComputeGraph(writer);
+        var peaks = ComputeGraph();
         foreach (var peak in peaks)
-            // Cut from the original image of the plate and save to a vector.
-            // ATTENTION: Cutting from original,
-            // we have to apply an inverse transformation to the coordinates calculated from imageCopy
-            response.Add(new Plate(Image.SubImage(peak.Left, 0, peak.Diff, Image.Height)));
+            response.Add(new Plate(Image.SubImage(peak.Left, 0, peak.Diff, Image.Height), _context));
 
         return response;
     }
 
     public BandGraph Histogram(SKBitmap bitmap)
     {
-        var graph = new BandGraph(this);
+        var graph = new BandGraph(this, _context.Settings);
         for (var x = 0; x < bitmap.Width; x++)
         {
             float counter = 0;
@@ -78,13 +75,8 @@ public class Band(SKBitmap image) : Photo(image)
             { 1, 2, 1 }
         };
 
-        // Apply vertical edge detection
         var i1 = source.Convolve(verticalMatrix);
-
-        // Apply horizontal edge detection
         var i2 = source.Convolve(horizontalMatrix);
-
-        // Combine edge detection results
         var width = source.Width;
         var height = source.Height;
 

@@ -7,7 +7,7 @@ namespace dotnetANPR.Recognizer;
 /// </summary>
 /// <param name="chr">The matched character.</param>
 /// <param name="cost">The classification cost; lower values indicate a better match.</param>
-public class RecognizedPattern(char chr, float cost)
+internal class RecognizedPattern(char chr, float cost)
 {
     /// <summary>
     /// Gets the matched character.
@@ -20,7 +20,7 @@ public class RecognizedPattern(char chr, float cost)
     public float Cost { get; private set; } = cost;
 }
 
-public class RecognizedPatternComparer(bool sortDesc) : IComparer<RecognizedPattern>
+internal class RecognizedPatternComparer(bool sortDesc) : IComparer<RecognizedPattern>
 {
     public int Compare(RecognizedPattern x, RecognizedPattern y)
     {

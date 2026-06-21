@@ -5,7 +5,7 @@ namespace dotnetANPR.ImageAnalysis;
 /// </summary>
 /// <param name="leftX">The X-coordinate of the left edge.</param>
 /// <param name="rightX">The X-coordinate of the right edge.</param>
-public class PositionInPlate(int leftX, int rightX)
+internal class PositionInPlate(int leftX, int rightX)
 {
     /// <summary>Gets the X-coordinate of the left edge.</summary>
     public int LeftX { get; private set; } = leftX;

@@ -6,7 +6,7 @@ namespace dotnetANPR.NeuralNetwork;
 /// <summary>
 /// Represents a single neuron in a <see cref="NeuralLayer"/> with a threshold, weighted inputs, and an activation output.
 /// </summary>
-public class Neuron
+internal class Neuron
 {
     /// <summary>The activation threshold (bias).</summary>
     public double Threshold { get; set; }

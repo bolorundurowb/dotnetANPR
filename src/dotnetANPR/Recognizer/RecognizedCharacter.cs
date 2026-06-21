@@ -8,7 +8,7 @@ namespace dotnetANPR.Recognizer;
 /// Holds the ranked list of pattern matches for a single recognised character.
 /// Patterns must be sorted via <see cref="Sort"/> before they become accessible.
 /// </summary>
-public class RecognizedCharacter
+internal class RecognizedCharacter
 {
     private readonly List<RecognizedPattern> _patterns = [];
 

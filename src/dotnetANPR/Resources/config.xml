@@ -60,6 +60,7 @@
     <!-- CHARACTER HEURISTICS (DETERMINES CONSTRAINTS FOR CHARACTERS ACCEPTANCE) -->
 
     <entry key="intelligence_minCharWidthHeightRatio">0.1</entry>
+    <entry key="intelligence_minEdgeCharWidthHeightRatio">0.12</entry>
     <!-- char proportions: minimum char width/height ratio -->
     <entry key="intelligence_maxCharWidthHeightRatio">0.92</entry>
     <!-- char proportions: maximum char width/height ratio -->

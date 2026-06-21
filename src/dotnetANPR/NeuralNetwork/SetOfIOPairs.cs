@@ -5,7 +5,7 @@ namespace dotnetANPR.NeuralNetwork;
 /// <summary>
 /// A training set containing input-output pairs for neural network learning.
 /// </summary>
-public class SetOfIOPairs
+internal class SetOfIOPairs
 {
     /// <summary>The list of input-output pairs in this training set.</summary>
     public List<IOPair> Pairs { get; } = new();
@@ -23,7 +23,7 @@ public class SetOfIOPairs
     /// <summary>
     /// A single training example pairing an input vector with its expected output vector.
     /// </summary>
-    public class IOPair(List<double> inputs, List<double> outputs)
+    internal class IOPair(List<double> inputs, List<double> outputs)
     {
         /// <summary>The input feature vector.</summary>
         public List<double> Inputs { get; } = inputs;

@@ -4,16 +4,18 @@ using dotnetANPR.Configuration;
 
 namespace dotnetANPR.ImageAnalysis;
 
-public class PlateHorizontalGraph : Graph
+internal sealed class PlateHorizontalGraph : Graph
 {
-    private static readonly int HorizontalDetectionType =
-        Configurator.Instance.Get<int>("platehorizontalgraph_detectionType");
+    private readonly AnprSettings _settings;
+
+    public PlateHorizontalGraph(AnprSettings settings) => _settings = settings;
 
     public float Derivation(int index1, int index2) => YValues[index1] - YValues[index2];
 
-    public List<Peak> FindPeak() => HorizontalDetectionType == 1
-        ? FindPeakEdgeDetection()
-        : FindPeakDerivative();
+    public List<Peak> FindPeak(AnprSettings settings) =>
+        settings.PlateHorizontalGraphDetectionType == 1
+            ? FindPeakEdgeDetection()
+            : FindPeakDerivative();
 
     public List<Peak> FindPeakDerivative()
     {

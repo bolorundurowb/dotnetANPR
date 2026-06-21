@@ -7,11 +7,11 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
 
     - name: Set up .NET
       uses: actions/setup-dotnet@v5
@@ -23,3 +23,18 @@ jobs:
 
     - name: Build
       run: dotnet build ./src/dotnetANPR.slnx --configuration Release --no-restore
+
+    - name: Test with coverage
+      run: dotnet test ./src/dotnetANPR.slnx --configuration Release --no-build -- --coverage --coverage-output-format cobertura
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v7
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        files: src/**/TestResults/**/*.cobertura.xml
+        disable_search: true
+        flags: unittests
+        name: codecov-dotnetANPR
+
+    - name: Pack
+      run: dotnet pack ./src/dotnetANPR/dotnetANPR.csproj --configuration Release --no-build --output ./artifacts

@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace dotnetANPR.ImageAnalysis;
 
-public class Graph
+internal class Graph
 {
     private List<Peak>? _peaks = null;
     protected List<float> YValues = [];

@@ -1,0 +1,97 @@
+name: Generate Release
+
+on:
+  push:
+    branches: [ master ]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: generate-release
+  cancel-in-progress: false
+
+jobs:
+  check-version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      should_release: ${{ steps.tag.outputs.should_release }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Resolve package version
+        id: version
+        run: |
+          VERSION=$(dotnet msbuild ./src/dotnetANPR/dotnetANPR.csproj -getProperty:Version -nologo)
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Package version: $VERSION"
+
+      - name: Check for existing version tag
+        id: tag
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          git fetch --tags --force origin
+          if git rev-parse "refs/tags/${VERSION}" >/dev/null 2>&1; then
+            echo "should_release=false" >> "$GITHUB_OUTPUT"
+            echo "Tag ${VERSION} already exists; skipping release."
+          else
+            echo "should_release=true" >> "$GITHUB_OUTPUT"
+            echo "No tag ${VERSION} found; release will be created."
+          fi
+
+  release:
+    needs: check-version
+    if: needs.check-version.outputs.should_release == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: |
+            8.0.x
+            10.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore ./src/dotnetANPR.slnx
+
+      - name: Build
+        run: dotnet build ./src/dotnetANPR.slnx --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test ./src/dotnetANPR.slnx --configuration Release --no-build
+
+      - name: Pack NuGet package
+        run: dotnet pack ./src/dotnetANPR/dotnetANPR.csproj --configuration Release --no-build --output ./artifacts
+
+      - name: Publish trimmed self-contained CLI
+        run: |
+          dotnet publish ./src/dotnetANPR.CLI/dotnetANPR.CLI.csproj \
+            --configuration Release \
+            --runtime win-x64 \
+            --self-contained true \
+            --output ./artifacts/cli
+
+      - name: Stage release assets
+        env:
+          VERSION: ${{ needs.check-version.outputs.version }}
+        run: |
+          cp "./artifacts/dotnetANPR.${VERSION}.nupkg" "./artifacts/dotnetANPR-${VERSION}.nupkg"
+          cp "./artifacts/cli/dotnetANPR.CLI.exe" "./artifacts/dotnetANPR-cli-win-x64-${VERSION}.exe"
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.check-version.outputs.version }}
+        run: |
+          gh release create "$VERSION" \
+            --title "dotnetANPR $VERSION" \
+            --generate-notes \
+            "./artifacts/dotnetANPR-${VERSION}.nupkg" \
+            "./artifacts/dotnetANPR-cli-win-x64-${VERSION}.exe"

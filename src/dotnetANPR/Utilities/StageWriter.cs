@@ -9,7 +9,7 @@ namespace dotnetANPR.Utilities;
 /// Each call to <see cref="Write"/> saves a sequentially-numbered JPEG named
 /// <c>{counter:D2}-{stageName}.jpg</c>.
 /// </summary>
-public class StageWriter
+internal class StageWriter
 {
     private readonly string _directory;
     private int _counter;

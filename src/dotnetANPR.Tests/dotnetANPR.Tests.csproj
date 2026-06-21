@@ -17,4 +17,11 @@
         <ProjectReference Include="..\dotnetANPR\dotnetANPR.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+        <None Include="..\dotnetANPR\Resources\syntax.xml">
+            <Link>Resources\syntax.xml</Link>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+
 </Project>

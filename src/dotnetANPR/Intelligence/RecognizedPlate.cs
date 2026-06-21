@@ -7,7 +7,7 @@ namespace dotnetANPR.Intelligence;
 /// <summary>
 /// Holds the collection of recognised characters that form a licence plate result.
 /// </summary>
-public class RecognizedPlate
+internal class RecognizedPlate
 {
     private readonly List<RecognizedCharacter> _characters = [];
 

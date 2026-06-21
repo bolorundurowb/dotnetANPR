@@ -5,10 +5,18 @@
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <PublishTrimmed>true</PublishTrimmed>
+        <PublishSingleFile>true</PublishSingleFile>
+        <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+        <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
+        <TrimMode>partial</TrimMode>
+        <DebugType Condition="'$(Configuration)' == 'Release'">none</DebugType>
+        <DebugSymbols Condition="'$(Configuration)' == 'Release'">false</DebugSymbols>
     </PropertyGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\dotnetANPR\dotnetANPR.csproj" />
+      <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="10.0.9" />
     </ItemGroup>
 
 </Project>

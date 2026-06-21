@@ -3,7 +3,7 @@ namespace dotnetANPR.Intelligence;
 /// <summary>
 /// Specifies how the parser matches recognised text against known licence plate format templates.
 /// </summary>
-public enum SyntaxAnalysisMode
+internal enum SyntaxAnalysisMode
 {
     /// <summary>No syntax analysis; returns the raw recognised text.</summary>
     DoNotParse = 0,

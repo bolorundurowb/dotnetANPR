@@ -66,14 +66,14 @@ internal static class SkiaBitmapExtensions
     public static SKBitmap SubImage(this SKBitmap source, int x, int y, int width, int height)
     {
         var subset = new SKBitmap(width, height);
-
+        var srcPixmap = source.PeekPixels();
         for (int dy = 0; dy < height; dy++)
+        for (int dx = 0; dx < width; dx++)
         {
-            for (int dx = 0; dx < width; dx++)
-            {
-                var color = source.GetPixel(x + dx, y + dy);
-                subset.SetPixel(dx, dy, color);
-            }
+            var color = srcPixmap != null
+                ? srcPixmap.GetPixelColor(x + dx, y + dy)
+                : source.GetPixel(x + dx, y + dy);
+            subset.SetPixel(dx, dy, color);
         }
 
         return subset;
@@ -115,17 +115,14 @@ internal static class SkiaBitmapExtensions
     /// </summary>
     public static void Thresholding(SKBitmap bitmap)
     {
+        var pixmap = bitmap.PeekPixels();
         for (int y = 0; y < bitmap.Height; y++)
+        for (int x = 0; x < bitmap.Width; x++)
         {
-            for (int x = 0; x < bitmap.Width; x++)
-            {
-                var color = bitmap.GetPixel(x, y);
-                // Use luminance to determine threshold
-                var gray = (byte)(color.Red * 0.299f + color.Green * 0.587f + color.Blue * 0.114f);
-
-                byte newGray = gray < 36 ? (byte)0 : gray;
-                bitmap.SetPixel(x, y, new SKColor(newGray, newGray, newGray));
-            }
+            var color = pixmap != null ? pixmap.GetPixelColor(x, y) : bitmap.GetPixel(x, y);
+            var gray = (byte)(color.Red * 0.299f + color.Green * 0.587f + color.Blue * 0.114f);
+            var newGray = gray < 36 ? (byte)0 : gray;
+            bitmap.SetPixel(x, y, new SKColor(newGray, newGray, newGray));
         }
     }
 

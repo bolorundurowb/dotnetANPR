@@ -9,6 +9,10 @@ using Microsoft.Extensions.Logging;
 
 namespace dotnetANPR.Intelligence.Parser;
 
+/// <summary>
+/// Performs syntax-based parsing of recognised plate text against known licence plate format templates
+/// defined in an XML syntax description file.
+/// </summary>
 public class Parser
 {
     private static readonly ILogger<Parser> Logger = Logging.GetLogger<Parser>();
@@ -34,6 +38,9 @@ public class Parser
         }
     }
 
+    /// <summary>
+    /// Loads plate format templates from an XML syntax description file.
+    /// </summary>
     public List<PlateForm> LoadFromXml(string fileName)
     {
         var plateForms = new List<PlateForm>();
@@ -69,6 +76,9 @@ public class Parser
         return plateForms;
     }
 
+    /// <summary>
+    /// Removes the flag from all plate forms so none are preselected.
+    /// </summary>
     public void UnFlagAll()
     {
         foreach (var form in _plateForms)
@@ -92,6 +102,9 @@ public class Parser
             }
     }
 
+    /// <summary>
+    /// Flags plate forms with the same length as the recognised text.
+    /// </summary>
     public void FlagEqualLength(int length)
     {
         foreach (var form in _plateForms)
@@ -99,6 +112,9 @@ public class Parser
                 form.IsFlagged = true;
     }
 
+    /// <summary>
+    /// Inverts the flagged state of all plate forms.
+    /// </summary>
     public void InvertFlags()
     {
         foreach (var form in _plateForms)

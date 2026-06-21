@@ -31,13 +31,14 @@ public class ANPR
     }
 
     /// <summary>
-    /// Recognises the licence plate in <paramref name="imagePath"/>.
+    /// Recognises the licence plate in the specified image.
     /// </summary>
-    /// <param name="imagePath">Path to the source image.</param>
+    /// <param name="imagePath">Path to the source image file.</param>
     /// <param name="dumpDir">
     /// Optional directory to dump intermediate processing stages as sequentially-numbered JPEGs.
     /// The directory is created if it does not exist.
     /// </param>
+    /// <returns>The recognised plate text, or <c>null</c> if no plate was found.</returns>
     public static string? Recognize(string imagePath, string? dumpDir = null)
     {
         if (!File.Exists(imagePath))
@@ -46,7 +47,11 @@ public class ANPR
         return Recognize(SkiaSharpAdapter.LoadBitmap(imagePath), dumpDir);
     }
 
-    /// <inheritdoc cref="Recognize(string, string?)"/>
+    /// <summary>
+    /// Recognises the licence plate in the specified image stream.
+    /// </summary>
+    /// <inheritdoc cref="Recognize(string, string?)" path="/param[@name='dumpDir']"/>
+    /// <inheritdoc cref="Recognize(string, string?)" path="/returns"/>
     public static string? Recognize(Stream imageStream, string? dumpDir = null)
     {
         using var skData = SKData.Create(imageStream);
@@ -54,7 +59,11 @@ public class ANPR
         return Recognize(image, dumpDir);
     }
 
-    /// <inheritdoc cref="Recognize(string, string?)"/>
+    /// <summary>
+    /// Recognises the licence plate in the specified <see cref="SKBitmap"/>.
+    /// </summary>
+    /// <inheritdoc cref="Recognize(string, string?)" path="/param[@name='dumpDir']"/>
+    /// <inheritdoc cref="Recognize(string, string?)" path="/returns"/>
     public static string? Recognize(SKBitmap image, string? dumpDir = null)
     {
         if (dumpDir is not null && string.IsNullOrWhiteSpace(dumpDir))
@@ -71,6 +80,11 @@ public class ANPR
     /// <param name="outputFilePath">The path to the file where the configuration will be exported.</param>
     public static void ExportDefaultConfig(string outputFilePath) => Configurator.Instance.Save(outputFilePath);
 
+    /// <summary>
+    /// Trains a new neural network on the default alphabet and exports it to the specified file.
+    /// </summary>
+    /// <param name="outputFilePath">The file path to export the trained network to.</param>
+    /// <exception cref="IOException">Thrown if the destination file already exists.</exception>
     public static void TrainNetworkAndExport(string outputFilePath)
     {
         if (File.Exists(outputFilePath))
@@ -80,6 +94,12 @@ public class ANPR
         npc.NeuralNetwork.SaveToXml(outputFilePath);
     }
 
+    /// <summary>
+    /// Normalises all character images in the source alphabet directory and saves them to the destination.
+    /// </summary>
+    /// <param name="sourceDirectoryPath">Directory containing the source alphabet images.</param>
+    /// <param name="destinationDirectoryPath">Directory to write the normalised images to.</param>
+    /// <exception cref="ArgumentException">Thrown if the source directory does not exist or is empty.</exception>
     public static void NormalizeAlphabets(string sourceDirectoryPath, string destinationDirectoryPath)
     {
         if (!Directory.Exists(sourceDirectoryPath))

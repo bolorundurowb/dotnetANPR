@@ -4,6 +4,11 @@ using PropertyConfig;
 
 namespace dotnetANPR.Configuration;
 
+/// <summary>
+/// Thread-safe singleton that holds all configurable parameters for the recognition pipeline.
+/// Parameters are stored as key-value pairs and can be loaded from or saved to an XML file.
+/// Use <see cref="Instance"/> to access the singleton.
+/// </summary>
 public sealed class Configurator
 {
     private static Configurator? _configurator;
@@ -93,24 +98,45 @@ public sealed class Configurator
 
     public Configurator(string filePath) : this() { LoadConfiguration(filePath); }
 
+    /// <summary>The singleton instance, loaded from the default configuration file.</summary>
     public static Configurator Instance => _configurator ??= new Configurator(FileName);
 
+    /// <summary>
+    /// Gets a configuration value, automatically resolving file paths for the underlying platform.
+    /// </summary>
     public string GetPath(string name)
     {
         var rawValue = Get<string>(name);
         return rawValue.Replace('/', Path.DirectorySeparatorChar);
     }
 
+    /// <summary>
+    /// Gets a typed configuration value.
+    /// </summary>
+    /// <typeparam name="T">The expected type of the value.</typeparam>
+    /// <param name="name">The configuration key.</param>
     public T Get<T>(string name)
     {
         var rawValue = _properties[name];
         return (T)Convert.ChangeType(rawValue, typeof(T));
     }
 
+    /// <summary>
+    /// Sets a configuration value.
+    /// </summary>
+    /// <typeparam name="T">The type of the value.</typeparam>
+    /// <param name="name">The configuration key.</param>
+    /// <param name="value">The value to store.</param>
     public void Set<T>(string name, T value) => _properties[name] = value?.ToString();
 
+    /// <summary>
+    /// Saves the current configuration to the specified XML file.
+    /// </summary>
     public void Save(string outputFilePath) => _properties.StoreToXml(outputFilePath);
 
+    /// <summary>
+    /// Saves the current configuration to the default file.
+    /// </summary>
     public void Save() => Save(FileName);
 
     private void LoadConfiguration(string? filePath = null)

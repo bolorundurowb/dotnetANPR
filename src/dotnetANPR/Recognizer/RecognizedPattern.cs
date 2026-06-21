@@ -2,10 +2,21 @@ using System.Collections.Generic;
 
 namespace dotnetANPR.Recognizer;
 
+/// <summary>
+/// Represents a single character match with an associated cost (lower is better).
+/// </summary>
+/// <param name="chr">The matched character.</param>
+/// <param name="cost">The classification cost; lower values indicate a better match.</param>
 public class RecognizedPattern(char chr, float cost)
 {
+    /// <summary>
+    /// Gets the matched character.
+    /// </summary>
     public char Char { get; private set; } = chr;
 
+    /// <summary>
+    /// Gets the classification cost. Lower values indicate a better match.
+    /// </summary>
     public float Cost { get; private set; } = cost;
 }
 

@@ -9,6 +9,10 @@ using NN = dotnetANPR.NeuralNetwork;
 
 namespace dotnetANPR.Recognizer;
 
+/// <summary>
+/// Character recognition using a feed-forward neural network.
+/// The network can be loaded from a pre-trained file or trained on an alphabet at runtime.
+/// </summary>
 public class NeuralPatternClassifier : CharacterRecognizer
 {
     private static readonly ILogger<NeuralPatternClassifier> Logger = Logging.GetLogger<NeuralPatternClassifier>();
@@ -17,15 +21,19 @@ public class NeuralPatternClassifier : CharacterRecognizer
     private static readonly int NormalizeY = Configurator.Instance.Get<int>("char_normalizeddimensions_y");
 
     /// <summary>
-    /// The dimensions of an input character after transformation are 10 * 16 = 160 neurons.
+    /// Gets the underlying neural network used for classification.
     /// </summary>
     public NN.NeuralNetwork NeuralNetwork { get; private set; }
 
     /// <summary>
-    /// Do not learn the network, but load it from a file (default).
+    /// Initialises the classifier by loading a pre-trained network from the configured XML path.
     /// </summary>
     public NeuralPatternClassifier() : this(false) { }
 
+    /// <summary>
+    /// Initialises the classifier. When <paramref name="learn"/> is <c>true</c>, the network is trained
+    /// on the configured alphabet instead of loading from file.
+    /// </summary>
     public NeuralPatternClassifier(bool learn)
     {
         var configurator = Configurator.Instance;
@@ -60,6 +68,9 @@ public class NeuralPatternClassifier : CharacterRecognizer
         }
     }
 
+    /// <summary>
+    /// Recognises a character by normalising it and running it through the neural network.
+    /// </summary>
     public override RecognizedCharacter Recognize(Character character)
     {
         character.Normalize();
@@ -75,11 +86,11 @@ public class NeuralPatternClassifier : CharacterRecognizer
     }
 
     /// <summary>
-    /// Creates a new IOPair with the given character and normalized image character.
+    /// Creates an input-output training pair for the given character and its normalised image.
     /// </summary>
-    /// <param name="chr">The character.</param>
-    /// <param name="imgChar">The normalized image character.</param>
-    /// <returns>An IOPair object.</returns>
+    /// <param name="chr">The target character (0-9, A-Z).</param>
+    /// <param name="imgChar">The normalised image of the character.</param>
+    /// <returns>An input-output pair where the output vector targets the correct character class.</returns>
     public NN.SetOfIOPairs.IOPair CreateNewPair(char chr, Character imgChar)
     {
         var vectorInput = imgChar.ExtractFeatures();
@@ -89,10 +100,10 @@ public class NeuralPatternClassifier : CharacterRecognizer
     }
 
     /// <summary>
-    /// Learn the neural network with an alphabet in the given folder.
+    /// Trains the neural network using the alphabet images in the specified folder.
     /// </summary>
-    /// <param name="folder">The alphabet folder.</param>
-    /// <exception cref="IOException">If the alphabet failed to load.</exception>
+    /// <param name="folder">The path to the alphabet training images directory.</param>
+    /// <exception cref="IOException">Thrown if the alphabet failed to load.</exception>
     public void LearnAlphabet(string folder)
     {
         var train = new NN.SetOfIOPairs();

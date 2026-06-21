@@ -14,8 +14,15 @@ public class Intelligence
     private readonly PS.Parser _parser;
 
     private static readonly Configurator Configurator = Configurator.Instance;
+
+    /// <summary>
+    /// Gets the duration (in milliseconds) of the last call to <see cref="Recognize"/>.
+    /// </summary>
     public static long LastProcessDuration { get; private set; }
 
+    /// <summary>
+    /// Initialises the recognition engine with the configured classification method and syntax parser.
+    /// </summary>
     public Intelligence()
     {
         var classificationMethod = Configurator.Get<int>("intelligence_classification_method");
@@ -23,6 +30,12 @@ public class Intelligence
         _parser = new PS.Parser();
     }
 
+    /// <summary>
+    /// Analyses a car snapshot image and attempts to recognise a licence plate.
+    /// </summary>
+    /// <param name="carSnapshot">The car image to analyse.</param>
+    /// <param name="stageWriter">Optional writer for dumping intermediate processing stages.</param>
+    /// <returns>The recognised plate text, or <c>null</c> if no plate was found.</returns>
     public string? Recognize(CarSnapshot carSnapshot, StageWriter? stageWriter = null)
     {
         var timeMeter = new TimeMeter();
@@ -36,14 +49,10 @@ public class Intelligence
             {
                 var localPlate = plate;
 
-                // Skew detection runs when either configured or dumping stages
                 if (skewDetectionMode != 0 || stageWriter != null)
                 {
-                    // HorizontalEdgeDetector reads plate.Image and returns a new Bitmap —
-                    // no need to clone the whole Plate (which would also duplicate _plateCopy).
                     using var edgeBitmap = plate.HorizontalEdgeDetector(plate.Image);
 
-                    // Build the Hough transform directly from the edge bitmap
                     var hough = new HoughTransformation(edgeBitmap.Width, edgeBitmap.Height);
                     for (var hx = 0; hx < edgeBitmap.Width; hx++)
                         for (var hy = 0; hy < edgeBitmap.Height; hy++)
@@ -61,11 +70,7 @@ public class Intelligence
                     {
                         var shearFactor = -(float)hough.Dy / hough.Dx;
 
-                        // Create a shear transform using SkiaSharp
-                        var shearTransform = SKMatrix.CreateIdentity();
-                        // Shear matrix: [1, shearY, 0, shearX, 1, 0, 0, 0, 1]
-                        // For horizontal shear: multiply y-coordinate by shearFactor
-                        shearTransform = SKMatrix.CreateSkew(0, shearFactor);
+                        var shearTransform = SKMatrix.CreateSkew(0, shearFactor);
 
                         var core = new SKBitmap(plate.Image.Width, plate.Image.Height);
                         using var canvas = new SKCanvas(core);

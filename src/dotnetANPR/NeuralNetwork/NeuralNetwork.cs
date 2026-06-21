@@ -8,14 +8,22 @@ using Microsoft.Extensions.Logging;
 
 namespace dotnetANPR.NeuralNetwork;
 
+/// <summary>
+/// A feed-forward multi-layer perceptron neural network supporting training via gradient descent
+/// with back-propagation and persistence to/from XML.
+/// </summary>
 public class NeuralNetwork
 {
     private static readonly ILogger<NeuralNetwork> Logger = Logging.GetLogger<NeuralNetwork>();
 
     private readonly Random _randomGenerator;
 
+    /// <summary>Gets the layers of the network (first is input, last is output).</summary>
     public List<NeuralLayer> Layers { get; } = new();
 
+    /// <summary>
+    /// Creates a network from the specified layer dimensions. Each element defines the number of neurons in a layer.
+    /// </summary>
     public NeuralNetwork(List<int> dimensions)
     {
         foreach (var dimension in dimensions)
@@ -25,12 +33,18 @@ public class NeuralNetwork
         Logger.LogInformation("Created neural network with " + dimensions.Count + " layers");
     }
 
+    /// <summary>
+    /// Loads a pre-trained network from an XML file.
+    /// </summary>
     public NeuralNetwork(string path)
     {
         LoadFromXml(path);
         _randomGenerator = new Random();
     }
 
+    /// <summary>
+    /// Runs a forward pass and returns the output vector for the given inputs.
+    /// </summary>
     public List<double> Test(List<double> inputs)
     {
         if (inputs.Count != Layers[0].Neurons.Count)
@@ -42,6 +56,14 @@ public class NeuralNetwork
         return Activities(inputs);
     }
 
+    /// <summary>
+    /// Trains the network on the given training set using gradient descent with back-propagation.
+    /// </summary>
+    /// <param name="trainingSet">The input-output pairs to train on.</param>
+    /// <param name="maxK">Maximum number of training iterations.</param>
+    /// <param name="eps">Convergence threshold.</param>
+    /// <param name="lambda">Learning rate.</param>
+    /// <param name="micro">Momentum factor.</param>
     public void Learn(SetOfIOPairs trainingSet, int maxK, double eps, double lambda, double micro)
     {
         if (trainingSet.Pairs.Count == 0)
@@ -64,6 +86,9 @@ public class NeuralNetwork
         Adaptation(trainingSet, maxK, eps, lambda, micro);
     }
 
+    /// <summary>
+    /// Saves the network topology (layers, neurons, weights, thresholds) to an XML file.
+    /// </summary>
     public void SaveToXml(string fileName)
     {
         Logger.LogInformation("Saving network topology to file " + fileName);

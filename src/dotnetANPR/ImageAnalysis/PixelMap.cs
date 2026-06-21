@@ -5,6 +5,10 @@ using SkiaSharp;
 
 namespace dotnetANPR.ImageAnalysis;
 
+/// <summary>
+/// Represents a binary pixel matrix used for connected-component analysis, skeletonisation,
+/// and noise reduction on thresholded character images.
+/// </summary>
 public class PixelMap
 {
     private bool[,] _matrix = null!;
@@ -12,8 +16,14 @@ public class PixelMap
     private int _width;
     private int _height;
 
+    /// <summary>
+    /// Initialises the pixel map from a thresholded photo.
+    /// </summary>
     public PixelMap(Photo photo) => MatrixInit(photo);
 
+    /// <summary>
+    /// Renders the pixel map back to a binary bitmap.
+    /// </summary>
     public SKBitmap Render()
     {
         var image = new SKBitmap(_width, _height);
@@ -24,12 +34,18 @@ public class PixelMap
         return image;
     }
 
+    /// <summary>
+    /// Finds the best (largest) connected piece, removing all others.
+    /// </summary>
     public Piece BestPiece()
     {
         ReduceOtherPieces();
         return _bestPiece ?? new Piece(_matrix);
     }
 
+    /// <summary>
+    /// Applies the Zhang-Suen thinning algorithm to skeletonise the pixel map in-place.
+    /// </summary>
     public PixelMap Skeletonize()
     {
         PointSet flaggedPoints = [];
@@ -70,6 +86,9 @@ public class PixelMap
         return this;
     }
 
+    /// <summary>
+    /// Removes isolated pixel noise where a point has fewer than 4 neighbours.
+    /// </summary>
     public PixelMap ReduceNoise()
     {
         PointSet pointsToReduce = [];
@@ -85,6 +104,9 @@ public class PixelMap
         return this;
     }
 
+    /// <summary>
+    /// Finds all connected components (pieces) in the pixel map.
+    /// </summary>
     public PieceSet FindPieces()
     {
         PieceSet pieces = [];
@@ -101,6 +123,9 @@ public class PixelMap
         return pieces;
     }
 
+    /// <summary>
+    /// Retains only the best (highest cost) connected piece and removes all others.
+    /// </summary>
     public void ReduceOtherPieces()
     {
         if (_bestPiece != null)
@@ -299,6 +324,7 @@ public class PixelMap
 
     #endregion
 
+    /// <summary>Represents a 2D point in the pixel map.</summary>
     public sealed class Point(int x, int y) : IEquatable<Point>
     {
         public int X { get; } = x;
@@ -339,6 +365,7 @@ public class PixelMap
         public static bool operator !=(Point? left, Point? right) => !Equals(left, right);
     }
 
+    /// <summary>A stack-like collection of points.</summary>
     public class PointSet : List<Point>
     {
         public void Push(Point point) { Add(point); }
@@ -357,8 +384,12 @@ public class PixelMap
         }
     }
 
+    /// <summary>A collection of connected pieces.</summary>
     public class PieceSet : List<Piece> { }
 
+    /// <summary>
+    /// Represents a connected component (piece) in the pixel map with bounding box, centre, and magnitude.
+    /// </summary>
     public class Piece : PointSet
     {
         private readonly bool[,] _matrix;
@@ -368,29 +399,43 @@ public class PixelMap
             _matrix = matrix;
         }
 
+        /// <summary>The leftmost x-coordinate of the piece.</summary>
         public int MostLeftPoint { get; set; }
 
+        /// <summary>The rightmost x-coordinate of the piece.</summary>
         public int MostRightPoint { get; set; }
 
+        /// <summary>The topmost y-coordinate of the piece.</summary>
         public int MostTopPoint { get; set; }
 
+        /// <summary>The bottommost y-coordinate of the piece.</summary>
         public int MostBottomPoint { get; set; }
 
+        /// <summary>Horizontal centre of the bounding box.</summary>
         public int CenterX { get; set; }
 
+        /// <summary>Vertical centre of the bounding box.</summary>
         public int CenterY { get; set; }
 
+        /// <summary>Ratio of black to total pixels within the bounding box.</summary>
         public float Magnitude { get; set; }
 
+        /// <summary>Number of black pixels in the piece.</summary>
         public int NumberOfBlackPoints { get; set; }
 
+        /// <summary>Total number of pixels within the bounding box.</summary>
         public int NumberOfAllPoints { get; set; }
 
+        /// <summary>Width of the bounding box.</summary>
         public int Width { get; set; }
 
+        /// <summary>Height of the bounding box.</summary>
         public int Height { get; set; }
 
 
+        /// <summary>
+        /// Renders the piece as a binary bitmap within its bounding box.
+        /// </summary>
         public SKBitmap? Render()
         {
             if (NumberOfAllPoints == 0)
@@ -405,6 +450,7 @@ public class PixelMap
             return image;
         }
 
+        /// <summary>Computes bounding box, centre, and magnitude statistics.</summary>
         public void CreateStatistics()
         {
             MostLeftPoint = ComputeMostLeftPoint();
@@ -420,8 +466,10 @@ public class PixelMap
             Magnitude = (float)NumberOfBlackPoints / NumberOfAllPoints;
         }
 
+        /// <summary>Cost is the number of white pixels in the bounding box (used for ranking pieces).</summary>
         public int Cost() => NumberOfAllPoints - NumberOfBlackPoints;
 
+        /// <summary>Sets all pixels belonging to this piece to white (false).</summary>
         public void BleachPiece()
         {
             foreach (var point in this)

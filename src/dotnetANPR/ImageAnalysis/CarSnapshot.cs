@@ -6,6 +6,10 @@ using dotnetANPR.Utilities;
 
 namespace dotnetANPR.ImageAnalysis;
 
+/// <summary>
+/// Represents a photograph of a car. Extracts horizontal bands that may contain a licence plate
+/// using vertical edge detection and peak analysis on the image histogram.
+/// </summary>
 public class CarSnapshot(SKBitmap image) : Photo(image)
 {
     private static readonly int DistributorMargins =
@@ -22,21 +26,24 @@ public class CarSnapshot(SKBitmap image) : Photo(image)
 
     private CarSnapshotGraph? _graphHandle;
 
+    /// <summary>
+    /// Extracts candidate horizontal bands from the car image that may contain a licence plate.
+    /// </summary>
+    /// <param name="writer">Optional stage writer for diagnostic output.</param>
+    /// <returns>List of image bands to analyse for plate content.</returns>
     public List<Band> Bands(StageWriter? writer = null)
     {
         List<Band> response = [];
         var peaks = ComputeGraph(writer);
         foreach (var peak in peaks)
-        {
-            // Cut from the original image of the plate and save to a vector.
-            // ATTENTION: Cutting from original,
-            // we have to apply an inverse transformation to the coordinates calculated from imageCopy
             response.Add(new Band(Image.SubImage(0, peak.Left, Image.Width, peak.Diff)));
-        }
 
         return response;
     }
 
+    /// <summary>
+    /// Applies a vertical edge detection convolution kernel to the image.
+    /// </summary>
     public SKBitmap VerticalEdge(SKBitmap bitmap)
     {
         float[,] data = {
@@ -77,7 +84,7 @@ public class CarSnapshot(SKBitmap image) : Photo(image)
             _graphHandle = Histogram(imageCopy);
             _graphHandle.RankFilter(CarSnapshotGraphRankFilter);
             _graphHandle.ApplyProbabilityDistributor(Distributor);
-            _graphHandle.FindPeaks(NumberOfCandidates); // sort by height
+            _graphHandle.FindPeaks(NumberOfCandidates);
             imageCopy.Dispose(); // histogram is built; release the working bitmap
         }
 

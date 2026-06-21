@@ -9,24 +9,51 @@ using dotnetANPR.Recognizer;
 
 namespace dotnetANPR.ImageAnalysis;
 
+/// <summary>
+/// Represents a single character extracted from a licence plate image.
+/// Handles normalisation, feature extraction, and statistical analysis of brightness, contrast, hue, and saturation.
+/// </summary>
 public class Character : Photo
 {
+    /// <summary>Whether the character has been normalised.</summary>
     public bool Normalized;
+
+    /// <summary>The position of this character within the plate.</summary>
     public PositionInPlate? PositionInPlate;
 
-    public int FullWidth, FullHeight, PieceWidth, PieceHeight;
+    /// <summary>Full width and height of the character region.</summary>
+    public int FullWidth, FullHeight;
 
+    /// <summary>Width and height of the character after cropping to its best connected piece.</summary>
+    public int PieceWidth, PieceHeight;
+
+    /// <summary>Average brightness of the character region.</summary>
     public float StatisticAverageBrightness;
+
+    /// <summary>Minimum brightness of the character region.</summary>
     public float StatisticMinimumBrightness;
+
+    /// <summary>Maximum brightness of the character region.</summary>
     public float StatisticMaximumBrightness;
+
+    /// <summary>Contrast of the character region.</summary>
     public float StatisticContrast;
+
+    /// <summary>Average hue of the character region.</summary>
     public float StatisticAverageHue;
+
+    /// <summary>Average saturation of the character region.</summary>
     public float StatisticAverageSaturation;
 
+    /// <summary>The thresholded (binary) version of the character image.</summary>
     public readonly SKBitmap ThresholdedImage;
 
+    /// <summary>Gets a pixel map representation for connected-component analysis.</summary>
     public PixelMap PixelMap => new(this);
 
+    /// <summary>
+    /// Creates a character from an image file, applying adaptive thresholding.
+    /// </summary>
     public Character(string fileName) : base(SkiaSharpAdapter.LoadBitmap(fileName))
     {
         var origin = DuplicateBitmap(Image);
@@ -39,6 +66,9 @@ public class Character : Photo
 
     public Character(SKBitmap image) : this(image, image, null) { }
 
+    /// <summary>
+    /// Creates a character from an image and optional thresholded version with a position in the plate.
+    /// </summary>
     public Character(SKBitmap image, SKBitmap thresholdedImage, PositionInPlate? positionInPlate) : base(image)
     {
         ThresholdedImage = thresholdedImage;
@@ -47,6 +77,9 @@ public class Character : Photo
         Init();
     }
 
+    /// <summary>
+    /// Lists all available alphabet image files in the specified directory.
+    /// </summary>
     public static List<string> AlphabetList(string directory)
     {
         const string alphaString = "0123456789abcdefghijklmnopqrstuvwxyz";
@@ -60,6 +93,10 @@ public class Character : Photo
         return filenames;
     }
 
+    /// <summary>
+    /// Normalises the character by cropping to the best connected piece, computing statistics,
+    /// and resizing to the configured normalised dimensions.
+    /// </summary>
     public void Normalize()
     {
         if (Normalized)
@@ -104,6 +141,9 @@ public class Character : Photo
         Normalized = true;
     }
 
+    /// <summary>
+    /// Extracts edge-based features from the character for classification.
+    /// </summary>
     public List<double> ExtractEdgeFeatures()
     {
         var width = Image.Width;
@@ -137,6 +177,9 @@ public class Character : Photo
         return output.ToList();
     }
 
+    /// <summary>
+    /// Extracts pixel-map features (brightness values) from the character for classification.
+    /// </summary>
     public List<double> ExtractMapFeatures()
     {
         List<double> vectorInput = [];
@@ -147,6 +190,9 @@ public class Character : Photo
         return vectorInput;
     }
 
+    /// <summary>
+    /// Extracts features from the character using the configured extraction method (map or edge).
+    /// </summary>
     public List<double> ExtractFeatures()
     {
         var featureExtractionMethod = Configurator.Instance.Get<int>("char_featuresExtractionMethod");

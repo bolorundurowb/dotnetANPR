@@ -8,12 +8,19 @@ using Microsoft.Extensions.Logging;
 
 namespace dotnetANPR.Recognizer;
 
+/// <summary>
+/// Character recognition using k-Nearest Neighbour (KNN) pattern matching.
+/// Compares extracted character features against a learned alphabet using simplified Euclidean distance.
+/// </summary>
 public class KnnPatternClassifier : CharacterRecognizer
 {
     private static readonly ILogger<KnnPatternClassifier> Logger = Logging.GetLogger<KnnPatternClassifier>();
 
     private readonly List<List<double>> _learnLists;
 
+    /// <summary>
+    /// Initialises the classifier by loading and normalising the alphabet images from the configured path.
+    /// </summary>
     public KnnPatternClassifier()
     {
         var path = Configurator.Instance.GetPath("char_learnAlphabetPath");
@@ -31,6 +38,9 @@ public class KnnPatternClassifier : CharacterRecognizer
             Logger.LogWarning("Alphabet in {} is not complete", path);
     }
 
+    /// <summary>
+    /// Recognises a character by computing Euclidean distances against all learned alphabet patterns.
+    /// </summary>
     public override RecognizedCharacter Recognize(Character chr)
     {
         var features = chr.ExtractFeatures();
@@ -46,10 +56,6 @@ public class KnnPatternClassifier : CharacterRecognizer
         return recognized;
     }
 
-    #region Private Helpers
-
     private static double SimplifiedEuclideanDistance(List<double> vectorA, List<double> vectorB) => vectorA
         .Select((t, x) => Math.Abs(t - vectorB[x])).Sum(partialDiff => partialDiff * partialDiff);
-
-    #endregion
 }

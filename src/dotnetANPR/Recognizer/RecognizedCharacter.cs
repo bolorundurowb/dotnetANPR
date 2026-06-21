@@ -4,18 +4,38 @@ using SkiaSharp;
 
 namespace dotnetANPR.Recognizer;
 
+/// <summary>
+/// Holds the ranked list of pattern matches for a single recognised character.
+/// Patterns must be sorted via <see cref="Sort"/> before they become accessible.
+/// </summary>
 public class RecognizedCharacter
 {
     private readonly List<RecognizedPattern> _patterns = [];
 
+    /// <summary>
+    /// Gets whether the patterns have been sorted. Patterns are inaccessible until sorted.
+    /// </summary>
     public bool IsSorted { get; private set; }
 
+    /// <summary>
+    /// Gets the sorted list of pattern matches, or <c>null</c> if not yet sorted.
+    /// </summary>
     public List<RecognizedPattern>? Patterns => !IsSorted ? null : _patterns;
 
+    /// <summary>
+    /// Adds a pattern match to the internal collection.
+    /// </summary>
     public void AddPattern(RecognizedPattern pattern) => _patterns.Add(pattern);
 
+    /// <summary>
+    /// Returns the pattern match at the specified index, or <c>null</c> if out of range or unsorted.
+    /// </summary>
     public RecognizedPattern? Pattern(int index) => Patterns?.ElementAtOrDefault(index);
 
+    /// <summary>
+    /// Sorts the patterns by cost in ascending or descending order and marks them as accessible.
+    /// </summary>
+    /// <param name="sortDesc">If <c>true</c>, sorts from highest to lowest cost.</param>
     public void Sort(bool sortDesc)
     {
         if (IsSorted)
@@ -25,6 +45,10 @@ public class RecognizedCharacter
         IsSorted = true;
     }
 
+    /// <summary>
+    /// Renders a bar chart visualisation of the pattern matching costs.
+    /// </summary>
+    /// <returns>A bitmap showing the cost of each candidate character pattern.</returns>
     public SKBitmap Render()
     {
         var width = 500;

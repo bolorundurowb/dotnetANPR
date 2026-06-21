@@ -8,6 +8,11 @@ using dotnetANPR.Utilities;
 
 namespace dotnetANPR.ImageAnalysis;
 
+/// <summary>
+/// Represents a candidate licence plate region extracted from a car image.
+/// Handles normalisation (cropping to bounds), character segmentation via histogram peak analysis,
+/// and computes statistical properties of the contained characters.
+/// </summary>
 public class Plate : Photo, ICloneable
 {
     private static readonly ProbabilityDistributor Distributor = new(0, 0, 0, 0);
@@ -34,15 +39,16 @@ public class Plate : Photo, ICloneable
 
     public new object Clone() => new Plate(DuplicateBitmap(Image));
 
+    /// <summary>
+    /// Segments the plate image into individual character regions using histogram peak analysis.
+    /// </summary>
+    /// <returns>A list of character images with their positions within the plate.</returns>
     public List<Character> Characters()
     {
         List<Character> characters = [];
         var peaks = ComputeGraph();
         foreach (var peak in peaks)
         {
-            // Cut from the original image of the plate and save to a vector.
-            // ATTENTION: Cutting from original,
-            // we have to apply an inverse transformation to the coordinates calculated from imageCopy
             if (peak.Diff <= 0)
                 continue;
             var positionInPlate = new PositionInPlate(peak.Left, peak.Right);
@@ -55,6 +61,9 @@ public class Plate : Photo, ICloneable
         return characters;
     }
 
+    /// <summary>
+    /// Crops the plate to its bounds using vertical and horizontal edge detection and histogram analysis.
+    /// </summary>
     public void Normalize(StageWriter? writer = null)
     {
         // Vertical edge — create a temporary Bitmap for edge detection only (no Plate clone needed)
@@ -83,7 +92,7 @@ public class Plate : Photo, ICloneable
         }
         else
         {
-            horizontalEdgeBitmap = Image; // borrow reference; no ownership transfer
+            horizontalEdgeBitmap = Image;
             disposeHorizontalEdge = false;
         }
         writer?.Write("plate-horizontal-edge", horizontalEdgeBitmap);
@@ -102,6 +111,9 @@ public class Plate : Photo, ICloneable
         writer?.Write("plate-normalized", Image);
     }
 
+    /// <summary>
+    /// Computes the horizontal histogram for character segmentation.
+    /// </summary>
     public PlateGraph Histogram(SKBitmap bi)
     {
         var graph = new PlateGraph(this);
@@ -117,18 +129,28 @@ public class Plate : Photo, ICloneable
         return graph;
     }
 
+    /// <summary>
+    /// Applies vertical edge detection for finding the top and bottom bounds of the plate.
+    /// </summary>
     public SKBitmap VerticalEdgeDetector(SKBitmap source)
     {
         float[,] matrix = { { -1, 0, 1 } };
         return source.Convolve(matrix);
     }
 
+    /// <summary>
+    /// Applies horizontal edge detection for finding the left and right bounds of the plate.
+    /// </summary>
     public SKBitmap HorizontalEdgeDetector(SKBitmap source)
     {
         float[,] matrix = { { -1, -2, -1 }, { 0, 0, 0 }, { 1, 2, 1 } };
         return source.Convolve(matrix);
     }
 
+    /// <summary>
+    /// Measures the width dispersion of character regions relative to the average character width.
+    /// A lower value indicates more uniform character widths.
+    /// </summary>
     public float CharactersWidthDispersion(List<Character> characters)
     {
         float averageDispersion = 0;

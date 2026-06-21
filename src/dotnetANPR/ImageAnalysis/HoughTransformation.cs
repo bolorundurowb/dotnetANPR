@@ -4,14 +4,20 @@ using dotnetANPR.Extensions;
 
 namespace dotnetANPR.ImageAnalysis;
 
+/// <summary>
+/// Implements the Hough transform for detecting lines in an image.
+/// Used to determine the skew angle of a licence plate for de-skewing correction.
+/// </summary>
 public class HoughTransformation
 {
+    /// <summary>Controls whether all lines or only the transformation are rendered.</summary>
     public enum RenderType
     {
         RenderAll = 1,
         RenderTransformationOnly = 0
     }
 
+    /// <summary>Controls the colour mode of rendered output.</summary>
     public enum ColorType
     {
         BlackAndWhite = 0,
@@ -26,12 +32,18 @@ public class HoughTransformation
     private float _dx;
     private float _dy;
 
+    /// <summary>Gets the horizontal delta of the detected line.</summary>
     public float Dx => _dx;
 
+    /// <summary>Gets the vertical delta of the detected line.</summary>
     public float Dy => _dy;
 
+    /// <summary>Gets the angle of the detected line in degrees.</summary>
     public float Angle => _angle;
 
+    /// <summary>
+    /// Creates a Hough transform accumulator of the specified dimensions.
+    /// </summary>
     public HoughTransformation(int width, int height)
     {
         _maxPoint = null;
@@ -44,6 +56,9 @@ public class HoughTransformation
                 _bitmap[x, y] = 0;
     }
 
+    /// <summary>
+    /// Adds a pixel at the given coordinates to the accumulator with the specified brightness weight.
+    /// </summary>
     public void AddLine(int x, int y, float brightness)
     {
         // Normalize coordinates to -1..1 range
@@ -63,6 +78,9 @@ public class HoughTransformation
         }
     }
 
+    /// <summary>
+    /// Returns the coordinates of the point with maximum accumulated intensity.
+    /// </summary>
     public (int X, int Y) GetMaxPoint()
     {
         if (!_maxPoint.HasValue)
@@ -81,6 +99,10 @@ public class HoughTransformation
         return sum / (_width * _height);
     }
 
+    /// <summary>
+    /// Renders the Hough transform accumulator as a visual bitmap with optional line overlays.
+    /// After calling this method, <see cref="Dx"/>, <see cref="Dy"/>, and <see cref="Angle"/> are populated.
+    /// </summary>
     public SKBitmap Render(RenderType renderType, ColorType colorType)
     {
         var average = GetAverageValue();

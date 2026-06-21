@@ -5,18 +5,28 @@ using dotnetANPR.Extensions;
 
 namespace dotnetANPR.ImageAnalysis;
 
+/// <summary>
+/// Base class for images in the processing pipeline. Provides pixel-level access (brightness, saturation, hue),
+/// image filters (resize, thresholding), and bitmap utilities. Implements <see cref="IDisposable"/>.
+/// </summary>
 public class Photo(SKBitmap image) : IDisposable, ICloneable
 {
+    /// <summary>Gets the width of the image in pixels.</summary>
     public int Width => image.Width;
 
+    /// <summary>Gets the height of the image in pixels.</summary>
     public int Height => image.Height;
 
+    /// <summary>Gets the brightness at the centre of the image.</summary>
     public float Brightness => GetBrightness(image, Width / 2, Height / 2);
 
+    /// <summary>Gets the saturation at the centre of the image.</summary>
     public float Saturation => GetSaturation(image, Width / 2, Height / 2);
 
+    /// <summary>Gets the hue at the centre of the image.</summary>
     public float Hue => GetHue(image, Width / 2, Height / 2);
 
+    /// <summary>Gets or sets the underlying <see cref="SKBitmap"/>.</summary>
     public SKBitmap Image
     {
         get => image;
@@ -208,6 +218,9 @@ public class Photo(SKBitmap image) : IDisposable, ICloneable
         return (int)((uint)color.Alpha << 24 | (uint)color.Red << 16 | (uint)color.Green << 8 | (uint)color.Blue);
     }
 
+    /// <summary>
+    /// Applies adaptive thresholding using a moving neighbourhood average to produce a binary image.
+    /// </summary>
     public void AdaptiveThresholding()
     {
         var statistics = new Statistics(this);
@@ -255,6 +268,9 @@ public class Photo(SKBitmap image) : IDisposable, ICloneable
     }
 
 
+    /// <summary>
+    /// Disposes the underlying <see cref="SKBitmap"/>.
+    /// </summary>
     public void Dispose() { image.Dispose(); }
 
     #region Overrides

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Xml;
+using System.Text.Json;
 using dotnetANPR.Configuration;
 using dotnetANPR.Utilities;
 using Microsoft.Extensions.Logging;
@@ -25,7 +25,7 @@ public class Parser
 
         try
         {
-            _plateForms = LoadFromXml(fileName);
+            _plateForms = LoadFromJsonc(fileName);
         }
         catch (Exception e)
         {
@@ -34,32 +34,39 @@ public class Parser
         }
     }
 
-    public List<PlateForm> LoadFromXml(string fileName)
+    /// <summary>
+    /// Loads plate format definitions from a JSONC file.
+    /// The file must contain a top-level "plateFormats" array where each element
+    /// has a "name" string and a "positions" array of allowed-character strings.
+    /// </summary>
+    public List<PlateForm> LoadFromJsonc(string fileName)
     {
         var plateForms = new List<PlateForm>();
-        var doc = new XmlDocument();
-        doc.Load(fileName);
+        var json = File.ReadAllText(fileName);
+        var docOptions = new JsonDocumentOptions { CommentHandling = JsonCommentHandling.Skip };
 
-        var structureNode = doc.DocumentElement;
-        var structureNodeContent = structureNode?.ChildNodes;
+        using var doc = JsonDocument.Parse(json, docOptions);
+        var root = doc.RootElement;
 
-        if (structureNodeContent is null)
-            throw new IOException("Failed to load from parser syntax description file");
+        if (!root.TryGetProperty("plateFormats", out var formatsArray))
+            throw new IOException($"Syntax file '{fileName}' is missing the 'plateFormats' array.");
 
-        foreach (XmlNode typeNode in structureNodeContent)
+        foreach (var formatElement in formatsArray.EnumerateArray())
         {
-            if (typeNode.Name != "type")
-                continue;
+            var name = formatElement.GetProperty("name").GetString()
+                ?? throw new IOException("A plate format entry is missing its 'name' field.");
 
-            var form = new PlateForm(((XmlElement)typeNode).GetAttribute("name"));
-            var typeNodeContent = typeNode.ChildNodes;
+            var form = new PlateForm(name);
 
-            foreach (XmlNode charNode in typeNodeContent)
+            if (!formatElement.TryGetProperty("positions", out var positionsArray))
+                throw new IOException($"Plate format '{name}' is missing its 'positions' array.");
+
+            foreach (var positionElement in positionsArray.EnumerateArray())
             {
-                if (charNode.Name != "char")
-                    continue;
+                var content = positionElement.GetString()
+                    ?? throw new IOException($"A position entry in format '{name}' is null.");
 
-                var content = ((XmlElement)charNode).GetAttribute("content");
+                // Characters are normalised to upper-case, matching the original XML loader.
                 form.Positions.Add(new Position(content.ToUpper()));
             }
 
@@ -76,7 +83,7 @@ public class Parser
     }
 
     /// <summary>
-    /// For the given length, finds a <see cref="PlateForm"/> of the same length. 
+    /// For the given length, finds a <see cref="PlateForm"/> of the same length.
     /// If no such <see cref="PlateForm"/> is found, tries to find one with fewer characters.
     /// </summary>
     /// <param name="length">The number of characters of the PlateForm.</param>

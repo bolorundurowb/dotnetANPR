@@ -1,0 +1,108 @@
+/**
+ * Copyright 2013 JavaANPR contributors
+ * Copyright 2006 Ondrej Martinsky
+ * Licensed under the Educational Community License, Version 2.0 (the "License");
+ *
+ * Plate syntax definitions used by the post-recognition parser.
+ *
+ * HOW IT WORKS
+ * ────────────
+ * After characters are recognised, the parser tries every format defined here
+ * against the raw recognised string and picks the best-fitting one (fewest
+ * character substitutions required). A format matches when each recognised
+ * character either already belongs to the allowed set for that position, or can
+ * be substituted for one that does at low cost.
+ *
+ * HOW TO ADD A NEW FORMAT
+ * ───────────────────────
+ * 1. Add a new object to the "plateFormats" array.
+ * 2. Give it a unique "name" (used only for logging/debugging).
+ * 3. Set "positions" to an array of strings — one per character slot in the
+ *    plate, ordered left-to-right. Each string lists every character that is
+ *    valid at that slot (case-insensitive; lower and upper are treated equally).
+ *
+ * TIPS
+ * ────
+ * • "o0123456789" in a position means the digit zero and the letter O are both
+ *   accepted there, which handles common OCR confusion between the two glyphs.
+ * • Keep formats as tight as possible; overly permissive positions reduce the
+ *   parser's ability to correct genuine misreads.
+ * • Formats with the same length compete; the one requiring fewer changes wins.
+ */
+{
+  "plateFormats": [
+    {
+      // German standard format: three letters followed by three digits.
+      // e.g. "ABC123"
+      "name": "germany",
+      "positions": [
+        "abcdefghijklmno0pqrstuvwxyz", // 1st char: any letter (O included to handle OCR noise)
+        "abcdefghijklmno0pqrstuvwxyz", // 2nd char: any letter
+        "abcdefghijklmno0pqrstuvwxyz", // 3rd char: any letter
+        "0123456789",                  // 4th char: digit
+        "0123456789",                  // 5th char: digit
+        "0123456789"                   // 6th char: digit
+      ]
+    },
+
+    {
+      // Slovak new-style format: two letters, three digits-or-O, two letters.
+      // e.g. "BA123AB"
+      "name": "slovensko_nova",
+      "positions": [
+        "abcdefghijklmno0pqrstuvwxyz", // 1st char: region letter
+        "abcdefghijklmno0pqrstuvwxyz", // 2nd char: region letter
+        "o0123456789",                 // 3rd char: digit or O
+        "o0123456789",                 // 4th char: digit or O
+        "o0123456789",                 // 5th char: digit or O
+        "abcdefghijklmno0pqrstuvwxyz", // 6th char: serial letter
+        "abcdefghijklmno0pqrstuvwxyz"  // 7th char: serial letter
+      ]
+    },
+
+    {
+      // Czechoslovak newer format: three letters followed by four digits-or-O.
+      // e.g. "ABC1234"
+      "name": "ceskoslovenska_novsia",
+      "positions": [
+        "abcdefghijklmno0pqrstuvwxyz", // 1st char: letter
+        "abcdefghijklmno0pqrstuvwxyz", // 2nd char: letter
+        "abcdefghijklmno0pqrstuvwxyz", // 3rd char: letter
+        "o0123456789",                 // 4th char: digit or O
+        "o0123456789",                 // 5th char: digit or O
+        "o0123456789",                 // 6th char: digit or O
+        "o0123456789"                  // 7th char: digit or O
+      ]
+    },
+
+    {
+      // Czechoslovak older format: two letters followed by four digits-or-O.
+      // e.g. "AB1234"
+      "name": "ceskoslovenska_starsia",
+      "positions": [
+        "abcdefghijklmno0pqrstuvwxyz", // 1st char: letter
+        "abcdefghijklmno0pqrstuvwxyz", // 2nd char: letter
+        "o0123456789",                 // 3rd char: digit or O
+        "o0123456789",                 // 4th char: digit or O
+        "o0123456789",                 // 5th char: digit or O
+        "o0123456789"                  // 6th char: digit or O
+      ]
+    },
+
+    {
+      // Czech new-style format: digit-or-O, region-code letter, five digits-or-O.
+      // The second position is a restricted set of letters used as Czech region codes.
+      // e.g. "1A12345"
+      "name": "ceska_nova",
+      "positions": [
+        "o0123456789",   // 1st char: digit or O
+        "cbkhltmepasujz", // 2nd char: one of the valid Czech region-code letters
+        "o0123456789",   // 3rd char: digit or O
+        "o0123456789",   // 4th char: digit or O
+        "o0123456789",   // 5th char: digit or O
+        "o0123456789",   // 6th char: digit or O
+        "o0123456789"    // 7th char: digit or O
+      ]
+    }
+  ]
+}

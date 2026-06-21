@@ -1,0 +1,253 @@
+/**
+ * Copyright 2013 JavaANPR contributors
+ * Copyright 2006 Ondrej Martinsky
+ * Licensed under the Educational Community License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.osedu.org/licenses/ECL-2.0
+ *
+ * Global configuration file for the Automatic Number Plate Recognition System.
+ *
+ * All numeric thresholds are tuned for the bundled training data. When
+ * adapting to a new camera setup, locale, or resolution, adjust the values
+ * in the sections most relevant to your changes (photo, intelligence, character).
+ */
+{
+  // ─── Photo ──────────────────────────────────────────────────────────────────
+  "photo": {
+    // Controls the binarisation step applied to every input image.
+    // 0 = plain global thresholding (fast; works well for uniform lighting).
+    // N ≥ 1 = adaptive (local-neighbourhood) thresholding with a square
+    //   neighbourhood of radius N pixels. Larger values handle stronger
+    //   brightness gradients across the plate but are slower.
+    //   Increase if plates are partially shadowed; decrease for speed.
+    "adaptiveThresholdingRadius": 7
+  },
+
+  // ─── Band graph ─────────────────────────────────────────────────────────────
+  // A "band" is a horizontal strip of the car image that may contain a plate.
+  // The band graph is a 1-D brightness signal projected along the y-axis.
+  "bandGraph": {
+    // Fraction of a peak's own maximum height that defines its foot (base edge).
+    // Lower → broader peaks (captures more of each candidate band region).
+    // Higher → narrower peaks (requires a sharper contrast boundary).
+    "peakFootConstant": 0.55,
+
+    // After cutting a peak at its foot, the boundaries are expanded outward by
+    // this fraction of the peak's width. Prevents tight cropping of slanted bands.
+    // Raise if bands are frequently clipped at their edges.
+    "peakDiffMultiplicationConstant": 0.2
+  },
+
+  // ─── Car snapshot ───────────────────────────────────────────────────────────
+  "carSnapshot": {
+    // Pixel margin from the left and right edges of the image within which
+    // the probability distributor suppresses band candidates. Prevents spurious
+    // detections caused by image borders or vehicle bodywork.
+    // Increase for cameras that capture significant non-road context.
+    "distributorMargins": 25,
+
+    // Kernel size (in pixels) of the rank filter applied to the car-snapshot
+    // graph before peak detection. Larger values smooth out high-frequency noise
+    // at the cost of smearing closely spaced bands together.
+    "graphRankFilter": 9
+  },
+
+  // ─── Car snapshot graph ─────────────────────────────────────────────────────
+  // Governs peak detection on the car-level graph (same semantics as bandGraph,
+  // but applied one level higher in the pipeline).
+  "carSnapshotGraph": {
+    // See bandGraph.peakFootConstant.
+    "peakFootConstant": 0.55,
+
+    // See bandGraph.peakDiffMultiplicationConstant.
+    "peakDiffMultiplicationConstant": 0.1
+  },
+
+  // ─── Character ──────────────────────────────────────────────────────────────
+  "character": {
+    // Width in pixels to which each character image is down-sampled before
+    // feature extraction. Must match the dimensions the classifier was trained on.
+    // Changing this requires retraining (or switching) the classifier.
+    "normalizedWidth": 8,
+
+    // Height in pixels to which each character image is down-sampled before
+    // feature extraction. Same training-data constraint as normalizedWidth.
+    "normalizedHeight": 13,
+
+    // Algorithm used when shrinking a character to the normalised size.
+    // 0 = bilinear (preserves edges; best when featuresExtractionMethod=1).
+    // 1 = weighted-average (smooths pixel values; best when featuresExtractionMethod=0).
+    "resizeMethod": 1,
+
+    // How the normalised pixel grid is converted into the feature vector that
+    // the classifier operates on.
+    // 0 = direct pixel map — each pixel brightness is a feature. Works well for
+    //     blurred or low-contrast characters; default for the bundled KNN model.
+    // 1 = edge detection — Sobel-style edges become features. More robust to
+    //     skewed or deformed characters but requires a matching trained network.
+    "featuresExtractionMethod": 0,
+
+    // Relative path to the pre-trained neural-network weights file.
+    // The filename encodes the training configuration:
+    //   network_{resizeMethod}res_{W}{H}_{extractionMode}.xml
+    // Switch this (and featuresExtractionMethod) when using an edge-trained network.
+    "neuralNetworkPath": "Resources/neuralnetworks/network_avgres_813_map.xml",
+
+    // Relative path to the directory that contains one image per labelled character,
+    // used by the KNN / Euclidean-distance classifier. Image dimensions must match
+    // normalizedWidth × normalizedHeight.
+    "learnAlphabetPath": "Resources/alphabets/alphabet_8x13"
+  },
+
+  // ─── Plate graph ────────────────────────────────────────────────────────────
+  // Governs how candidate license plates are segmented within each band.
+  "plateGraph": {
+    // See bandGraph.peakFootConstant, applied to the plate-level vertical graph.
+    // Higher values force a stronger vertical brightness boundary for plate edges.
+    "peakFootConstant": 0.7,
+
+    // Minimum peak height expressed as a fraction of the tallest peak in the graph.
+    // Peaks below this relative threshold are discarded as noise or non-plates.
+    // Increase (toward 1.0) to be more selective; decrease to capture dim plates.
+    "relativeMinPeakSize": 0.86
+  },
+
+  // ─── Plate horizontal graph ─────────────────────────────────────────────────
+  // Controls character segmentation along the horizontal axis of a plate candidate.
+  "plateHorizontalGraph": {
+    // See bandGraph.peakFootConstant, applied to the horizontal character graph.
+    // Very low value (0.05) ensures even faint valleys between characters are used
+    // as split points. Increase if characters are being merged.
+    "peakFootConstant": 0.05,
+
+    // Algorithm used to locate character boundaries.
+    // 1 = edge detection (default) — finds brightness transitions; robust to noise.
+    // 0 = magnitude derivative — uses the raw signal derivative; faster but noisier.
+    "detectionType": 1
+  },
+
+  // ─── Plate vertical graph ───────────────────────────────────────────────────
+  // Controls how the top and bottom boundaries of the plate are trimmed.
+  "plateVerticalGraph": {
+    // See bandGraph.peakFootConstant, applied to the plate vertical graph.
+    "peakFootConstant": 0.42
+  },
+
+  // ─── Intelligence / recognition pipeline ────────────────────────────────────
+  "intelligence": {
+    // Selects the character-recognition back-end.
+    // 0 = Euclidean (KNN) pattern matching — no training required at runtime;
+    //     uses the pre-normalised alphabet images in character.learnAlphabetPath.
+    // 1 = Feedforward neural network — potentially higher accuracy on clean input;
+    //     requires the network file at character.neuralNetworkPath.
+    "classificationMethod": 0,
+
+    // How many horizontal band candidates to extract from the full car image.
+    // Increase if plates are sometimes missed; decrease to save processing time.
+    "numberOfBands": 3,
+
+    // How many plate candidates to extract per band.
+    // Increase for images where several plates may share a band.
+    "numberOfPlates": 3,
+
+    // Upper bound on the number of character segments extracted from one plate's
+    // horizontal graph. Acts as a guard against over-segmentation.
+    "numberOfChars": 20,
+
+    // Plate candidates with fewer detected characters than this are rejected outright.
+    // Set to the shortest plate format you need to support.
+    "minimumChars": 5,
+
+    // Plate candidates with more detected characters than this are rejected.
+    // Set to the longest plate format you need to support.
+    "maximumChars": 15,
+
+    // Skew (tilt) correction using Hough transform.
+    // 0 = disabled (faster; suitable for mounted cameras with fixed angle).
+    // 1 = enabled (corrects rotated plates at the cost of extra computation).
+    "skewDetection": 0,
+
+    // Post-recognition syntax correction mode.
+    // 0 = disabled — return raw recognised string with no correction.
+    // 1 = correct only when the character count exactly matches a known plate format.
+    // 2 = correct even when the count doesn't match, dropping extra characters
+    //     to find the best-fitting format. Most permissive; use when segmentation
+    //     is noisy.
+    "syntaxAnalysis": 2,
+
+    // Relative path to the JSONC file defining allowed plate formats.
+    // Edit that file to add support for new countries or plate styles.
+    "syntaxDescriptionFile": "Resources/syntax.jsonc",
+
+    // Maximum allowed spread of character widths within a single plate, expressed
+    // as a fraction of the average width. Plates where characters vary too wildly
+    // in width (e.g., mis-segmented glyphs) are discarded.
+    // Increase to tolerate proportional fonts or worn plates.
+    "maxCharWidthDispersion": 0.5,
+
+    // Geometric filter: minimum acceptable plate width-to-height ratio.
+    // Very narrow/tall blobs are not license plates. Decrease only for unusual
+    // portrait-style plates.
+    "minPlateWidthHeightRatio": 0.5,
+
+    // Geometric filter: maximum acceptable plate width-to-height ratio.
+    // Very wide/flat blobs are not license plates.
+    "maxPlateWidthHeightRatio": 15.0,
+
+    // Geometric filter: minimum acceptable character width-to-height ratio.
+    // Characters thinner than this (e.g., '|' artefacts) are skipped.
+    "minCharWidthHeightRatio": 0.1,
+
+    // Geometric filter: maximum acceptable character width-to-height ratio.
+    // Characters wider than this (e.g., merged glyphs) are skipped.
+    // A value near 1.0 excludes nearly-square blobs.
+    "maxCharWidthHeightRatio": 0.92,
+
+    // Photometric filters: maximum allowed deviation of a single character's
+    // brightness / contrast / hue / saturation / height from the plate average.
+    // Characters that deviate beyond these limits are likely noise or stickers
+    // rather than plate characters. Increase to be more permissive on faded plates.
+    "maxBrightnessCostDispersion": 0.161,
+    "maxContrastCostDispersion": 0.1,
+    "maxHueCostDispersion": 0.145,
+    "maxSaturationCostDispersion": 0.24,
+    "maxHeightCostDispersion": 0.2,
+
+    // Maximum recognition similarity cost accepted for a character.
+    // The cost is the Euclidean distance (or neural-network output cost) between
+    // the input and the best matching template. Characters above this threshold
+    // are rejected as unrecognisable. Increase to accept lower-quality matches.
+    "maxSimilarityCostDispersion": 100.0
+  },
+
+  // ─── Neural network training ─────────────────────────────────────────────────
+  // These parameters control the optional on-device training of the neural-network
+  // classifier. They have no effect when classificationMethod=0 (KNN).
+  "neuralNetwork": {
+    // Maximum number of weight-update iterations (epochs). Training stops here
+    // regardless of whether the target error has been reached.
+    // Increase for a more thorough (but slower) training run.
+    "maxK": 8000,
+
+    // Target mean-squared error (ε). Training halts early if the network reaches
+    // this error level. Lower values push for higher precision but increase the
+    // risk of overfitting the training set.
+    "eps": 0.07,
+
+    // Learning rate (λ). Controls the step size of each weight update.
+    // Too high → oscillation and divergence; too low → very slow convergence.
+    "lambda": 0.05,
+
+    // Momentum factor (μ). Fraction of the previous weight delta added to the
+    // current delta. Smooths the optimisation trajectory and helps escape
+    // shallow local minima. Range [0, 1).
+    "micro": 0.5,
+
+    // Number of neurons in the single hidden layer of the network.
+    // More neurons increase representational capacity but also overfitting risk
+    // and inference time.
+    "topology": 20
+  }
+}

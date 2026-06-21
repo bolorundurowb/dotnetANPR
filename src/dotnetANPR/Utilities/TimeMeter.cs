@@ -2,7 +2,7 @@ using System.Diagnostics;
 
 namespace dotnetANPR.Utilities;
 
-public class TimeMeter
+internal class TimeMeter
 {
     private readonly Stopwatch _stopwatch;
 

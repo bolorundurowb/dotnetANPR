@@ -1,11 +1,11 @@
 using System;
-using System.Drawing;
+using SkiaSharp;
 
 namespace dotnetANPR.Extensions;
 
 internal static class ColorExtensions
 {
-    public static Color HsbToRgb(float hue, float saturation, float brightness)
+    public static SKColor HsbToRgb(float hue, float saturation, float brightness)
     {
         // Clamp values to valid ranges
         hue = Math.Max(0.0f, Math.Min(1.0f, hue));
@@ -61,6 +61,6 @@ internal static class ColorExtensions
             }
         }
 
-        return Color.FromArgb(r, g, b);
+        return new SKColor((byte)r, (byte)g, (byte)b);
     }
 }

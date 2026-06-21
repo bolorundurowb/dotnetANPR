@@ -3,44 +3,35 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml;
-using dotnetANPR.Configuration;
-using dotnetANPR.Utilities;
+using dotnetANPR.Intelligence;
 using Microsoft.Extensions.Logging;
 
 namespace dotnetANPR.Intelligence.Parser;
 
-/// <summary>
-/// Performs syntax-based parsing of recognised plate text against known licence plate format templates
-/// defined in an XML syntax description file.
-/// </summary>
-public class Parser
+internal sealed class Parser
 {
-    private static readonly ILogger<Parser> Logger = Logging.GetLogger<Parser>();
-
+    private readonly ILogger _logger;
     private readonly List<PlateForm> _plateForms;
 
-    public Parser()
+    public Parser(string syntaxFilePath, ILogger logger)
     {
+        _logger = logger;
         _plateForms = [];
-        var fileName = Configurator.Instance.GetPath("intelligence_syntaxDescriptionFile");
 
-        if (string.IsNullOrEmpty(fileName))
-            throw new IOException("Failed to get syntax description file from Configurator");
+        if (string.IsNullOrEmpty(syntaxFilePath))
+            throw new IOException("Failed to get syntax description file path");
 
         try
         {
-            _plateForms = LoadFromXml(fileName);
+            _plateForms = LoadFromXml(syntaxFilePath);
         }
         catch (Exception e)
         {
-            Logger.LogError(e, "Failed to load from parser syntax description file");
+            _logger.LogError(e, "Failed to load parser syntax description file");
             throw;
         }
     }
 
-    /// <summary>
-    /// Loads plate format templates from an XML syntax description file.
-    /// </summary>
     public List<PlateForm> LoadFromXml(string fileName)
     {
         var plateForms = new List<PlateForm>();
@@ -59,9 +50,7 @@ public class Parser
                 continue;
 
             var form = new PlateForm(((XmlElement)typeNode).GetAttribute("name"));
-            var typeNodeContent = typeNode.ChildNodes;
-
-            foreach (XmlNode charNode in typeNodeContent)
+            foreach (XmlNode charNode in typeNode.ChildNodes)
             {
                 if (charNode.Name != "char")
                     continue;
@@ -76,21 +65,12 @@ public class Parser
         return plateForms;
     }
 
-    /// <summary>
-    /// Removes the flag from all plate forms so none are preselected.
-    /// </summary>
     public void UnFlagAll()
     {
         foreach (var form in _plateForms)
             form.IsFlagged = false;
     }
 
-    /// <summary>
-    /// For the given length, finds a <see cref="PlateForm"/> of the same length. 
-    /// If no such <see cref="PlateForm"/> is found, tries to find one with fewer characters.
-    /// </summary>
-    /// <param name="length">The number of characters of the PlateForm.</param>
-    /// <returns>A <see cref="PlateForm"/> of the specified length or shorter if available; otherwise, null.</returns>
     public void FlagEqualOrShorterLength(int length)
     {
         var found = false;
@@ -102,9 +82,6 @@ public class Parser
             }
     }
 
-    /// <summary>
-    /// Flags plate forms with the same length as the recognised text.
-    /// </summary>
     public void FlagEqualLength(int length)
     {
         foreach (var form in _plateForms)
@@ -112,21 +89,6 @@ public class Parser
                 form.IsFlagged = true;
     }
 
-    /// <summary>
-    /// Inverts the flagged state of all plate forms.
-    /// </summary>
-    public void InvertFlags()
-    {
-        foreach (var form in _plateForms)
-            form.IsFlagged = !form.IsFlagged;
-    }
-
-    /// <summary>
-    /// Syntactically parses text from the given <see cref="RecognizedPlate"/> in the specified analysis mode.
-    /// </summary>
-    /// <param name="recognizedPlate">The plate to parse.</param>
-    /// <param name="syntaxAnalysisMode">The mode in which to parse.</param>
-    /// <returns>The parsed recognized plate text.</returns>
     public string Parse(RecognizedPlate recognizedPlate, SyntaxAnalysisMode syntaxAnalysisMode)
     {
         var length = recognizedPlate.Characters.Count;
@@ -156,12 +118,10 @@ public class Parser
 
             for (var i = 0; i <= length - form.Length; i++)
             {
-                // moving the form on the plate
-                Logger.LogDebug("Comparing {} with form {} and offset {}.", recognizedPlate, form.Name, i);
+                _logger.LogDebug("Comparing plate with form {FormName} and offset {Offset}", form.Name, i);
                 var finalPlate = new FinalPlate();
                 for (var j = 0; j < form.Length; j++)
                 {
-                    // all chars of the form
                     var rc = recognizedPlate.Characters[j + i];
                     if (form.Positions[j].IsAllowed(rc.Patterns![0].Char))
                     {
@@ -169,34 +129,27 @@ public class Parser
                     }
                     else
                     {
-                        // a swap needed
-                        finalPlate.RequiredChanges++; // +1 for every char
+                        finalPlate.RequiredChanges++;
                         foreach (var rp in rc.Patterns.Where(t => form.Positions[j].IsAllowed(t.Char)))
                         {
-                            finalPlate.RequiredChanges += rp.Cost / 100.0; // +x for its cost
+                            finalPlate.RequiredChanges += rp.Cost / 100.0;
                             finalPlate.AddChar(rp.Char);
                             break;
                         }
                     }
                 }
 
-                Logger.LogDebug("Adding {} with required changes {}.", finalPlate.Plate, finalPlate.RequiredChanges);
                 finalPlates.Add(finalPlate);
             }
         }
 
         if (finalPlates.Count == 0)
-        {
             return recognizedPlate.ToString();
-        }
 
-        // else: find the plate with the lowest number of swaps
         var minimalChanges = double.PositiveInfinity;
         var minimalIndex = 0;
         for (var i = 0; i < finalPlates.Count; i++)
         {
-            Logger.LogDebug("Plate {} : {} with required changes {}.", i, finalPlates[i].Plate,
-                finalPlates[i].RequiredChanges);
             if (finalPlates[i].RequiredChanges <= minimalChanges)
             {
                 minimalChanges = finalPlates[i].RequiredChanges;
@@ -206,23 +159,15 @@ public class Parser
 
         var toReturn = recognizedPlate.ToString();
         if (finalPlates[minimalIndex].RequiredChanges <= 2)
-        {
             toReturn = finalPlates[minimalIndex].Plate;
-        }
 
         return toReturn;
     }
 
-    #region Private Helpers
-
-    private class FinalPlate
+    private sealed class FinalPlate
     {
         public string Plate { get; private set; } = string.Empty;
-
-        public double RequiredChanges { get; internal set; }
-
-        public void AddChar(char chr) { Plate += chr; }
+        public double RequiredChanges { get; set; }
+        public void AddChar(char chr) => Plate += chr;
     }
-
-    #endregion
 }

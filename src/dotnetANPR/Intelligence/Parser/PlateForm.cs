@@ -6,7 +6,7 @@ namespace dotnetANPR.Intelligence.Parser;
 /// Represents a licence plate format template (e.g. "AA-123-BB") with typed character positions.
 /// </summary>
 /// <param name="name">The descriptive name of the plate format.</param>
-public class PlateForm(string name)
+internal class PlateForm(string name)
 {
     /// <summary>The ordered list of allowed character sets for each position.</summary>
     public List<Position> Positions { get; private set; } = [];

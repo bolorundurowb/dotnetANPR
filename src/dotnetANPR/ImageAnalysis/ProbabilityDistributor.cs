@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace dotnetANPR.ImageAnalysis;
 
-public class ProbabilityDistributor(float center, float power, int leftMargin, int rightMargin)
+internal class ProbabilityDistributor(float center, float power, int leftMargin, int rightMargin)
 {
     private readonly int _leftMargin = Math.Max(1, leftMargin);
     private readonly int _rightMargin = Math.Max(1, rightMargin);

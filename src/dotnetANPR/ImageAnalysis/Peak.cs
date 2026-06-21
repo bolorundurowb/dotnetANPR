@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace dotnetANPR.ImageAnalysis;
 
-public class Peak(int left, int center, int right)
+internal class Peak(int left, int center, int right)
 {
     public int Left { get; set; } = left;
 
@@ -15,12 +15,12 @@ public class Peak(int left, int center, int right)
     public Peak(int left, int right) : this(left, (left + right) / 2, right) { }
 }
 
-public class PeakComparator(List<float> yValues) : IComparer<Peak>
+internal class PeakComparator(List<float> yValues) : IComparer<Peak>
 {
     public int Compare(Peak x, Peak y) => yValues[y.Center].CompareTo(yValues[x.Center]);
 }
 
-public class SpaceComparator : IComparer<Peak>
+internal class SpaceComparator : IComparer<Peak>
 {
     public int Compare(Peak peak1, Peak peak2)
     {

@@ -4,14 +4,14 @@ using dotnetANPR.Configuration;
 
 namespace dotnetANPR.ImageAnalysis;
 
-public class PlateVerticalGraph : Graph
+internal sealed class PlateVerticalGraph : Graph
 {
-    private static readonly double PeakFootConstant =
-        Configurator.Instance.Get<double>("plateverticalgraph_peakfootconstant");
+    private readonly AnprSettings _settings;
 
-    public List<Peak> FindPeak(int count)
+    public PlateVerticalGraph(AnprSettings settings) => _settings = settings;
+
+    public List<Peak> FindPeak(int count, AnprSettings settings)
     {
-        // lower the peak
         for (var i = 0; i < YValues.Count; i++)
             YValues[i] -= MinValue();
 
@@ -22,26 +22,22 @@ public class PlateVerticalGraph : Graph
             var maxIndex = 0;
 
             for (var i = 0; i < YValues.Count; i++)
-                // left to right
-                if (IsOutsideAllPeaks(outPeaks, i))
-                    if (YValues[i] >= maxValue)
-                    {
-                        maxValue = YValues[i];
-                        maxIndex = i;
-                    }
+                if (IsOutsideAllPeaks(outPeaks, i) && YValues[i] >= maxValue)
+                {
+                    maxValue = YValues[i];
+                    maxIndex = i;
+                }
 
-            // we found the biggest peak
             if (YValues[maxIndex] < 0.05 * MaxValue())
-                break; // 0.4
+                break;
 
-            var leftIndex = IndexOfLeftPeakRel(maxIndex, PeakFootConstant);
-            var rightIndex = IndexOfRightPeakRel(maxIndex, PeakFootConstant);
+            var leftIndex = IndexOfLeftPeakRel(maxIndex, settings.PlateVerticalGraphPeakFootConstant);
+            var rightIndex = IndexOfRightPeakRel(maxIndex, settings.PlateVerticalGraphPeakFootConstant);
             outPeaks.Add(new Peak(Math.Max(0, leftIndex), maxIndex, Math.Min(YValues.Count - 1, rightIndex)));
         }
 
         outPeaks.Sort(new PeakComparator(YValues));
         Peaks = outPeaks;
-
         return outPeaks;
     }
 }

@@ -1,49 +1,34 @@
 using System.Collections.Generic;
 using SkiaSharp;
-using dotnetANPR.Configuration;
 using dotnetANPR.Extensions;
+using dotnetANPR.Pipeline;
 using dotnetANPR.Utilities;
 
 namespace dotnetANPR.ImageAnalysis;
 
 /// <summary>
-/// Represents a photograph of a car. Extracts horizontal bands that may contain a licence plate
-/// using vertical edge detection and peak analysis on the image histogram.
+/// Represents a photograph of a car. Extracts horizontal bands that may contain a licence plate.
 /// </summary>
-public class CarSnapshot(SKBitmap image) : Photo(image)
+internal sealed class CarSnapshot : Photo
 {
-    private static readonly int DistributorMargins =
-        Configurator.Instance.Get<int>("carsnapshot_distributormargins");
-
-    private static readonly int CarSnapshotGraphRankFilter =
-        Configurator.Instance.Get<int>("carsnapshot_graphrankfilter");
-
-    private static readonly int NumberOfCandidates =
-        Configurator.Instance.Get<int>("intelligence_numberOfBands");
-
-    private static readonly ProbabilityDistributor Distributor =
-        new(0, 0, DistributorMargins, DistributorMargins);
-
+    private readonly PipelineContext _context;
     private CarSnapshotGraph? _graphHandle;
 
-    /// <summary>
-    /// Extracts candidate horizontal bands from the car image that may contain a licence plate.
-    /// </summary>
-    /// <param name="writer">Optional stage writer for diagnostic output.</param>
-    /// <returns>List of image bands to analyse for plate content.</returns>
-    public List<Band> Bands(StageWriter? writer = null)
+    public CarSnapshot(SKBitmap image, PipelineContext context) : base(image)
+    {
+        _context = context;
+    }
+
+    public List<Band> Bands()
     {
         List<Band> response = [];
-        var peaks = ComputeGraph(writer);
+        var peaks = ComputeGraph();
         foreach (var peak in peaks)
-            response.Add(new Band(Image.SubImage(0, peak.Left, Image.Width, peak.Diff)));
+            response.Add(new Band(Image.SubImage(0, peak.Left, Image.Width, peak.Diff), _context));
 
         return response;
     }
 
-    /// <summary>
-    /// Applies a vertical edge detection convolution kernel to the image.
-    /// </summary>
     public SKBitmap VerticalEdge(SKBitmap bitmap)
     {
         float[,] data = {
@@ -57,7 +42,7 @@ public class CarSnapshot(SKBitmap image) : Photo(image)
 
     public CarSnapshotGraph Histogram(SKBitmap bitmap)
     {
-        var graph = new CarSnapshotGraph();
+        var graph = new CarSnapshotGraph(_context.Settings);
         for (var y = 0; y < bitmap.Height; y++)
         {
             float counter = 0;
@@ -70,22 +55,28 @@ public class CarSnapshot(SKBitmap image) : Photo(image)
         return graph;
     }
 
-    private List<Peak> ComputeGraph(StageWriter? writer = null)
+    private List<Peak> ComputeGraph()
     {
         if (_graphHandle == null)
         {
+            var settings = _context.Settings;
+            var distributor = new ProbabilityDistributor(
+                0, 0,
+                settings.CarSnapshotDistributorMargins,
+                settings.CarSnapshotDistributorMargins);
+
             var raw = DuplicateBitmap(Image);
-            var imageCopy = VerticalEdge(raw); // Convolve returns a new Bitmap
-            raw.Dispose();                     // release the DuplicateBitmap
+            var imageCopy = VerticalEdge(raw);
+            raw.Dispose();
 
             Thresholding(imageCopy);
-            writer?.Write("vertical-rank-filter", imageCopy);
+            _context.StageWriter?.Write("vertical-rank-filter", imageCopy);
 
             _graphHandle = Histogram(imageCopy);
-            _graphHandle.RankFilter(CarSnapshotGraphRankFilter);
-            _graphHandle.ApplyProbabilityDistributor(Distributor);
-            _graphHandle.FindPeaks(NumberOfCandidates);
-            imageCopy.Dispose(); // histogram is built; release the working bitmap
+            _graphHandle.RankFilter(settings.CarSnapshotGraphRankFilter);
+            _graphHandle.ApplyProbabilityDistributor(distributor);
+            _graphHandle.FindPeaks(settings.IntelligenceNumberOfBands);
+            imageCopy.Dispose();
         }
 
         return _graphHandle.Peaks;

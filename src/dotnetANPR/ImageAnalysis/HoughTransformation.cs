@@ -8,17 +8,17 @@ namespace dotnetANPR.ImageAnalysis;
 /// Implements the Hough transform for detecting lines in an image.
 /// Used to determine the skew angle of a licence plate for de-skewing correction.
 /// </summary>
-public class HoughTransformation
+internal class HoughTransformation
 {
     /// <summary>Controls whether all lines or only the transformation are rendered.</summary>
-    public enum RenderType
+    internal enum RenderType
     {
         RenderAll = 1,
         RenderTransformationOnly = 0
     }
 
     /// <summary>Controls the colour mode of rendered output.</summary>
-    public enum ColorType
+    internal enum ColorType
     {
         BlackAndWhite = 0,
         Hue = 1

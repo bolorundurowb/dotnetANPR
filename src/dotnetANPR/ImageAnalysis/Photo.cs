@@ -1,6 +1,5 @@
 using System;
 using SkiaSharp;
-using dotnetANPR.Configuration;
 using dotnetANPR.Extensions;
 
 namespace dotnetANPR.ImageAnalysis;
@@ -9,7 +8,7 @@ namespace dotnetANPR.ImageAnalysis;
 /// Base class for images in the processing pipeline. Provides pixel-level access (brightness, saturation, hue),
 /// image filters (resize, thresholding), and bitmap utilities. Implements <see cref="IDisposable"/>.
 /// </summary>
-public class Photo(SKBitmap image) : IDisposable, ICloneable
+internal class Photo(SKBitmap image) : IDisposable, ICloneable
 {
     /// <summary>Gets the width of the image in pixels.</summary>
     public int Width => image.Width;
@@ -221,10 +220,9 @@ public class Photo(SKBitmap image) : IDisposable, ICloneable
     /// <summary>
     /// Applies adaptive thresholding using a moving neighbourhood average to produce a binary image.
     /// </summary>
-    public void AdaptiveThresholding()
+    public void AdaptiveThresholding(int radius)
     {
         var statistics = new Statistics(this);
-        var radius = Configurator.Instance.Get<int>("photo_adaptivethresholdingradius");
         if (radius == 0)
         {
             PlainThresholding(statistics);

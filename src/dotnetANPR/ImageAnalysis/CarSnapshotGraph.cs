@@ -4,13 +4,11 @@ using dotnetANPR.Configuration;
 
 namespace dotnetANPR.ImageAnalysis;
 
-public class CarSnapshotGraph : Graph
+internal sealed class CarSnapshotGraph : Graph
 {
-    private static readonly double PeakFootConstant =
-        Configurator.Instance.Get<double>("carsnapshotgraph_peakfootconstant"); // 0.55
+    private readonly AnprSettings _settings;
 
-    private static readonly double PeakDiffMultiplicationConstant =
-        Configurator.Instance.Get<double>("carsnapshotgraph_peakDiffMultiplicationConstant"); // 0.1
+    public CarSnapshotGraph(AnprSettings settings) => _settings = settings;
 
     public void FindPeaks(int count)
     {
@@ -20,20 +18,17 @@ public class CarSnapshotGraph : Graph
             var maxValue = 0.0f;
             var maxIndex = 0;
             for (var i = 0; i < YValues.Count; i++)
-                // left to right
-                if (IsOutsideAllPeaks(outPeaks, i))
-                    if (YValues[i] >= maxValue)
-                    {
-                        maxValue = YValues[i];
-                        maxIndex = i;
-                    }
+                if (IsOutsideAllPeaks(outPeaks, i) && YValues[i] >= maxValue)
+                {
+                    maxValue = YValues[i];
+                    maxIndex = i;
+                }
 
-            // we found the biggest peak
-            var leftIndex = IndexOfLeftPeakRel(maxIndex, PeakFootConstant);
-            var rightIndex = IndexOfRightPeakRel(maxIndex, PeakFootConstant);
+            var leftIndex = IndexOfLeftPeakRel(maxIndex, _settings.CarSnapshotGraphPeakFootConstant);
+            var rightIndex = IndexOfRightPeakRel(maxIndex, _settings.CarSnapshotGraphPeakFootConstant);
             var diff = rightIndex - leftIndex;
-            leftIndex -= (int)Math.Round(PeakDiffMultiplicationConstant * diff);
-            rightIndex += (int)Math.Round(PeakDiffMultiplicationConstant * diff);
+            leftIndex -= (int)Math.Round(_settings.CarSnapshotGraphPeakDiffMultiplicationConstant * diff);
+            rightIndex += (int)Math.Round(_settings.CarSnapshotGraphPeakDiffMultiplicationConstant * diff);
             outPeaks.Add(new Peak(Math.Max(0, leftIndex), maxIndex, Math.Min(YValues.Count - 1, rightIndex)));
         }
 

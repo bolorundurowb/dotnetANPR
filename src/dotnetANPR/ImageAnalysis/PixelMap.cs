@@ -9,7 +9,7 @@ namespace dotnetANPR.ImageAnalysis;
 /// Represents a binary pixel matrix used for connected-component analysis, skeletonisation,
 /// and noise reduction on thresholded character images.
 /// </summary>
-public class PixelMap
+internal class PixelMap
 {
     private bool[,] _matrix = null!;
     private Piece? _bestPiece;
@@ -366,7 +366,7 @@ public class PixelMap
     }
 
     /// <summary>A stack-like collection of points.</summary>
-    public class PointSet : List<Point>
+    internal class PointSet : List<Point>
     {
         public void Push(Point point) { Add(point); }
 
@@ -385,12 +385,12 @@ public class PixelMap
     }
 
     /// <summary>A collection of connected pieces.</summary>
-    public class PieceSet : List<Piece> { }
+    internal class PieceSet : List<Piece> { }
 
     /// <summary>
     /// Represents a connected component (piece) in the pixel map with bounding box, centre, and magnitude.
     /// </summary>
-    public class Piece : PointSet
+    internal class Piece : PointSet
     {
         private readonly bool[,] _matrix;
 

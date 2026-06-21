@@ -13,8 +13,9 @@ namespace dotnetANPR.ImageAnalysis;
 /// Represents a single character extracted from a licence plate image.
 /// Handles normalisation, feature extraction, and statistical analysis of brightness, contrast, hue, and saturation.
 /// </summary>
-public class Character : Photo
+internal class Character : Photo
 {
+    private readonly AnprSettings _settings;
     /// <summary>Whether the character has been normalised.</summary>
     public bool Normalized;
 
@@ -54,26 +55,26 @@ public class Character : Photo
     /// <summary>
     /// Creates a character from an image file, applying adaptive thresholding.
     /// </summary>
-    public Character(string fileName) : base(SkiaSharpAdapter.LoadBitmap(fileName))
+    public Character(string fileName, AnprSettings settings) : base(SkiaSharpAdapter.LoadBitmap(fileName))
     {
+        _settings = settings;
         var origin = DuplicateBitmap(Image);
-        AdaptiveThresholding();
+        AdaptiveThresholding(settings.PhotoAdaptiveThresholdingRadius);
         ThresholdedImage = Image;
         Image = origin;
 
         Init();
     }
 
-    public Character(SKBitmap image) : this(image, image, null) { }
-
     /// <summary>
     /// Creates a character from an image and optional thresholded version with a position in the plate.
     /// </summary>
-    public Character(SKBitmap image, SKBitmap thresholdedImage, PositionInPlate? positionInPlate) : base(image)
+    public Character(SKBitmap image, SKBitmap thresholdedImage, PositionInPlate? positionInPlate, AnprSettings settings)
+        : base(image)
     {
         ThresholdedImage = thresholdedImage;
         PositionInPlate = positionInPlate;
-
+        _settings = settings;
         Init();
     }
 
@@ -97,7 +98,7 @@ public class Character : Photo
     /// Normalises the character by cropping to the best connected piece, computing statistics,
     /// and resizing to the configured normalised dimensions.
     /// </summary>
-    public void Normalize()
+    public void Normalize(AnprSettings settings)
     {
         if (Normalized)
             return;
@@ -137,7 +138,7 @@ public class Character : Photo
 
         PieceWidth = Width;
         PieceHeight = Height;
-        NormalizeResizeOnly();
+        NormalizeResizeOnly(settings);
         Normalized = true;
     }
 
@@ -193,10 +194,11 @@ public class Character : Photo
     /// <summary>
     /// Extracts features from the character using the configured extraction method (map or edge).
     /// </summary>
-    public List<double> ExtractFeatures()
+    public List<double> ExtractFeatures(AnprSettings settings)
     {
-        var featureExtractionMethod = Configurator.Instance.Get<int>("char_featuresExtractionMethod");
-        return featureExtractionMethod == 0 ? ExtractMapFeatures() : ExtractEdgeFeatures();
+        return settings.CharFeaturesExtractionMethod == 0
+            ? ExtractMapFeatures()
+            : ExtractEdgeFeatures();
     }
 
     #region Private Helpers
@@ -213,17 +215,16 @@ public class Character : Photo
         return directoryName.Substring(directoryName.LastIndexOf('_'));
     }
 
-    private void NormalizeResizeOnly()
+    private void NormalizeResizeOnly(AnprSettings settings)
     {
-        // returns the same Char object
-        var x = Configurator.Instance.Get<int>("char_normalizeddimensions_x");
-        var y = Configurator.Instance.Get<int>("char_normalizeddimensions_y");
+        var x = settings.CharNormalizedDimensionsX;
+        var y = settings.CharNormalizedDimensionsY;
 
         if (x == 0 || y == 0)
             return;
 
-        if (Configurator.Instance.Get<int>("char_resizeMethod") == 0)
-            LinearResize(x, y); // do a weighted average
+        if (settings.CharResizeMethod == 0)
+            LinearResize(x, y);
         else
             AverageResize(x, y);
 

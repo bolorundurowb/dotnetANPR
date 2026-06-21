@@ -2,7 +2,7 @@ using System;
 
 namespace dotnetANPR.ImageAnalysis;
 
-public class Statistics
+internal class Statistics
 {
     private readonly float _maximum;
     private readonly float _minimum;

@@ -38,7 +38,7 @@ public sealed class Configurator
     public static Configurator Instance => _configurator ??= new Configurator(FileName);
 
     // -------------------------------------------------------------------------
-    // Public API (unchanged from the original PropertyConfig-based version)
+    // Public API
     // -------------------------------------------------------------------------
 
     /// <summary>Returns the value for <paramref name="name"/>, replacing '/' with the

@@ -1,6 +1,6 @@
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
+using SkiaSharp;
+using dotnetANPR.Extensions;
 
 namespace dotnetANPR.Utilities;
 
@@ -27,11 +27,11 @@ public class StageWriter
     /// <summary>
     /// Saves <paramref name="image"/> to the dump directory as the next numbered stage.
     /// </summary>
-    public void Write(string stageName, Bitmap image)
+    public void Write(string stageName, SKBitmap image)
     {
         _counter++;
         var fileName = $"{_counter:D2}-{stageName}.jpg";
         var outputPath = Path.Combine(_directory, fileName);
-        image.Save(outputPath, ImageFormat.Jpeg);
+        SkiaSharpAdapter.SaveAsJpeg(image, outputPath);
     }
 }

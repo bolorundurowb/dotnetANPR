@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
-using System.Drawing;
+using SkiaSharp;
 using dotnetANPR.Configuration;
 using dotnetANPR.Extensions;
 using dotnetANPR.Utilities;
 
 namespace dotnetANPR.ImageAnalysis;
 
-public class Band(Bitmap image) : Photo(image)
+public class Band(SKBitmap image) : Photo(image)
 {
     private static readonly ProbabilityDistributor Distributor = new(0, 0, 25, 25);
 
@@ -47,7 +47,7 @@ public class Band(Bitmap image) : Photo(image)
         return response;
     }
 
-    public BandGraph Histogram(Bitmap bitmap)
+    public BandGraph Histogram(SKBitmap bitmap)
     {
         var graph = new BandGraph(this);
         for (var x = 0; x < bitmap.Width; x++)
@@ -62,7 +62,7 @@ public class Band(Bitmap image) : Photo(image)
         return graph;
     }
 
-    public static void FullEdgeDetector(Bitmap source)
+    public static void FullEdgeDetector(SKBitmap source)
     {
         float[,] verticalMatrix =
         {

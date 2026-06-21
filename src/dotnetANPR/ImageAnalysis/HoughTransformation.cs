@@ -1,6 +1,5 @@
 using System;
-using System.Drawing;
-using System.Drawing.Imaging;
+using SkiaSharp;
 using dotnetANPR.Extensions;
 
 namespace dotnetANPR.ImageAnalysis;
@@ -20,7 +19,7 @@ public class HoughTransformation
     }
 
     private readonly float[,] _bitmap;
-    private Point? _maxPoint;
+    private (int X, int Y)? _maxPoint;
     private readonly int _width;
     private readonly int _height;
     private float _angle;
@@ -64,7 +63,7 @@ public class HoughTransformation
         }
     }
 
-    public Point GetMaxPoint()
+    public (int X, int Y) GetMaxPoint()
     {
         if (!_maxPoint.HasValue)
             _maxPoint = FindMaxPoint();
@@ -82,34 +81,39 @@ public class HoughTransformation
         return sum / (_width * _height);
     }
 
-    public Bitmap Render(RenderType renderType, ColorType colorType)
+    public SKBitmap Render(RenderType renderType, ColorType colorType)
     {
         var average = GetAverageValue();
-        var output = new Bitmap(_width, _height, PixelFormat.Format24bppRgb);
-        var g = Graphics.FromImage(output);
+        var output = new SKBitmap(_width, _height);
 
+        // First pass: set pixels based on bitmap values
         for (var x = 0; x < _width; x++)
             for (var y = 0; y < _height; y++)
             {
                 var value = (int)(255 * _bitmap[x, y] / average / 3);
                 value = Math.Max(0, Math.Min(value, 255));
 
-                output.SetPixel(x, y,
-                    colorType == ColorType.BlackAndWhite
-                        ? Color.FromArgb(value, value, value)
-                        : ColorExtensions.HsbToRgb(0.67f - (float)value / 255 * 2 / 3, 1.0f, 1.0f));
+                var color = colorType == ColorType.BlackAndWhite
+                    ? new SKColor((byte)value, (byte)value, (byte)value)
+                    : ColorExtensions.HsbToRgb(0.67f - (float)value / 255 * 2 / 3, 1.0f, 1.0f);
+
+                output.SetPixel(x, y, color);
             }
 
+        // Second pass: draw overlays with canvas
+        using var canvas = new SKCanvas(output);
         var maximumPoint = FindMaxPoint();
-        g.DrawImage(output, 0, 0);
-        g.Dispose();
 
-        g = Graphics.FromImage(output);
-        g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-        g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+        // Draw orange circle at max point
+        using var paint = new SKPaint
+        {
+            Color = new SKColor(255, 165, 0), // Orange
+            Style = SKPaintStyle.Fill,
+            IsAntialias = true
+        };
+        canvas.DrawCircle(maximumPoint.X, maximumPoint.Y, 5, paint);
 
-        g.FillEllipse(Brushes.Orange, maximumPoint.X - 5, maximumPoint.Y - 5, 10, 10);
-
+        // Calculate line parameters
         var a = 2 * (float)maximumPoint.X / _width - 1;
         var b = 2 * (float)maximumPoint.Y / _height - 1;
         const float x0F = -1;
@@ -122,18 +126,26 @@ public class HoughTransformation
         _dy = y1 - y0;
         _angle = (float)(180 * Math.Atan(_dy / _dx) / Math.PI);
 
+        // Draw lines if requested
         if (renderType == RenderType.RenderAll)
         {
-            g.DrawLine(Pens.Orange, 0, _height / 2 - _dy / 2 - 1, _width, _height / 2 + _dy / 2 - 1);
-            g.DrawLine(Pens.Orange, 0, _height / 2 - _dy / 2, _width, _height / 2 + _dy / 2);
-            g.DrawLine(Pens.Orange, 0, _height / 2 - _dy / 2 + 1, _width, _height / 2 + _dy / 2 + 1);
+            using var linePaint = new SKPaint
+            {
+                Color = new SKColor(255, 165, 0), // Orange
+                Style = SKPaintStyle.Stroke,
+                StrokeWidth = 1,
+                IsAntialias = true
+            };
+
+            canvas.DrawLine(0, _height / 2 - _dy / 2 - 1, _width, _height / 2 + _dy / 2 - 1, linePaint);
+            canvas.DrawLine(0, _height / 2 - _dy / 2, _width, _height / 2 + _dy / 2, linePaint);
+            canvas.DrawLine(0, _height / 2 - _dy / 2 + 1, _width, _height / 2 + _dy / 2 + 1, linePaint);
         }
 
-        g.Dispose();
         return output;
     }
 
-    private Point FindMaxPoint()
+    private (int X, int Y) FindMaxPoint()
     {
         float max = 0;
         int maxX = 0, maxY = 0;
@@ -150,6 +162,6 @@ public class HoughTransformation
                 max = curr;
             }
 
-        return new Point(maxX, maxY);
+        return (maxX, maxY);
     }
 }

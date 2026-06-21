@@ -1,12 +1,12 @@
 using System.Collections.Generic;
-using System.Drawing;
+using SkiaSharp;
 using dotnetANPR.Configuration;
 using dotnetANPR.Extensions;
 using dotnetANPR.Utilities;
 
 namespace dotnetANPR.ImageAnalysis;
 
-public class CarSnapshot(Bitmap image) : Photo(image)
+public class CarSnapshot(SKBitmap image) : Photo(image)
 {
     private static readonly int DistributorMargins =
         Configurator.Instance.Get<int>("carsnapshot_distributormargins");
@@ -37,7 +37,7 @@ public class CarSnapshot(Bitmap image) : Photo(image)
         return response;
     }
 
-    public Bitmap VerticalEdge(Bitmap bitmap)
+    public SKBitmap VerticalEdge(SKBitmap bitmap)
     {
         float[,] data = {
             { -1, 0, 1 },
@@ -48,7 +48,7 @@ public class CarSnapshot(Bitmap image) : Photo(image)
         return bitmap.Convolve(data);
     }
 
-    public CarSnapshotGraph Histogram(Bitmap bitmap)
+    public CarSnapshotGraph Histogram(SKBitmap bitmap)
     {
         var graph = new CarSnapshotGraph();
         for (var y = 0; y < bitmap.Height; y++)

@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using SkiaSharp;
 using dotnetANPR.Configuration;
 using dotnetANPR.Extensions;
 using dotnetANPR.Recognizer;
@@ -24,11 +23,11 @@ public class Character : Photo
     public float StatisticAverageHue;
     public float StatisticAverageSaturation;
 
-    public readonly Bitmap ThresholdedImage;
+    public readonly SKBitmap ThresholdedImage;
 
     public PixelMap PixelMap => new(this);
 
-    public Character(string fileName) : base(new Bitmap(fileName))
+    public Character(string fileName) : base(SkiaSharpAdapter.LoadBitmap(fileName))
     {
         var origin = DuplicateBitmap(Image);
         AdaptiveThresholding();
@@ -38,9 +37,9 @@ public class Character : Photo
         Init();
     }
 
-    public Character(Bitmap image) : this(image, image, null) { }
+    public Character(SKBitmap image) : this(image, image, null) { }
 
-    public Character(Bitmap image, Bitmap thresholdedImage, PositionInPlate? positionInPlate) : base(image)
+    public Character(SKBitmap image, SKBitmap thresholdedImage, PositionInPlate? positionInPlate) : base(image)
     {
         ThresholdedImage = thresholdedImage;
         PositionInPlate = positionInPlate;
@@ -72,7 +71,7 @@ public class Character : Photo
         var bestPiece = pixelMap.BestPiece();
 
         // Crop to the best piece region if it has valid dimensions
-        Bitmap statsImage;
+        SKBitmap statsImage;
         bool ownStatsImage;
         if (bestPiece.Width > 0 && bestPiece.Height > 0)
         {
@@ -97,7 +96,7 @@ public class Character : Photo
             statsImage.Dispose();
         colorImage.Dispose();
 
-        Image = bestPiece.Render() ?? new Bitmap(1, 1, PixelFormat.Format24bppRgb);
+        Image = bestPiece.Render() ?? new SKBitmap(1, 1);
 
         PieceWidth = Width;
         PieceHeight = Height;
@@ -185,7 +184,7 @@ public class Character : Photo
         NormalizeBrightness(0.5f);
     }
 
-    private void ComputeStatisticContrast(Bitmap bi)
+    private void ComputeStatisticContrast(SKBitmap bi)
     {
         float sum = 0;
         var w = bi.Width;
@@ -197,7 +196,7 @@ public class Character : Photo
         StatisticContrast = sum / (w * h);
     }
 
-    private void ComputeStatisticBrightness(Bitmap bi)
+    private void ComputeStatisticBrightness(SKBitmap bi)
     {
         float sum = 0;
         var min = float.PositiveInfinity;
@@ -219,7 +218,7 @@ public class Character : Photo
         StatisticMaximumBrightness = max;
     }
 
-    private void ComputeStatisticHue(Bitmap bi)
+    private void ComputeStatisticHue(SKBitmap bi)
     {
         float sum = 0;
         var w = bi.Width;
@@ -231,7 +230,7 @@ public class Character : Photo
         StatisticAverageHue = sum / (w * h);
     }
 
-    private void ComputeStatisticSaturation(Bitmap bi)
+    private void ComputeStatisticSaturation(SKBitmap bi)
     {
         float sum = 0;
         var w = bi.Width;

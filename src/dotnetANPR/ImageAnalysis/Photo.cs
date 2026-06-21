@@ -1,13 +1,11 @@
 using System;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
-using System.Runtime.InteropServices;
+using SkiaSharp;
 using dotnetANPR.Configuration;
+using dotnetANPR.Extensions;
 
 namespace dotnetANPR.ImageAnalysis;
 
-public class Photo(Bitmap image) : IDisposable, ICloneable
+public class Photo(SKBitmap image) : IDisposable, ICloneable
 {
     public int Width => image.Width;
 
@@ -19,123 +17,59 @@ public class Photo(Bitmap image) : IDisposable, ICloneable
 
     public float Hue => GetHue(image, Width / 2, Height / 2);
 
-    public Bitmap Image
+    public SKBitmap Image
     {
         get => image;
         internal set => image = value;
     }
 
-    public static void SetBrightness(Bitmap image, int x, int y, float value)
+    public static void SetBrightness(SKBitmap image, int x, int y, float value)
     {
-        var brightness = (int)(value * 255);
-        image.SetPixel(x, y, Color.FromArgb(brightness, brightness, brightness));
+        SkiaSharpAdapter.SetBrightness(image, x, y, value);
     }
 
-    public static float GetBrightness(Bitmap image, int x, int y)
+    public static float GetBrightness(SKBitmap image, int x, int y)
     {
-        var color = image.GetPixel(x, y);
-        return Color.FromArgb(color.R, color.G, color.B).GetBrightness();
+        return SkiaSharpAdapter.GetBrightness(image, x, y);
     }
 
-    public static float GetSaturation(Bitmap image, int x, int y)
+    public static float GetSaturation(SKBitmap image, int x, int y)
     {
-        var color = image.GetPixel(x, y);
-        return Color.FromArgb(color.R, color.G, color.B).GetSaturation();
+        return SkiaSharpAdapter.GetSaturation(image, x, y);
     }
 
-    public static float GetHue(Bitmap image, int x, int y)
+    public static float GetHue(SKBitmap image, int x, int y)
     {
-        var color = image.GetPixel(x, y);
-        return Color.FromArgb(color.R, color.G, color.B).GetHue() / 360f;
+        return SkiaSharpAdapter.GetHue(image, x, y);
     }
 
-    public static Bitmap LinearResizeImage(Bitmap origin, int width, int height)
+    public static SKBitmap LinearResizeImage(SKBitmap origin, int width, int height)
     {
-        var resizedImage = new Bitmap(width, height);
-        using var graphics = Graphics.FromImage(resizedImage);
-        var xScale = (float)width / origin.Width;
-        var yScale = (float)height / origin.Height;
-
-        graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
-        graphics.ScaleTransform(xScale, yScale);
-        graphics.DrawImage(origin, new Rectangle(0, 0, origin.Width, origin.Height));
-        return resizedImage;
+        return origin.LinearResizeImage(width, height);
     }
 
-    public static Bitmap DuplicateBitmap(Bitmap image)
+    public static SKBitmap DuplicateBitmap(SKBitmap image)
     {
-        var imageCopy = new Bitmap(image.Width, image.Height, PixelFormat.Format24bppRgb);
-        using var graphics = Graphics.FromImage(imageCopy);
-        graphics.DrawImage(image, 0, 0, image.Width, image.Height);
-
-        return imageCopy;
+        return SkiaSharpAdapter.DuplicateBitmap(image);
     }
 
-    public static void Thresholding(Bitmap bitmap)
+    public static void Thresholding(SKBitmap bitmap)
     {
-        // Define the threshold array
-        var threshold = new byte[256];
-        for (var i = 0; i < 36; i++)
-            threshold[i] = 0;
-        for (var i = 36; i < 256; i++) 
-            threshold[i] = (byte)i;
-
-        // Lock the bitmap's bits
-        var rect = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
-        var bmpData = bitmap.LockBits(rect, ImageLockMode.ReadWrite, bitmap.PixelFormat);
-
-        // Get the address of the first line
-        var ptr = bmpData.Scan0;
-
-        // Declare an array to hold the bytes of the bitmap
-        var bytes = Math.Abs(bmpData.Stride) * bitmap.Height;
-        var rgbValues = new byte[bytes];
-
-        // Copy the RGB values into the array
-        Marshal.Copy(ptr, rgbValues, 0, bytes);
-
-        // Apply the thresholding
-        for (var i = 0; i < rgbValues.Length; i++)
-            rgbValues[i] = threshold[rgbValues[i]];
-
-        // Copy the RGB values back to the bitmap
-        Marshal.Copy(rgbValues, 0, ptr, bytes);
-
-        // Unlock the bits
-        bitmap.UnlockBits(bmpData);
+        SkiaBitmapExtensions.Thresholding(bitmap);
     }
 
-    public static Bitmap ArrayToBitmap(float[,] array, int w, int h)
+    public static SKBitmap ArrayToBitmap(float[,] array, int w, int h)
     {
-        var bitmap = new Bitmap(w, h, PixelFormat.Format24bppRgb);
-        var rect = new Rectangle(0, 0, w, h);
-        var bmpData = bitmap.LockBits(rect, ImageLockMode.WriteOnly, PixelFormat.Format24bppRgb);
-        var stride = bmpData.Stride;
-        var pixelBytes = new byte[stride * h];
-
-        for (var y = 0; y < h; y++)
-            for (var x = 0; x < w; x++)
-            {
-                var b = (byte)(array[x, y] * 255);
-                var offset = y * stride + x * 3;
-                pixelBytes[offset]     = b; // B
-                pixelBytes[offset + 1] = b; // G
-                pixelBytes[offset + 2] = b; // R
-            }
-
-        Marshal.Copy(pixelBytes, 0, bmpData.Scan0, pixelBytes.Length);
-        bitmap.UnlockBits(bmpData);
-        return bitmap;
+        return SkiaSharpAdapter.ArrayToBitmap(array, w, h);
     }
 
-    public static Bitmap CreateBlankBitmap(Bitmap image) => CreateBlankBitmap(image.Width, image.Height);
+    public static SKBitmap CreateBlankBitmap(SKBitmap image) => CreateBlankBitmap(image.Width, image.Height);
 
-    public static Bitmap CreateBlankBitmap(int width, int height) => new(width, height, PixelFormat.Format24bppRgb);
+    public static SKBitmap CreateBlankBitmap(int width, int height) => SkiaBitmapExtensions.CreateBlankBitmap(width, height);
 
-    public void SetBrightness(int x, int y, int value)
+    public void SetBrightness(int x, int y, float value)
     {
-        var color = Color.FromArgb(value, value, value);
-        image.SetPixel(x, y, color);
+        SkiaSharpAdapter.SetBrightness(image, x, y, value);
     }
 
     public float GetBrightness(int x, int y) => GetBrightness(image, x, y);
@@ -144,7 +78,7 @@ public class Photo(Bitmap image) : IDisposable, ICloneable
 
     public float GetHue(int x, int y) => GetHue(image, x, y);
 
-    public void Save(string path) { image.Save(path); }
+    public void Save(string path) { SkiaSharpAdapter.Save(image, path); }
 
     public void NormalizeBrightness(float coef)
     {
@@ -178,7 +112,7 @@ public class Photo(Bitmap image) : IDisposable, ICloneable
         image = newImage;
     }
 
-    public Bitmap AverageResizeImage(Bitmap origin, int width, int height)
+    public SKBitmap AverageResizeImage(SKBitmap origin, int width, int height)
     {
         // TODO: Doesn't work well for characters of size similar to the target size
         if (origin.Width < width || origin.Height < height)
@@ -189,7 +123,7 @@ public class Photo(Bitmap image) : IDisposable, ICloneable
         // Java traditionally makes images smaller with the bilinear method (linear mapping), which brings large
         // information loss. Fourier transformation would be ideal, but it is too slow.
         // Therefore we use the method of weighted average.
-        var resized = new Bitmap(width, height, PixelFormat.Format24bppRgb);
+        var resized = SkiaBitmapExtensions.CreateBlankBitmap(width, height);
         var xScale = (float)origin.Width / width;
         var yScale = (float)origin.Height / height;
 
@@ -222,18 +156,12 @@ public class Photo(Bitmap image) : IDisposable, ICloneable
 
     #endregion
 
-    public float[,] BitmapToArray(Bitmap image, int width, int height)
+    public float[,] BitmapToArray(SKBitmap image, int width, int height)
     {
-        var array = new float[width, height];
-
-        for (var x = 0; x < width; x++)
-        for (var y = 0; y < height; y++)
-            array[x, y] = GetBrightness(image, x, y);
-
-        return array;
+        return SkiaSharpAdapter.BitmapToArray(image, width, height);
     }
 
-    public float[,] BitmapToArrayWithBounds(Bitmap image, int width, int height)
+    public float[,] BitmapToArrayWithBounds(SKBitmap image, int width, int height)
     {
         var array = new float[width + 2, height + 2];
 
@@ -257,20 +185,9 @@ public class Photo(Bitmap image) : IDisposable, ICloneable
         return array;
     }
 
-    public Bitmap SumBitmaps(Bitmap image1, Bitmap image2)
+    public SKBitmap SumBitmaps(SKBitmap image1, SKBitmap image2)
     {
-        var outWidth = Math.Min(image1.Width, image2.Width);
-        var outHeight = Math.Min(image1.Height, image2.Height);
-
-        var outImage = new Bitmap(outWidth, outHeight, PixelFormat.Format24bppRgb);
-        for (var x = 0; x < outWidth; x++)
-        for (var y = 0; y < outHeight; y++)
-        {
-            var brightness = Math.Min(1.0f, GetBrightness(image1, x, y) + GetBrightness(image2, x, y));
-            SetBrightness(outImage, x, y, brightness);
-        }
-
-        return outImage;
+        return SkiaBitmapExtensions.SumBitmaps(image1, image2);
     }
 
     public void PlainThresholding(Statistics stat)
@@ -285,7 +202,11 @@ public class Photo(Bitmap image) : IDisposable, ICloneable
         }
     }
 
-    public int GetPixelColor(int x, int y) => image.GetPixel(x, y).ToArgb();
+    public int GetPixelColor(int x, int y)
+    {
+        var color = image.GetPixel(x, y);
+        return (int)((uint)color.Alpha << 24 | (uint)color.Red << 16 | (uint)color.Green << 8 | (uint)color.Blue);
+    }
 
     public void AdaptiveThresholding()
     {

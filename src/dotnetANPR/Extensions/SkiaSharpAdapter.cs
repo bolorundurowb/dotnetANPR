@@ -70,20 +70,21 @@ internal static class SkiaSharpAdapter
     /// </summary>
     public static float GetBrightness(SKBitmap bitmap, int x, int y)
     {
-        var color = bitmap.GetPixel(x, y);
-        // Calculate brightness using standard formula: (R*0.299 + G*0.587 + B*0.114) / 255
-        var brightness = (color.Red * 0.299f + color.Green * 0.587f + color.Blue * 0.114f) / 255f;
-        return brightness;
+        var pixmap = bitmap.PeekPixels();
+        if (pixmap != null)
+        {
+            var color = pixmap.GetPixelColor(x, y);
+            return (color.Red * 0.299f + color.Green * 0.587f + color.Blue * 0.114f) / 255f;
+        }
+
+        var fallback = bitmap.GetPixel(x, y);
+        return (fallback.Red * 0.299f + fallback.Green * 0.587f + fallback.Blue * 0.114f) / 255f;
     }
 
-    /// <summary>
-    /// Sets a pixel to a brightness value (0-1 range, converted to grayscale).
-    /// </summary>
     public static void SetBrightness(SKBitmap bitmap, int x, int y, float value)
     {
         var gray = (byte)(Clamp(value, 0, 1) * 255);
-        var color = new SKColor(gray, gray, gray);
-        bitmap.SetPixel(x, y, color);
+        bitmap.SetPixel(x, y, new SKColor(gray, gray, gray));
     }
 
     /// <summary>

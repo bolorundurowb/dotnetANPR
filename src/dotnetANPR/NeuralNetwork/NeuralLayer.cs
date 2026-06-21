@@ -5,7 +5,7 @@ namespace dotnetANPR.NeuralNetwork;
 /// <summary>
 /// Represents a layer of <see cref="Neuron"/> objects within a <see cref="NeuralNetwork"/>.
 /// </summary>
-public class NeuralLayer
+internal class NeuralLayer
 {
     /// <summary>The zero-based index of this layer within the network.</summary>
     public int Index { get; }

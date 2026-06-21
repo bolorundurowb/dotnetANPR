@@ -12,7 +12,7 @@ namespace dotnetANPR.NeuralNetwork;
 /// A feed-forward multi-layer perceptron neural network supporting training via gradient descent
 /// with back-propagation and persistence to/from XML.
 /// </summary>
-public class NeuralNetwork
+internal class NeuralNetwork
 {
     private static readonly ILogger<NeuralNetwork> Logger = Logging.GetLogger<NeuralNetwork>();
 

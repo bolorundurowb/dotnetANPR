@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace dotnetANPR.NeuralNetwork;
 
-public class Gradients
+internal class Gradients
 {
     public List<List<double>> Thresholds { get; private set; }
 

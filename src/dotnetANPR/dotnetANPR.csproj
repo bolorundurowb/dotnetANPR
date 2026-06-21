@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFramework>netstandard2.0</TargetFramework>
-        <LangVersion>latest</LangVersion>
+        <LangVersion>14</LangVersion>
         <Nullable>enable</Nullable>
         <PackageId>dotnetANPR</PackageId>
         <Version>0.1.0</Version>
@@ -13,6 +12,7 @@
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <IsTrimmable>false</IsTrimmable>
         <PublishTrimmed>false</PublishTrimmed>
+        <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
     </PropertyGroup>
 
     <ItemGroup>

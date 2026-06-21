@@ -1,41 +1,48 @@
 using System;
 using System.IO;
+using Microsoft.Extensions.Logging;
 using dotnetANPR;
-
-// Usage:
-//   dotnetANPR.CLI <image-path> [--dump-stages <dir>]
-//
-// Options:
-//   <image-path>          Path to the car image to analyse (required).
-//   --dump-stages <dir>   Directory to write intermediate processing stage images into.
-//                         Files are written as 01-vertical-rank-filter.jpg, 02-..., etc.
 
 string? imagePath = null;
 string? dumpDir = null;
+string? configPath = null;
+bool enableSkew = false;
 
-var cliArgs = Environment.GetCommandLineArgs()[1..]; // skip executable name
+var cliArgs = Environment.GetCommandLineArgs()[1..];
 
 for (var i = 0; i < cliArgs.Length; i++)
 {
-    if (cliArgs[i] == "--dump-stages")
+    switch (cliArgs[i])
     {
-        if (i + 1 >= cliArgs.Length)
-        {
-            Console.Error.WriteLine("Error: --dump-stages requires a directory path.");
-            Environment.Exit(1);
-        }
-
-        dumpDir = cliArgs[++i];
-    }
-    else if (imagePath == null)
-    {
-        imagePath = cliArgs[i];
-    }
-    else
-    {
-        Console.Error.WriteLine($"Error: unexpected argument '{cliArgs[i]}'.");
-        PrintUsage();
-        Environment.Exit(1);
+        case "--dump-stages":
+            if (i + 1 >= cliArgs.Length)
+            {
+                Console.Error.WriteLine("Error: --dump-stages requires a directory path.");
+                Environment.Exit(1);
+            }
+            dumpDir = cliArgs[++i];
+            break;
+        case "--config":
+            if (i + 1 >= cliArgs.Length)
+            {
+                Console.Error.WriteLine("Error: --config requires a file path.");
+                Environment.Exit(1);
+            }
+            configPath = cliArgs[++i];
+            break;
+        case "--skew":
+            enableSkew = true;
+            break;
+        default:
+            if (imagePath == null)
+                imagePath = cliArgs[i];
+            else
+            {
+                Console.Error.WriteLine($"Error: unexpected argument '{cliArgs[i]}'.");
+                PrintUsage();
+                Environment.Exit(1);
+            }
+            break;
     }
 }
 
@@ -55,12 +62,27 @@ if (!File.Exists(imagePath))
 if (dumpDir != null)
     Console.WriteLine($"Dumping processing stages to: {Path.GetFullPath(dumpDir)}");
 
-var result = ANPR.Recognize(imagePath, dumpDir);
+using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+var engine = new AnprEngine(new AnprOptions
+{
+    ConfigFilePath = configPath,
+    LoggerFactory = loggerFactory,
+});
 
-if (result != null)
-    Console.WriteLine($"Recognised plate: {result}");
+var result = engine.Recognize(imagePath, new RecognitionOptions
+{
+    DumpStagesDirectory = dumpDir,
+    EnableSkewCorrection = enableSkew,
+});
+
+if (result.Success)
+    Console.WriteLine($"Recognised plate: {result.Text}");
 else
     Console.WriteLine("No plate recognised.");
 
+Console.WriteLine($"Confidence: {result.Confidence:F3}");
+Console.WriteLine($"Duration: {result.Duration.TotalMilliseconds:F0} ms");
+
 static void PrintUsage() =>
-    Console.Error.WriteLine("Usage: dotnetANPR.CLI <image-path> [--dump-stages <dir>]");
+    Console.Error.WriteLine(
+        "Usage: dotnetANPR.CLI <image-path> [--dump-stages <dir>] [--config <path>] [--skew]");

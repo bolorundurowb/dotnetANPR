@@ -2,6 +2,7 @@ using dotnetANPR.Intelligence;
 using dotnetANPR.Intelligence.Parser;
 using dotnetANPR.Recognizer;
 using Microsoft.Extensions.Logging.Abstractions;
+using OmniAssert;
 
 namespace dotnetANPR.Tests;
 
@@ -20,6 +21,6 @@ public class ParserTests
         plate.AddCharacter(rc);
 
         var result = parser.Parse(plate, SyntaxAnalysisMode.DoNotParse);
-        Assert.AreEqual("A", result);
+        result.Verify().ToBe("A");
     }
 }

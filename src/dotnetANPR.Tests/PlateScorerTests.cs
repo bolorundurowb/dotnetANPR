@@ -2,6 +2,7 @@ using dotnetANPR.Configuration;
 using dotnetANPR.Intelligence;
 using dotnetANPR.Pipeline;
 using dotnetANPR.Recognizer;
+using OmniAssert;
 
 namespace dotnetANPR.Tests;
 
@@ -28,7 +29,7 @@ public class PlateScorerTests
         lowCost.Score = scorer.Score(lowCost, settings);
         highCost.Score = scorer.Score(highCost, settings);
 
-        Assert.IsTrue(lowCost.Score > highCost.Score);
+        lowCost.Score.Verify().ToBeGreaterThan(highCost.Score);
     }
 
     private static AnprSettings CreateSettings() => new Configurator().CreateSettings(new ResourceLocator());

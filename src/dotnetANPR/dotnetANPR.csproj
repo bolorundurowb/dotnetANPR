@@ -16,7 +16,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="SkiaSharp" Version="3.116.0" />
+        <PackageReference Include="SkiaSharp" Version="3.116.1" />
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.9" />
         <PackageReference Include="PropertyConfig.dll" Version="3.0.1" />
     </ItemGroup>

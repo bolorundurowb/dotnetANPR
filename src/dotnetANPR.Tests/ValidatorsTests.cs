@@ -15,7 +15,7 @@ public class PlateValidatorTests
     {
         var settings = DefaultSettings();
         var validator = new PlateValidator();
-        validator.IsCharacterCountValid(8, settings).Verify().ToBeTrue();
+        validator.IsCharacterCountValid(8, settings).Must().BeTrue();
     }
 
     [TestMethod]
@@ -23,7 +23,7 @@ public class PlateValidatorTests
     {
         var settings = DefaultSettings();
         var validator = new PlateValidator();
-        validator.IsCharacterCountValid((int)settings.IntelligenceMinimumChars, settings).Verify().ToBeTrue();
+        validator.IsCharacterCountValid((int)settings.IntelligenceMinimumChars, settings).Must().BeTrue();
     }
 
     [TestMethod]
@@ -31,7 +31,7 @@ public class PlateValidatorTests
     {
         var settings = DefaultSettings();
         var validator = new PlateValidator();
-        validator.IsCharacterCountValid((int)settings.IntelligenceMaximumChars, settings).Verify().ToBeTrue();
+        validator.IsCharacterCountValid((int)settings.IntelligenceMaximumChars, settings).Must().BeTrue();
     }
 
     [TestMethod]
@@ -39,7 +39,7 @@ public class PlateValidatorTests
     {
         var settings = DefaultSettings();
         var validator = new PlateValidator();
-        validator.IsCharacterCountValid((int)settings.IntelligenceMinimumChars - 1, settings).Verify().ToBeFalse();
+        validator.IsCharacterCountValid((int)settings.IntelligenceMinimumChars - 1, settings).Must().BeFalse();
     }
 
     [TestMethod]
@@ -47,7 +47,7 @@ public class PlateValidatorTests
     {
         var settings = DefaultSettings();
         var validator = new PlateValidator();
-        validator.IsCharacterCountValid((int)settings.IntelligenceMaximumChars + 1, settings).Verify().ToBeFalse();
+        validator.IsCharacterCountValid((int)settings.IntelligenceMaximumChars + 1, settings).Must().BeFalse();
     }
 
     [TestMethod]
@@ -55,7 +55,7 @@ public class PlateValidatorTests
     {
         var settings = DefaultSettings();
         var validator = new PlateValidator();
-        validator.IsCharacterCountValid(0, settings).Verify().ToBeFalse();
+        validator.IsCharacterCountValid(0, settings).Must().BeFalse();
     }
 }
 
@@ -70,7 +70,7 @@ public class CharacterValidatorTests
     {
         var settings = DefaultSettings();
         var validator = new CharacterValidator();
-        validator.IsClassificationCostValid(50f, settings).Verify().ToBeTrue();
+        validator.IsClassificationCostValid(50f, settings).Must().BeTrue();
     }
 
     [TestMethod]
@@ -79,7 +79,7 @@ public class CharacterValidatorTests
         var settings = DefaultSettings();
         var validator = new CharacterValidator();
         validator.IsClassificationCostValid(
-            (float)settings.IntelligenceMaxSimilarityCostDispersion, settings).Verify().ToBeTrue();
+            (float)settings.IntelligenceMaxSimilarityCostDispersion, settings).Must().BeTrue();
     }
 
     [TestMethod]
@@ -88,7 +88,7 @@ public class CharacterValidatorTests
         var settings = DefaultSettings();
         var validator = new CharacterValidator();
         validator.IsClassificationCostValid(
-            (float)settings.IntelligenceMaxSimilarityCostDispersion + 1f, settings).Verify().ToBeFalse();
+            (float)settings.IntelligenceMaxSimilarityCostDispersion + 1f, settings).Must().BeFalse();
     }
 
     [TestMethod]
@@ -96,6 +96,6 @@ public class CharacterValidatorTests
     {
         var settings = DefaultSettings();
         var validator = new CharacterValidator();
-        validator.IsClassificationCostValid(0f, settings).Verify().ToBeTrue();
+        validator.IsClassificationCostValid(0f, settings).Must().BeTrue();
     }
 }

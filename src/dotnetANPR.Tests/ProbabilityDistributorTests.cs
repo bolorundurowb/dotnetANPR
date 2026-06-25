@@ -14,8 +14,8 @@ public class ProbabilityDistributorTests
 
         var result = dist.Distribute(input);
 
-        result[0].Verify().ToBe(0f);
-        result[1].Verify().ToBe(0f);
+        result[0].Must().Be(0f);
+        result[1].Must().Be(0f);
     }
 
     [TestMethod]
@@ -26,8 +26,8 @@ public class ProbabilityDistributorTests
 
         var result = dist.Distribute(input);
 
-        result[4].Verify().ToBe(0f);
-        result[3].Verify().ToBe(0f);
+        result[4].Must().Be(0f);
+        result[3].Must().Be(0f);
     }
 
     [TestMethod]
@@ -38,9 +38,9 @@ public class ProbabilityDistributorTests
 
         var result = dist.Distribute(input);
 
-        result[0].Verify().ToBeApproximately(2f, 0.0001f);
-        result[1].Verify().ToBeApproximately(3f, 0.0001f);
-        result[2].Verify().ToBeApproximately(4f, 0.0001f);
+        result[0].Must().BeApproximately(2f, 0.0001f);
+        result[1].Must().BeApproximately(3f, 0.0001f);
+        result[2].Must().BeApproximately(4f, 0.0001f);
     }
 
     [TestMethod]
@@ -53,7 +53,7 @@ public class ProbabilityDistributorTests
 
         var centerValue = result[2];
         var edgeValue = result[0];
-        (centerValue >= edgeValue).Verify().ToBeTrue();
+        (centerValue >= edgeValue).Must().BeTrue();
     }
 
     // ── Edge cases ───────────────────────────────────────────────────────────
@@ -63,7 +63,7 @@ public class ProbabilityDistributorTests
     {
         var dist = new ProbabilityDistributor(0.5f, 0f, 1, 1);
         var result = dist.Distribute([]);
-        result.Verify().ToBeEmpty();
+        result.Must().BeEmpty();
     }
 
     [TestMethod]
@@ -72,7 +72,7 @@ public class ProbabilityDistributorTests
         var dist = new ProbabilityDistributor(0.5f, 0f, 0, 0);
         var input = new List<float> { 5f, 5f, 5f };
         var result = dist.Distribute(input);
-        result.Verify().ToHaveCount(3);
+        result.Must().HaveCount(3);
     }
 
     [TestMethod]
@@ -81,6 +81,6 @@ public class ProbabilityDistributorTests
         var dist = new ProbabilityDistributor(0.5f, 0.5f, 2, 2);
         var input = Enumerable.Range(0, 10).Select(i => (float)i).ToList();
         var result = dist.Distribute(input);
-        result.Verify().ToHaveCount(input.Count);
+        result.Must().HaveCount(input.Count);
     }
 }

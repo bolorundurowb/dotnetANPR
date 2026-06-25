@@ -9,21 +9,21 @@ public class RecognitionResultTests
     public void Success_IsTrueWhenTextIsNotNull()
     {
         var result = new RecognitionResult { Text = "ABC123" };
-        result.Success.Verify().ToBeTrue();
+        result.Success.Must().BeTrue();
     }
 
     [TestMethod]
     public void Success_IsFalseWhenTextIsNull()
     {
         var result = new RecognitionResult { Text = null };
-        result.Success.Verify().ToBeFalse();
+        result.Success.Must().BeFalse();
     }
 
     [TestMethod]
     public void Confidence_IsStoredCorrectly()
     {
         var result = new RecognitionResult { Confidence = 0.87 };
-        result.Confidence.Verify().ToBeApproximately(0.87, 0.0001);
+        result.Confidence.Must().BeApproximately(0.87, 0.0001);
     }
 
     [TestMethod]
@@ -31,14 +31,14 @@ public class RecognitionResultTests
     {
         var duration = TimeSpan.FromMilliseconds(42);
         var result = new RecognitionResult { Duration = duration };
-        result.Duration.Verify().ToBe(duration);
+        result.Duration.Must().Be(duration);
     }
 
     [TestMethod]
     public void Candidates_DefaultsToNull()
     {
         var result = new RecognitionResult();
-        ((object?)result.Candidates).Verify().ToBeNull();
+        ((object?)result.Candidates).Must().BeNull();
     }
 
     [TestMethod]
@@ -50,14 +50,14 @@ public class RecognitionResultTests
             new PlateCandidateResult { RawText = "AB1234", Score = 0.7 },
         };
         var result = new RecognitionResult { Candidates = candidates };
-        result.Candidates!.Verify().ToHaveCount(2);
+        result.Candidates!.Must().HaveCount(2);
     }
 
     [TestMethod]
     public void StageTimings_DefaultsToNull()
     {
         var result = new RecognitionResult();
-        result.StageTimings.Verify().ToBeNull();
+        result.StageTimings.Must().BeNull();
     }
 
     [TestMethod]
@@ -69,36 +69,36 @@ public class RecognitionResultTests
             ["plate-detection"] = TimeSpan.FromMilliseconds(20),
         };
         var result = new RecognitionResult { StageTimings = timings };
-        result.StageTimings!.Verify().ToHaveCount(2);
+        result.StageTimings!.Must().HaveCount(2);
     }
 
     [TestMethod]
     public void PlateCandidateResult_RawText_DefaultsToEmpty()
     {
         var candidate = new PlateCandidateResult();
-        candidate.RawText.Verify().ToBe("");
+        candidate.RawText.Must().Be("");
     }
 
     [TestMethod]
     public void PlateCandidateResult_CorrectedText_DefaultsToNull()
     {
         var candidate = new PlateCandidateResult();
-        candidate.CorrectedText.Verify().ToBeNull();
+        candidate.CorrectedText.Must().BeNull();
     }
 
     [TestMethod]
     public void PlateCandidateResult_Characters_DefaultsToEmpty()
     {
         var candidate = new PlateCandidateResult();
-        candidate.Characters.Verify().ToHaveCount(0);
+        candidate.Characters.Must().HaveCount(0);
     }
 
     [TestMethod]
     public void PlateCandidateResult_StoresBandAndPlateIndex()
     {
         var candidate = new PlateCandidateResult { BandIndex = 1, PlateIndex = 2 };
-        candidate.BandIndex.Verify().ToBe(1);
-        candidate.PlateIndex.Verify().ToBe(2);
+        candidate.BandIndex.Must().Be(1);
+        candidate.PlateIndex.Must().Be(2);
     }
 
     [TestMethod]
@@ -111,8 +111,8 @@ public class RecognitionResultTests
             PositionIndex = 3,
         };
 
-        diag.Character.Verify().ToBe('X');
-        diag.ClassificationCost.Verify().ToBeApproximately(12.5f, 0.0001f);
-        diag.PositionIndex.Verify().ToBe(3);
+        diag.Character.Must().Be('X');
+        diag.ClassificationCost.Must().BeApproximately(12.5f, 0.0001f);
+        diag.PositionIndex.Must().Be(3);
     }
 }

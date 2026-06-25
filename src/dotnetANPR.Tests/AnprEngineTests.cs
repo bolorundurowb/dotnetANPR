@@ -10,7 +10,7 @@ public class AnprEngineTests
     public void Engine_ConstructsWithDefaults()
     {
         var engine = new AnprEngine(new AnprOptions());
-        engine.Verify().NotToBeNull();
+        engine.Must().NotBeNull();
     }
 
     [TestMethod]

@@ -10,32 +10,32 @@ public class PeakTests
     public void Peak_ThreeArgConstructor_StoresAllValues()
     {
         var peak = new Peak(2, 5, 9);
-        peak.Left.Verify().ToBe(2);
-        peak.Center.Verify().ToBe(5);
-        peak.Right.Verify().ToBe(9);
+        peak.Left.Must().Be(2);
+        peak.Center.Must().Be(5);
+        peak.Right.Must().Be(9);
     }
 
     [TestMethod]
     public void Peak_TwoArgConstructor_ComputesCenterAsAverage()
     {
         var peak = new Peak(4, 10);
-        peak.Left.Verify().ToBe(4);
-        peak.Right.Verify().ToBe(10);
-        peak.Center.Verify().ToBe((4 + 10) / 2);
+        peak.Left.Must().Be(4);
+        peak.Right.Must().Be(10);
+        peak.Center.Must().Be((4 + 10) / 2);
     }
 
     [TestMethod]
     public void Peak_Diff_IsRightMinusLeft()
     {
         var peak = new Peak(3, 11);
-        peak.Diff.Verify().ToBe(8);
+        peak.Diff.Must().Be(8);
     }
 
     [TestMethod]
     public void Peak_Diff_IsZeroWhenEqualBounds()
     {
         var peak = new Peak(5, 5);
-        peak.Diff.Verify().ToBe(0);
+        peak.Diff.Must().Be(0);
     }
 
     [TestMethod]
@@ -43,7 +43,7 @@ public class PeakTests
     {
         var peak = new Peak(2, 10);
         peak.Left = 5;
-        peak.Diff.Verify().ToBe(5);
+        peak.Diff.Must().Be(5);
     }
 
     [TestMethod]
@@ -60,8 +60,8 @@ public class PeakTests
 
         peaks.Sort(comparer);
 
-        peaks[0].Center.Verify().ToBe(3);
-        peaks[1].Center.Verify().ToBe(1);
+        peaks[0].Center.Must().Be(3);
+        peaks[1].Center.Must().Be(1);
     }
 
     [TestMethod]
@@ -71,7 +71,7 @@ public class PeakTests
         var comparer = new PeakComparator(yValues);
         var a = new Peak(0, 1, 2);
         var b = new Peak(0, 2, 2);
-        comparer.Compare(a, b).Verify().ToBe(0);
+        comparer.Compare(a, b).Must().Be(0);
     }
 
     [TestMethod]
@@ -88,9 +88,9 @@ public class PeakTests
 
         peaks.Sort(comparer);
 
-        peaks[0].Center.Verify().ToBe(3);
-        peaks[1].Center.Verify().ToBe(8);
-        peaks[2].Center.Verify().ToBe(15);
+        peaks[0].Center.Must().Be(3);
+        peaks[1].Center.Must().Be(8);
+        peaks[2].Center.Must().Be(15);
     }
 
     [TestMethod]
@@ -99,6 +99,6 @@ public class PeakTests
         var comparer = new SpaceComparator();
         var a = new Peak(0, 5, 10);
         var b = new Peak(1, 5, 9);
-        comparer.Compare(a, b).Verify().ToBe(0);
+        comparer.Compare(a, b).Must().Be(0);
     }
 }

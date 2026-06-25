@@ -29,7 +29,7 @@ public class PlateScorerTests
         lowCost.Score = scorer.Score(lowCost, settings);
         highCost.Score = scorer.Score(highCost, settings);
 
-        lowCost.Score.Verify().ToBeGreaterThan(highCost.Score);
+        lowCost.Score.Must().BeGreaterThan(highCost.Score);
     }
 
     private static AnprSettings CreateSettings() => new Configurator().CreateSettings(new ResourceLocator());

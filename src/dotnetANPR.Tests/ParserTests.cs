@@ -21,6 +21,6 @@ public class ParserTests
         plate.AddCharacter(rc);
 
         var result = parser.Parse(plate, SyntaxAnalysisMode.DoNotParse);
-        result.Verify().ToBe("A");
+        result.Must().Be("A");
     }
 }

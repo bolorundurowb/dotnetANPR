@@ -11,8 +11,8 @@ public class RecognizedCharacterTests
     {
         var rc = new RecognizedCharacter();
         rc.AddPattern(new RecognizedPattern('A', 1f));
-        rc.IsSorted.Verify().ToBeFalse();
-        ((object?)rc.Patterns).Verify().ToBeNull();
+        rc.IsSorted.Must().BeFalse();
+        ((object?)rc.Patterns).Must().BeNull();
     }
 
     [TestMethod]
@@ -21,8 +21,8 @@ public class RecognizedCharacterTests
         var rc = new RecognizedCharacter();
         rc.AddPattern(new RecognizedPattern('A', 1f));
         rc.Sort(false);
-        rc.IsSorted.Verify().ToBeTrue();
-        ((object?)rc.Patterns).Verify().NotToBeNull();
+        rc.IsSorted.Must().BeTrue();
+        ((object?)rc.Patterns).Must().NotBeNull();
     }
 
     [TestMethod]
@@ -34,9 +34,9 @@ public class RecognizedCharacterTests
         rc.AddPattern(new RecognizedPattern('B', 50f));
         rc.Sort(false);
 
-        rc.Patterns![0].Char.Verify().ToBe('A');
-        rc.Patterns[1].Char.Verify().ToBe('B');
-        rc.Patterns[2].Char.Verify().ToBe('C');
+        rc.Patterns![0].Char.Must().Be('A');
+        rc.Patterns[1].Char.Must().Be('B');
+        rc.Patterns[2].Char.Must().Be('C');
     }
 
     [TestMethod]
@@ -47,7 +47,7 @@ public class RecognizedCharacterTests
         rc.AddPattern(new RecognizedPattern('Y', 25f));
         rc.Sort(false);
 
-        (rc.Patterns![0].Cost <= rc.Patterns[1].Cost).Verify().ToBeTrue();
+        (rc.Patterns![0].Cost <= rc.Patterns[1].Cost).Must().BeTrue();
     }
 
     [TestMethod]
@@ -58,8 +58,8 @@ public class RecognizedCharacterTests
         rc.AddPattern(new RecognizedPattern('B', 80f));
         rc.Sort(true);
 
-        rc.Patterns![0].Char.Verify().ToBe('B');
-        rc.Patterns[1].Char.Verify().ToBe('A');
+        rc.Patterns![0].Char.Must().Be('B');
+        rc.Patterns[1].Char.Must().Be('A');
     }
 
     [TestMethod]
@@ -72,7 +72,7 @@ public class RecognizedCharacterTests
 
         var firstChar = rc.Patterns![0].Char;
         rc.Sort(false);
-        rc.Patterns[0].Char.Verify().ToBe(firstChar);
+        rc.Patterns[0].Char.Must().Be(firstChar);
     }
 
     [TestMethod]
@@ -80,7 +80,7 @@ public class RecognizedCharacterTests
     {
         var rc = new RecognizedCharacter();
         rc.AddPattern(new RecognizedPattern('A', 1f));
-        rc.Pattern(0).Verify().ToBeNull();
+        rc.Pattern(0).Must().BeNull();
     }
 
     [TestMethod]
@@ -92,8 +92,8 @@ public class RecognizedCharacterTests
         rc.Sort(false);
 
         var first = rc.Pattern(0);
-        first.Verify().NotToBeNull();
-        first!.Char.Verify().ToBe('A');
+        first.Must().NotBeNull();
+        first!.Char.Must().Be('A');
     }
 
     [TestMethod]
@@ -102,21 +102,21 @@ public class RecognizedCharacterTests
         var rc = new RecognizedCharacter();
         rc.AddPattern(new RecognizedPattern('A', 1f));
         rc.Sort(false);
-        rc.Pattern(99).Verify().ToBeNull();
+        rc.Pattern(99).Must().BeNull();
     }
 
     [TestMethod]
     public void RecognizedPattern_StoresCharAndCost()
     {
         var rp = new RecognizedPattern('G', 42.5f);
-        rp.Char.Verify().ToBe('G');
-        rp.Cost.Verify().ToBeApproximately(42.5f, 0.0001f);
+        rp.Char.Must().Be('G');
+        rp.Cost.Must().BeApproximately(42.5f, 0.0001f);
     }
 
     [TestMethod]
     public void RecognizedPattern_ZeroCost_IsValid()
     {
         var rp = new RecognizedPattern('0', 0f);
-        rp.Cost.Verify().ToBeApproximately(0f, 0.0001f);
+        rp.Cost.Must().BeApproximately(0f, 0.0001f);
     }
 }

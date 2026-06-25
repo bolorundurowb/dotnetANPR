@@ -5,8 +5,8 @@ namespace dotnetANPR.ImageAnalysis;
 
 internal class ProbabilityDistributor(float center, float power, int leftMargin, int rightMargin)
 {
-    private readonly int _leftMargin = Math.Max(1, leftMargin);
-    private readonly int _rightMargin = Math.Max(1, rightMargin);
+    private readonly int _leftMargin = Math.Max(0, leftMargin);
+    private readonly int _rightMargin = Math.Max(0, rightMargin);
 
     public List<float> Distribute(List<float> peaks)
     {
@@ -14,7 +14,7 @@ internal class ProbabilityDistributor(float center, float power, int leftMargin,
 
         for (var i = 0; i < peaks.Count; i++)
         {
-            if (i < _leftMargin || i > peaks.Count - _rightMargin)
+            if (i < _leftMargin || i >= peaks.Count - _rightMargin)
                 distributedPeaks.Add(0f);
             else
                 distributedPeaks.Add(DistributionFunction(peaks[i], (float)i / peaks.Count));

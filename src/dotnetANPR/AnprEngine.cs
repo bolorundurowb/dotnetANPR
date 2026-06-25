@@ -65,14 +65,7 @@ public sealed class AnprEngine
 
         using var bitmap = SkiaSharpAdapter.LoadBitmap(imagePath);
         var recognizeOptions = options ?? new RecognitionOptions();
-        return Recognize(bitmap, new RecognitionOptions
-        {
-            DumpStagesDirectory = recognizeOptions.DumpStagesDirectory,
-            EnableSkewCorrection = recognizeOptions.EnableSkewCorrection,
-            OwnsInputImage = true,
-            CancellationToken = recognizeOptions.CancellationToken,
-            DumpSkewDiagnostics = recognizeOptions.DumpSkewDiagnostics,
-        });
+        return Recognize(bitmap, recognizeOptions with { OwnsInputImage = true });
     }
 
     /// <summary>
@@ -83,14 +76,7 @@ public sealed class AnprEngine
         using var skData = SKData.Create(imageStream);
         var bitmap = SKBitmap.Decode(skData);
         var recognizeOptions = options ?? new RecognitionOptions();
-        return Recognize(bitmap, new RecognitionOptions
-        {
-            DumpStagesDirectory = recognizeOptions.DumpStagesDirectory,
-            EnableSkewCorrection = recognizeOptions.EnableSkewCorrection,
-            OwnsInputImage = true,
-            CancellationToken = recognizeOptions.CancellationToken,
-            DumpSkewDiagnostics = recognizeOptions.DumpSkewDiagnostics,
-        });
+        return Recognize(bitmap, recognizeOptions with { OwnsInputImage = true });
     }
 
     /// <summary>
@@ -205,14 +191,7 @@ public sealed class AnprEngine
         if (ct == default)
             return options;
 
-        return new RecognitionOptions
-        {
-            DumpStagesDirectory = options.DumpStagesDirectory,
-            EnableSkewCorrection = options.EnableSkewCorrection,
-            OwnsInputImage = options.OwnsInputImage,
-            CancellationToken = ct,
-            DumpSkewDiagnostics = options.DumpSkewDiagnostics,
-        };
+        return options with { CancellationToken = ct };
     }
 
     private static List<PlateCandidateResult> BuildCandidateDiagnostics(

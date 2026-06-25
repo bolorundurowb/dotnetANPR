@@ -1,6 +1,7 @@
 # dotnetANPR
 
 [![Build and Test](https://github.com/bolorundurowb/dotnetANPR/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/bolorundurowb/dotnetANPR/actions/workflows/build-and-test.yml)
+[![codecov](https://codecov.io/gh/bolorundurowb/dotnetANPR/graph/badge.svg?token=2moJ78trra)](https://codecov.io/gh/bolorundurowb/dotnetANPR)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 Cross-platform automatic number plate recognition (ANPR) for .NET. dotnetANPR locates licence plates in car photos, segments individual characters, classifies them, and optionally corrects the result against known plate formats.

@@ -1,4 +1,5 @@
 using dotnetANPR;
+using OmniAssert;
 
 namespace dotnetANPR.Tests;
 
@@ -9,13 +10,13 @@ public class AnprEngineTests
     public void Engine_ConstructsWithDefaults()
     {
         var engine = new AnprEngine(new AnprOptions());
-        Assert.IsNotNull(engine);
+        engine.Must().NotBeNull();
     }
 
     [TestMethod]
     public void Recognize_InvalidPath_Throws()
     {
         var engine = new AnprEngine(new AnprOptions());
-        Assert.ThrowsExactly<ArgumentException>(() => engine.Recognize("nonexistent.jpg"));
+        ((Action)(() => engine.Recognize("nonexistent.jpg"))).Throws<ArgumentException>();
     }
 }

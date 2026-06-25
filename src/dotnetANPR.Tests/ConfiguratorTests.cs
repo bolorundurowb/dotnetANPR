@@ -25,8 +25,6 @@ public class ConfiguratorTests
         File.Exists(resolved).Verify().ToBeTrue();
     }
 
-    // ── Set / Get roundtrip ───────────────────────────────────────────────────
-
     [TestMethod]
     public void Set_ThenGet_RoundtripsInteger()
     {
@@ -47,13 +45,10 @@ public class ConfiguratorTests
     public void Set_OverridesDefault()
     {
         var config = new Configurator();
-        // Default is 5; override to 3
         config.Set("intelligence_minimumChars", 3);
         var settings = config.CreateSettings(new ResourceLocator());
         settings.IntelligenceMinimumChars.Verify().ToBe(3);
     }
-
-    // ── Default values ────────────────────────────────────────────────────────
 
     [TestMethod]
     public void DefaultSettings_CharCountRange_IsReasonable()
@@ -93,18 +88,13 @@ public class ConfiguratorTests
         File.Exists(settings.IntelligenceSyntaxDescriptionFile).Verify().ToBeTrue();
     }
 
-    // ── GetPath ───────────────────────────────────────────────────────────────
-
     [TestMethod]
     public void GetPath_NormalisesForwardSlashes()
     {
         var config = new Configurator();
         var path = config.GetPath("char_neuralNetworkPath");
-        // On any OS the path separator should match the current platform
         (path.Contains('/') && Path.DirectorySeparatorChar == '\\').Verify().ToBeFalse();
     }
-
-    // ── ResourceLocator ───────────────────────────────────────────────────────
 
     [TestMethod]
     public void ResourceLocator_ResolvesNeuralNetworkFile()

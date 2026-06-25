@@ -5,8 +5,6 @@ namespace dotnetANPR.Tests;
 [TestClass]
 public class RecognitionResultTests
 {
-    // ── Success flag ──────────────────────────────────────────────────────────
-
     [TestMethod]
     public void Success_IsTrueWhenTextIsNotNull()
     {
@@ -21,16 +19,12 @@ public class RecognitionResultTests
         result.Success.Verify().ToBeFalse();
     }
 
-    // ── Confidence ───────────────────────────────────────────────────────────
-
     [TestMethod]
     public void Confidence_IsStoredCorrectly()
     {
         var result = new RecognitionResult { Confidence = 0.87 };
         result.Confidence.Verify().ToBeApproximately(0.87, 0.0001);
     }
-
-    // ── Duration ────────────────────────────────────────────────────────────
 
     [TestMethod]
     public void Duration_IsStoredCorrectly()
@@ -40,13 +34,11 @@ public class RecognitionResultTests
         result.Duration.Verify().ToBe(duration);
     }
 
-    // ── Candidates ───────────────────────────────────────────────────────────
-
     [TestMethod]
     public void Candidates_DefaultsToNull()
     {
         var result = new RecognitionResult();
-        result.Candidates.Verify().ToBeNull();
+        ((object?)result.Candidates).Verify().ToBeNull();
     }
 
     [TestMethod]
@@ -60,8 +52,6 @@ public class RecognitionResultTests
         var result = new RecognitionResult { Candidates = candidates };
         result.Candidates!.Verify().ToHaveCount(2);
     }
-
-    // ── StageTimings ──────────────────────────────────────────────────────────
 
     [TestMethod]
     public void StageTimings_DefaultsToNull()
@@ -81,8 +71,6 @@ public class RecognitionResultTests
         var result = new RecognitionResult { StageTimings = timings };
         result.StageTimings!.Verify().ToHaveCount(2);
     }
-
-    // ── PlateCandidateResult ──────────────────────────────────────────────────
 
     [TestMethod]
     public void PlateCandidateResult_RawText_DefaultsToEmpty()
@@ -112,8 +100,6 @@ public class RecognitionResultTests
         candidate.BandIndex.Verify().ToBe(1);
         candidate.PlateIndex.Verify().ToBe(2);
     }
-
-    // ── CharacterDiagnostic ───────────────────────────────────────────────────
 
     [TestMethod]
     public void CharacterDiagnostic_StoresAllFields()

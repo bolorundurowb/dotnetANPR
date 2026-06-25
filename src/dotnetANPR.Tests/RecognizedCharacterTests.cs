@@ -6,15 +6,13 @@ namespace dotnetANPR.Tests;
 [TestClass]
 public class RecognizedCharacterTests
 {
-    // ── IsSorted ──────────────────────────────────────────────────────────────
-
     [TestMethod]
     public void Patterns_IsNullBeforeSort()
     {
         var rc = new RecognizedCharacter();
         rc.AddPattern(new RecognizedPattern('A', 1f));
         rc.IsSorted.Verify().ToBeFalse();
-        rc.Patterns.Verify().ToBeNull();
+        ((object?)rc.Patterns).Verify().ToBeNull();
     }
 
     [TestMethod]
@@ -24,10 +22,8 @@ public class RecognizedCharacterTests
         rc.AddPattern(new RecognizedPattern('A', 1f));
         rc.Sort(false);
         rc.IsSorted.Verify().ToBeTrue();
-        rc.Patterns.Verify().NotToBeNull();
+        ((object?)rc.Patterns).Verify().NotToBeNull();
     }
-
-    // ── Sort ascending (false) ────────────────────────────────────────────────
 
     [TestMethod]
     public void Sort_Ascending_OrdersLowestCostFirst()
@@ -54,8 +50,6 @@ public class RecognizedCharacterTests
         (rc.Patterns![0].Cost <= rc.Patterns[1].Cost).Verify().ToBeTrue();
     }
 
-    // ── Sort descending (true) ────────────────────────────────────────────────
-
     [TestMethod]
     public void Sort_Descending_OrdersHighestCostFirst()
     {
@@ -68,8 +62,6 @@ public class RecognizedCharacterTests
         rc.Patterns[1].Char.Verify().ToBe('A');
     }
 
-    // ── Sort idempotence ──────────────────────────────────────────────────────
-
     [TestMethod]
     public void Sort_CalledTwice_DoesNotChangeOrder()
     {
@@ -79,11 +71,9 @@ public class RecognizedCharacterTests
         rc.Sort(false);
 
         var firstChar = rc.Patterns![0].Char;
-        rc.Sort(false); // second call should be a no-op
+        rc.Sort(false);
         rc.Patterns[0].Char.Verify().ToBe(firstChar);
     }
-
-    // ── Pattern(index) accessor ───────────────────────────────────────────────
 
     [TestMethod]
     public void Pattern_ReturnsNullBeforeSort()
@@ -114,8 +104,6 @@ public class RecognizedCharacterTests
         rc.Sort(false);
         rc.Pattern(99).Verify().ToBeNull();
     }
-
-    // ── RecognizedPattern ─────────────────────────────────────────────────────
 
     [TestMethod]
     public void RecognizedPattern_StoresCharAndCost()

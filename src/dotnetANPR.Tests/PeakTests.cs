@@ -6,8 +6,6 @@ namespace dotnetANPR.Tests;
 [TestClass]
 public class PeakTests
 {
-    // ── Peak constructors ────────────────────────────────────────────────────
-
     [TestMethod]
     public void Peak_ThreeArgConstructor_StoresAllValues()
     {
@@ -23,7 +21,7 @@ public class PeakTests
         var peak = new Peak(4, 10);
         peak.Left.Verify().ToBe(4);
         peak.Right.Verify().ToBe(10);
-        peak.Center.Verify().ToBe((4 + 10) / 2); // = 7
+        peak.Center.Verify().ToBe((4 + 10) / 2);
     }
 
     [TestMethod]
@@ -48,24 +46,21 @@ public class PeakTests
         peak.Diff.Verify().ToBe(5);
     }
 
-    // ── PeakComparator ───────────────────────────────────────────────────────
-
     [TestMethod]
     public void PeakComparator_SortsDescendingByYValue()
     {
-        // yValues[center] is the sort key — higher center value → earlier in list
         var yValues = new List<float> { 0f, 3f, 1f, 5f, 2f };
         var comparer = new PeakComparator(yValues);
 
         var peaks = new List<Peak>
         {
-            new Peak(0, 1, 2),  // center=1, y=3
-            new Peak(2, 3, 4),  // center=3, y=5   ← should be first
+            new Peak(0, 1, 2),
+            new Peak(2, 3, 4),
         };
 
         peaks.Sort(comparer);
 
-        peaks[0].Center.Verify().ToBe(3); // highest y at center=3
+        peaks[0].Center.Verify().ToBe(3);
         peaks[1].Center.Verify().ToBe(1);
     }
 
@@ -79,8 +74,6 @@ public class PeakTests
         comparer.Compare(a, b).Verify().ToBe(0);
     }
 
-    // ── SpaceComparator ──────────────────────────────────────────────────────
-
     [TestMethod]
     public void SpaceComparator_OrdersByCenter_Ascending()
     {
@@ -88,9 +81,9 @@ public class PeakTests
 
         var peaks = new List<Peak>
         {
-            new Peak(10, 15, 20), // center=15
-            new Peak(0, 3, 6),   // center=3
-            new Peak(5, 8, 11),  // center=8
+            new Peak(10, 15, 20),
+            new Peak(0, 3, 6),
+            new Peak(5, 8, 11),
         };
 
         peaks.Sort(comparer);

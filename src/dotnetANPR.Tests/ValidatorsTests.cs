@@ -10,14 +10,11 @@ public class PlateValidatorTests
     private static AnprSettings DefaultSettings() =>
         new Configurator().CreateSettings(new ResourceLocator());
 
-    // ── IsCharacterCountValid ─────────────────────────────────────────────────
-
     [TestMethod]
     public void IsCharacterCountValid_WithinRange_ReturnsTrue()
     {
         var settings = DefaultSettings();
         var validator = new PlateValidator();
-        // Default min=5, max=15 — 8 chars is valid
         validator.IsCharacterCountValid(8, settings).Verify().ToBeTrue();
     }
 
@@ -68,14 +65,11 @@ public class CharacterValidatorTests
     private static AnprSettings DefaultSettings() =>
         new Configurator().CreateSettings(new ResourceLocator());
 
-    // ── IsClassificationCostValid ─────────────────────────────────────────────
-
     [TestMethod]
     public void IsClassificationCostValid_BelowThreshold_ReturnsTrue()
     {
         var settings = DefaultSettings();
         var validator = new CharacterValidator();
-        // Default max similarity cost = 100; cost of 50 is valid
         validator.IsClassificationCostValid(50f, settings).Verify().ToBeTrue();
     }
 
